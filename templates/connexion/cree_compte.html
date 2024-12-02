@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<title>Nuage</title>
+</html>
+
+<head>
+    <link rel="stylesheet" href="../static/general.css">
+    <link rel="stylesheet" href="../static/connexion/cree_compte.css">
+    <!--On récupère une font sur Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
+</head>
+
+<div class="mainDiv">
+    <p class="Title">Créer un compte
+    <div class="div_connexion">
+        {% if error %}
+        <h4 class="error">Erreur, {{error_msg}}</h5>
+        {% endif %}
+        <form method="post" action="new_compte">
+            <p> Pseudo : <input name="value" type=text> </p>
+            <p> Mot de passe  : <input name="value" type=password> </p>
+            <p> Prénom et nom : <input name="value" type=text> </p>
+            <p> Adresse mail : <input name="value" type=mail> </p>
+            <p> Date de naissance : <input style="background-color: rgba(255, 255, 255, 0.3); border-radius:5px; text-shadow:1px 1px 1px black" name="value" type=date> </p>
+            <text><input class="new_compte" type=submit value="Créer un compte">
+        </form>
+        <form method="post" action="back_to_connexion">
+            <text><input class="back" type=submit value="← Retour">
+        </form>
+    </div>
+</div>

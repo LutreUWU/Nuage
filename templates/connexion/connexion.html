@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<title>Nuage</title>
+</html>
+
+<head>
+    <link rel="stylesheet" href="../static/general.css">
+    <link rel="stylesheet" href="../static/connexion/connexion.css">
+
+    <!--On récupère une font sur Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
+</head>
+
+<div class="mainDiv">
+    <p class="Title">Nuage
+    <div class="div_connexion">
+        {% if error %}
+        <h4 class="error">Erreur, {{error_msg}}</h5>
+        {% endif %}
+        
+        {% if create_compte %}
+        <h4 class="error" style="color:green" >{{msg}}</h5>
+        {% endif %}
+            <form class="form_connexion" method = "post" action = "login">
+            <p>Pseudo :
+            <input type="text" name="pseudo"> 
+            <p> Mot de passe :
+            <input type="password" name="password">
+            <input style="margin-top: 5%;" class="button_login" type=submit value="Se connecter"> 
+        </form>
+        <form method="post" action="cree_compte">
+            <input class="new_compte" type=submit value="Créer un compte"> 
+        </form>
+    </div>
+</div>

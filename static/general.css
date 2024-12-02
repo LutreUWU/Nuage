@@ -1,0 +1,125 @@
+body{
+    background-image: url("./img/BG.jpg");
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    image-rendering: pixelated;
+    font-size: 1.2vw;
+    font-family: "VT323", monospace;
+    margin: 0;
+}
+
+.user{
+    position: absolute;
+    text-decoration: underline;
+    font-size: 1.3em;
+    top: 1%;
+    left: 1%;
+    transition: all 0.15s ease-in-out;
+    color: brown;
+    text-shadow: 1px 1px 1px black;
+}
+
+nav{
+    display: flex;
+    justify-content: space-around;
+    margin: 0;
+    border-bottom: 10px ridge #0b5991;
+    padding: 1% 0;
+}
+
+nav form input{
+    font-family: "VT323", monospace;
+    font-size: 2.3em;
+    width: 15vw;
+    height: 9vh;
+    background-color: transparent;
+    text-align: center;
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    transition: all 0.15s ease-in-out;
+}
+
+nav form input:hover{
+    background-color: rgb(235, 235, 235);
+    cursor: pointer;
+    color: black;
+    border: 2px solid black;
+    letter-spacing: 3px;
+    width: 18vw;
+}
+
+.current{
+    font-family: "VT323", monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.3em;
+    width: 18vw;
+    background-color: rgb(235, 235, 235);
+    color: black;
+    letter-spacing: 3px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+header{
+    text-align: center;
+    font-size: 3em;
+    animation: neon 0.05s infinite alternate, pan-overlay 10s infinite linear;
+}
+
+header h1{
+    margin: 0; 
+    text-shadow: rgb(32, 141, 230) 0px 0 15px;
+}
+
+.text-overlay-neon{
+background: linear-gradient(
+                #0b5991,
+                #0b5991 3px,
+                #1686d6 3px,
+                #1686d6 8px
+            );
+background-size:  100% 8px;
+-webkit-background-clip: text;
+color: transparent;
+}
+@keyframes neon {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.85;
+    }
+}
+@keyframes pan-overlay{
+    from{
+        background-position: 0% 0%;
+    }
+    to{
+        background-position: 0% 100%;
+    }
+}
+
+.disconnect{
+    background-color: transparent;
+    border: none;
+    font-family: "VT323", monospace;
+    color: rgb(9, 93, 210);
+    position: absolute;
+    text-decoration: underline;
+    font-size: 1.3em;
+    top: 1%;
+    right: 1%;
+    transition: all 0.15s ease-in-out;
+    text-shadow: 1px 1px 1px black;
+}
+
+.disconnect:hover{
+    color: brown;
+    transform: scale(1.15);
+    cursor: pointer;
+}

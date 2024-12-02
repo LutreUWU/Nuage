@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<title>Nuage</title>
+</html>
+
+<head>
+    <link rel="stylesheet" href="../static/general.css">
+    <link rel="stylesheet" href="../static/page/accueil.css">
+    <!--On récupère une font sur Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
+</head>
+
+<div style="background-color: rgba(173, 216, 230, 0.15);">
+    <span class="user">UTILISATEUR : {{user}}</span>
+    <header class="text-overlay-neon">
+        <h1>NUAGE</h1>
+    </header>
+    <nav>
+    <form action="boutique">
+        <input type=submit value="Boutique">
+    </form>
+    <form action="recherche">
+        <input type=submit value="Recherche">
+    </form>
+    <form action="profil">
+        <input type=submit value="Profil">
+    </form>
+    </nav>
+    <form method="post" action="disconnect">
+        <input class="disconnect" type=submit value="← Se déconnecter">
+    </form>
+</div>

@@ -1,0 +1,102 @@
+
+.mainDiv{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "VT323", monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 20%;
+}
+
+.Title{
+    width: 100%;
+    font-size: 4em;
+    color: white;
+    text-shadow: rgb(19, 37, 126) 3px 3px 3px;
+    text-decoration: underline;
+    letter-spacing: 2px;
+    text-align: center;
+    margin: 0;
+}
+
+.div_connexion{
+    width: 100%;
+    height: 100%;
+    padding: 5% 20% 10% 20%;
+    flex-basis: 100%;
+    border: 2px solid grey;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.562);
+    position: relative;
+}
+
+.error{
+    color: red;
+    margin: 1%;
+    margin-bottom: 5%;
+    height: auto;
+    text-align: center;
+    text-shadow: rgb(19, 37, 126) 1px 1px 1px;
+}
+
+.form_connexion{
+    color: white;
+    height: 80%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form_connexion p{
+    margin: 3% 0;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.form_connexion input{
+    display: block;
+    margin: 2% auto;
+    font-family: "VT323", monospace;
+    font-size: 1em;
+    border: 2px solid rgb(183, 183, 183);
+    border-radius: 5px;
+}
+
+.button_login{
+    padding: 3%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.562);
+    border: 2px solid white;
+    transition: all 0.15s ease-in-out;
+}
+
+.button_login:hover{
+    background-color: rgb(255, 255, 255);
+    color: black;
+    cursor:pointer;
+    padding: 3% 10%;
+}
+
+.new_compte{
+    background-color: transparent;
+    border: none;
+    font-family: "VT323", monospace;
+    color: rgb(9, 93, 210);
+    position: absolute;
+    text-decoration: underline;
+    left: 1%;
+    margin: 1%;
+    transition: all 0.15s ease-in-out;
+}
+
+.new_compte:hover{
+    color: brown;
+    transform: scale(1.15);
+    cursor: pointer;
+}
