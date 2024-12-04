@@ -35,10 +35,10 @@ CREATE TABLE jeu(
     prix numeric(5, 2) default 0 NOT NULL,
     date_sortie date NOT NULL,
     age_min numeric(2, 0) NOT NULL,
-    synopsis varchar(200), 
+    synopsis text, 
     nom_edite varchar(20), 
     nom_dev varchar(20),
-    url_img varchar(200),
+    url_img varchar(200) NOT NULL,
     FOREIGN KEY (nom_edite) REFERENCES entreprise(nom),
     FOREIGN KEY (nom_dev) REFERENCES entreprise(nom)
     ON DELETE SET NULL ON UPDATE CASCADE
@@ -136,24 +136,28 @@ CREATE VIEW rapport AS
 -- Entreprises
 INSERT INTO entreprise (nom, pays) VALUES
 ('Capcom', 'Japon'),
-('Square Enix', 'Japon'),
+('Square_Enix', 'Japon'),
 ('Bethesda', 'USA'),
 ('Bungie', 'USA'),
-('CD Projekt', 'Pologne'),
-('Naughty Dog', 'USA'),
-('2K Games', 'USA'),
-('Riot Games', 'USA'),
+('CD_Projekt', 'Pologne'),
+('Naughty_Dog', 'USA'),
+('2K_Games', 'USA'),
+('Riot_Games', 'USA'),
 ('Sega', 'Japon'),
-('Gearbox Software', 'USA'),
-('Project Moon', 'Corée'),
-('Ubisoft Montreal', 'Canada'),
-('Spike Chunsoft', 'Japon'),
-('KOEI TECMO', 'Japon'),
+('Gearbox_Software', 'USA'),
+('Project_Moon', 'Corée'),
+('Ubisoft_Montreal', 'Canada'),
+('Spike_Chunsoft', 'Japon'),
+('KOEI_TECMO', 'Japon'),
 ('FromSoftware', 'Japon'),
-('Ankama Games', 'France'),
-('PlayStation Studio', 'USA'),
-('Thomas Moon Kang', 'USA'),
-('Humble Games', 'USA');
+('Ankama_Games', 'France'),
+('PlayStation_Studio', 'USA'),
+('Thomas_Moon_Kang', 'USA'),
+('Humble_Games', 'USA'),
+('Digital_Sun', 'Espagne'),
+('Riot_Forge', 'USA'),
+('Activision', 'USA'),
+('Double_Stallion', 'Canada');
 
 -- Genres de jeux
 INSERT INTO genre (nom_genre) VALUES
@@ -191,15 +195,15 @@ INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance) VALUES
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
 ('Lobotomy Corp', 22.99, '2018-04-18', 18, 
 'Vous incarnez un manager qui a pour but de guider les Sephirah eux-mêmes chefs d''une troupe d''employés. La lobotomy corporation contient plusieurs monstre étranges qui serviront à récolter de l''énergie quitte à sacrifier des employés. Serez-vous capable de capable de génerer un maximum d''énergie avec un minimum de perte ?', 
-'Project Moon', 'Project Moon', '../static/img/game_cover/LobotomyCorp.webp'),
+'Project_Moon', 'Project_Moon', '../static/img/game_cover/LobotomyCorp.webp'),
 
 ('Danganronpa: Trigger Happy Havoc', 19.99, '2016-02-18', 16, 
 'Dans une école coupée du monde extérieur, vous êtes forcé de trouver meutrier en passant par une phase d''enquête pour ensuite utiliser ces preuves pour briser les arguments erroné afin de découvrir l''identité du coupable.',
-'Spike Chunsoft', 'Spike Chunsoft', '../static/img/game_cover/DanganronpaTriggerHappyHavoc.webp'),
+'Spike_Chunsoft', 'Spike_Chunsoft', '../static/img/game_cover/DanganronpaTriggerHappyHavoc.webp'),
 
 ('Fate/Samurai Remnant', 69.99, '2023-09-29', 18, 
 'Dans un paisible village à l''èree d''edo au Japon, un étrange Rituel invoque plusieurs esprits héroïques du passé chacun rattaché à un maître qui leur est propre. Il est dit que celui qui arrive à venir au bout des autres servant aura son voeu exaucé.', 
-'KOEI TECMO', 'KOEI TECMO', '../static/img/game_cover/FateSamuraiRemnant.webp'),
+'KOEI_TECMO', 'KOEI_TECMO', '../static/img/game_cover/FateSamuraiRemnant.webp'),
 
 ('Elden Ring', 59.99, '2022-02-25', 18, 
 'Découvrez un monde brisé où règne terreur et sang. Répondez à l''appel que vous, sans-éclat, pouvez entendre et suivez votre destin en vainquant de nombreux adversaires tous plus coriaces que les autres jusqu''a devenir Seigneur d''Elden.',
@@ -207,27 +211,42 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 
 ('Waven', 0.00, '2023-08-16', 12, 
 'Le nouveau jeu d''Ankama suivant la chronologie de Wakfu ! Sélectionnez une classe, puis améliorez votre personnage via ses équipements ou sorts. Façonnez votre aventure solo ou avec vos amis dans un gameplay au tour par tour !', 
-'Ankama Games', 'Ankama Games', '../static/img/game_cover/Waven.webp'),
+'Ankama_Games', 'Ankama_Games', '../static/img/game_cover/Waven.webp'),
 
 ('Limbus Company', 0.00, '2023-02-27', 18, 
 'Vous êtes un manager au sein d''un troupe de 12 Sinners engagés par la Limbus Company avec comme mission de ramener le Golden Bough. Explorez les ruines de la lobotomy corporation afin de trouver votre dû.', 
-'Project Moon', 'Project Moon', '../static/img/game_cover/LimbusCompany.webp'),
+'Project_Moon', 'Project_Moon', '../static/img/game_cover/LimbusCompany.webp'),
 
 ('Ghost of Tsushima DIRECTOR''S CUT', 59.99, '2024-03-16', 18, 
 'Tracez votre propre voie dans ce jeu d''action-aventure en monde ouvert et découvrez tous ses secrets.', 
-'PlayStation Studio', 'PlayStation Studio', '../static/img/game_cover/ghost-of-tsushima-directors-cut.webp'),
+'PlayStation_Studio', 'PlayStation_Studio', '../static/img/game_cover/ghost-of-tsushima-directors-cut.webp'),
 
 ('One Step From EDEN', 5.99, '2020-03-26', 12, 
 'Frayez-vous un chemin jusqu''à Eden à l''aide d''un deck de sorts que vous sélectionnerez au fil de votre partie. Faites des rencontres, bonnes ou mauvaises peu importe, progressez et atteignez Eden', 
-'Thomas Moon Kang', 'Humble Games', '../static/img/game_cover/One-Step-From-Eden.webp'),
+'Thomas_Moon_Kang', 'Humble_Games', '../static/img/game_cover/One-Step-From-Eden.webp'),
 
 ('Master Detective Archives: RAIN CODE Plus', 59.99, '2024-07-17', 18, 
 'Yuma, un détective en formation amnésique, et Shinigami, l''esprit qui le hante, s''attaquent aux mystères non résolus.', 
-'Spike Chunsoft', 'Spike Chunsoft', '../static/img/game_cover/MasterDetectiveRainCode.webp'),
+'Spike_Chunsoft', 'Spike_Chunsoft', '../static/img/game_cover/MasterDetectiveRainCode.webp'),
 
 ('Danganronpa 2: Goodbye Despair', 19.99, '2016-04-19', 18, 
 'Vos camarades de classe et vous étiez prêts à profiter du soleil, mais Monokuma est revenu pour relancer son jeu meurtrier ! Pris au piège dans une situation où il vous faut tuer ou être tué, votre seul espoir est de lever le voile sur les mystères de l''île.', 
-'Spike Chunsoft', 'Spike Chunsoft', '../static/img/game_cover/DanganronpaGoodbyeDespair.webp');
+'Spike_Chunsoft', 'Spike_Chunsoft', '../static/img/game_cover/DanganronpaGoodbyeDespair.webp'),
+
+('The Mageseeker', 29.99, '2023-04-18', 12,
+'Découvrez une ville pourrie par les conflit entre les mages et les humains lambda à travers Sylas, un mage prisonnier depuis son enfance avec un profond désir de vengeance envers ces traqueurs de mages qui l''ont enfermé. Battez vous avec les chaines qui faisaient de vous un prisonnier et utilisez la magie de vos adversaires pour libérer Demacia.',
+'Digital_Sun', 'Riot_Forge', '../static/img/game_cover/The-Mageseeker-A-League-Of-Legends-Story-Artwork.webp'
+),
+
+('Sekiro Shadows Die Twice', 59.99, '2019-03-19', 18,
+'Loup, un shinobi ayant perdu son bras au cours d''un de ses combats voit celui-ci remplacer par une prothèse. Combinez les arts Shinobi avec votre bras mécanique pour combattre des adversaires entrainés sous ordre de votre maître. Préparez vous à des combats féroces et sans-pitié qui vont vous donner du fil à retordre',
+'FromSoftware', 'Activision', '../static/img/game_cover/Sekiro.webp'
+),
+
+('Convergence', 29.99, '2023-05-23', 12,
+'Découvrez les bas-fonds de Zaun avec Ekko un jeune inventeur qui ne cesse d''innover et qui traverse Zaun et mets des raclées à ceux qui le mérite avec sa machine à remonter le temps ! Créez de nouveaux Gadgets et débloquez de nouvelles façon de les utiliser au cours de votre aventure.',
+'Double_Stallion', 'Riot_Forge', '../static/img/game_cover/Convergence.webp'
+);
 
 -- Classer les jeux dans des genres
 INSERT INTO classer (id_jeu, id_genre) VALUES
@@ -250,9 +269,14 @@ INSERT INTO classer (id_jeu, id_genre) VALUES
 (8, 12),
 (9, 11), -- Rain Code est un jeu d'action et d'aventure
 (9, 12),
-(10, 11); -- Danganronpa 2 est un jeu d'aventure
-
-
+(10, 11), -- Danganronpa 2 est un jeu d'aventure
+(11, 12), -- Mageseeker est un jeu d'Action, RPG et Indépendant
+(11, 13),
+(11, 10),
+(12, 11), -- Sekiro est un jeu Action et Aventure
+(12, 12),
+(13, 11), -- Convergence est un jeu Action et Aventure
+(13, 12);
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S011', 'Survivant', 'Survivre 7 jours dans Resident Evil 4', 1),

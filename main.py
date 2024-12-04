@@ -11,6 +11,7 @@ def connexion():
     error_condition = False
     return render_template("/connexion/connexion.html", error = error_condition)
 
+solde = 0
 ## Lorsqu'on appuie sur le bouton "Se connecter"
 app.secret_key = b'988d6b3b992fe9df993a4cb5190fd54a785cf5549eada60c7600e7aa0b03de89'
 @app.route("/connexion/login", methods = ['POST'])
@@ -28,8 +29,11 @@ def login():
         for res in cur: ## Si ce n'est pas le cas, on saute la boucle for et on return Error
             # On vérifie si le mdp correspond aux mdp hashés de l'utilisateur
             password_ctx = CryptContext(schemes=['bcrypt'])
-            if password_ctx.verify(mdp, res.mdp):
-                # Alors l'utilisateur s'est connecté avec succès
+            if password_ctx.verify(mdp, res.mdp): # Alors l'utilisateur s'est connecté avec succès
+                # On récupère le solde du joueur, qu'on va afficher tout le long du site
+                cur.execute('SELECT solde FROM joueur WHERE pseudo = %s', (pseudo,))
+                for res in cur:
+                    solde = res.solde 
                 session['user_nickname'] = pseudo # On enregistre la session, pour éviter qu'il se reconnecte à chaque fois
                 return redirect(url_for("accueil"))
         return render_template ("/connexion/connexion.html", error = True, error_msg = "Nom d'utilisateur ou mot de passe incorrect !") ## Nom d'utilisateur incorrect
@@ -67,25 +71,31 @@ def back_to_connexion():
 def accueil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    return render_template("/accueil.html", user = session['user_nickname'])
+    return render_template("/accueil.html", user = session['user_nickname'], solde = solde)
 ############################################################################################################
 ## Début des requêtes pour la boutique
 @app.route("/boutique")
 def boutique():
+    ## La liste pour filtrer les jeux, on utilise un dictionnaire en raison de la méthode de GETS 
     lst_type = {
         'Date':"Date de parution",
         'Nombre':"Nombre de ventes",
         'Note':"Note moyenne"
     }
+    ## On vérifie qu'une session est active
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
+    ## On sélectionne toutes les informations en lien avec les JEUX pour qu'on puisse les afficher sur le site 
     with db.connect() as conn:
         cur = conn.cursor()
+        ## On récupère le titre, prix, date de sortie, url de l'img, la moyenne de ses notes
         cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;')
         lst_jeu = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par", filtre = False)
+    return render_template("/boutique.html", user = session['user_nickname'], solde = solde, lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
+
 @app.route("/add_filtre", methods = ['GET'])
 def add_filtre():
+    ## La méthode GETS renvoie seulement le 1er mot, si on selectionne "Date de parution", GETS va renvoyer "Date" seulement, d'où la raison d'un dico
     lst_type = {
         'Date':"Date de parution",
         'Nombre':"Nombre de ventes",
@@ -93,17 +103,20 @@ def add_filtre():
     }
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
+    ## On récupère la méthode de trie
     type_trie = request.args.get("type", None)
     with db.connect() as conn:
         cur = conn.cursor()
+        ## En fonction de son résultat, on fait la requête approprié pour trier les jeux
         if type_trie == "Date":
             cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img ORDER BY date_sortie DESC;')
         if type_trie == "Nombre":
             cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img ORDER BY count(jeu.id_jeu) DESC;')
         if type_trie == "Note":
             cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img ORDER BY avg(note) DESC;')
+       ## On récupère la liste des filtres
         type_default = lst_type[type_trie]
-        del lst_type[type_trie]
+        del lst_type[type_trie] ## On supprime le filtre qu'on a appliqué pour éviter qu'on le selectionne
         lst_jeu = cur.fetchall()
     return render_template("/boutique.html", user = session['user_nickname'], lst_jeu = lst_jeu, lst_type = lst_type.values(), default = type_default, filtre = True)
 
@@ -111,37 +124,128 @@ def add_filtre():
 def supp_filtre():
     return redirect(url_for('boutique'))
 ## FIN des requêtes pour la boutique
+
 ############################################################################################################
+
 ## Début des requêtes pour la recherche
 @app.route("/recherche")
 def recherche():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    return render_template("/recherche.html", user = session['user_nickname'])
-
-""" 
-@app.route("/type_game", methods = ['GET'])
-def trier_type():
-    if 'user_nickname' not in session:
-        return redirect(url_for('connexion'))
-    type_game = request.args.get("type",None)
     with db.connect() as conn:
         cur = conn.cursor()
-        cur.execute('SELECT titre FROM classer NATURAL JOIN genre NATURAL JOIN jeu WHERE nom_genre = %s;', (type_game,))
-        lst_jeu = cur.fetchall()
-        cur.execute('SELECT nom_genre FROM genre WHERE nom_genre <> %s;', (type_game,))
-        lst_type = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], lst_jeu = lst_jeu, lst_type = lst_type, default = type_game, filtre = True)
+        cur.execute('SELECT nom_genre FROM genre;')
+        lst_gen = cur.fetchall()
+        cur.execute('SELECT nom FROM entreprise;')
+        lst_entreprise = cur.fetchall()
+    return render_template("/recherche.html", user = session['user_nickname'], solde = solde, lst_jeu = [], lst_genre = lst_gen, lst_editeur = lst_entreprise, lst_developpeur = lst_entreprise, default = ['', False, False, False])
 
-with db.connect() as conn:
-    cur = conn.cursor()
-    cur.execute('SELECT titre FROM jeu;')
-    lst_jeu = cur.fetchall()
-    cur.execute('SELECT nom_genre FROM genre;')
-    lst_type = cur.fetchall()
-return render_template("/recherche.html", user = session['user_nickname'], lst_jeu = lst_jeu, lst_type = lst_type, default = "Trier par", filtre = False)
+## Pour trier les jeux en fonctions de la barre de recherche ET de ses filtres 
+@app.route("/search_game", methods=['GET'])
+def search_game():
+    '''
+    Fonction qui va permettre de faire le filtre dans la page RECHERCHE, la méthode de filtre est la suivante :
+        - On récupère la lst des jeux (L1) filtré à partir de la barre de recherche.
+        - A partir de cette liste L1, on va filtrer en fonction du genre cette fois ci, on obtiendra une nouvelle lst (L2)
+        - A partir de cette liste L2, on va re-filtrer en fonction des Editeurs, on obtienra une nouvelle lst (L3)
+        - Pareil pour les Developpeurs.
+    On obtient donc une liste finale filtré en fonction des paramètres indiqués.
+    Après avoir filtré, on récupère la liste des Genres, Editeurs, Dev en retirant les options sélectionnées 
+    '''
+    lst_gen = []
+    lst_edi = []
+    lst_dev = []
+    if 'user_nickname' not in session:
+        return redirect(url_for('connexion'))
+    ## On récupère avec la méthode GETS, 
+    titre_recherche = request.args.get("titre_recherche", None) ## GETS renvoie '' si on a pas choisit d'option
+    genre = request.args.get("recherche_genre", None) ## GETS renvoie '' si on a pas choisit d'option
+    editeur = request.args.get("recherche_editeur", None) ## GETS renvoie '' si on a pas choisit d'option
+    dev = request.args.get("recherche_developpeur", None) ## GETS renvoie '' si on a pas choisit d'option
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On filtre d'abord en fonction de la barre de recherche grâce à LIKE
+        cur.execute('SELECT titre FROM jeu WHERE LOWER(titre) LIKE LOWER(%s);', ("%" + titre_recherche + "%",)) ## On utilise LOWER pour négliger les majuscules
+        lst_jeu = cur.fetchall() ## On récupère lst_jeu (= L1)
+        ## Si genre ne renvoie pas '', alors on veut filtrer en fonction
+        if (genre): 
+            lst_jeu_genre = []
+            ## On va filtrer mais en fonction de la liste L1 cette fois-ci
+            for elem in lst_jeu:
+                cur = conn.cursor()
+                cur.execute('SELECT titre FROM jeu NATURAL JOIN classer NATURAL JOIN genre WHERE titre = %s AND nom_genre = %s;',(elem.titre, genre,))
+                genre_result = cur.fetchone()
+                ## Si on trouve un résultat, alors se titre valide la Recherche et le Genre
+                if genre_result:
+                    lst_jeu_genre.append(genre_result)
+            ## On récupère lst_jeu (= L2)
+            lst_jeu = lst_jeu_genre
+        ## Pareil pour editeur
+        if (editeur): 
+            lst_jeu_editeur = []
+            for elem in lst_jeu:
+                cur = conn.cursor()
+                cur.execute('SELECT titre FROM jeu WHERE titre = %s AND nom_edite = %s;', (elem.titre, editeur,))
+                editeur_result = cur.fetchone()
+                if editeur_result:
+                    lst_jeu_editeur.append(editeur_result)
+            ## On récupère lst_jeu (= L3)
+            lst_jeu = lst_jeu_editeur
+        ## Pareil pour dev
+        if (dev):
+            lst_jeu_dev = []
+            for elem in lst_jeu:
+                cur = conn.cursor()
+                cur.execute('SELECT titre FROM jeu WHERE titre = %s AND nom_dev = %s;', (elem.titre, dev,))
+                dev_result = cur.fetchone()
+                if dev_result:
+                    lst_jeu_dev.append(dev_result)
+            ## On récupère lst_jeu (= L4)
+            lst_jeu = lst_jeu_dev
+        ## On a la liste avec seulement les TITRES de tout les jeux, maintenant on récupère les informations concernant le jeu
+        ## (titre, prix, date_sortie, url_img, moyenne des notes)
+        lst_finale = []
+        for elem in lst_jeu:
+            cur = conn.cursor()
+            cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img HAVING jeu.titre = %s;', (elem.titre,))
+            res = cur.fetchone()
+            if res:
+                lst_finale.append(res)
+        ## Ainsi, on obtient la liste finale
+        lst_jeu = lst_finale
+        
+        ##### Lorsqu'on obtient le résultat, on souhaite afficher sur le site les filtres qu'on a appliqués
+        ##### On récupère la liste des options, sauf qu'on va mettre l'option choisit en tête de liste
+        # Genre
+        cur.execute('SELECT nom_genre FROM genre WHERE nom_genre = %s;', (genre,)) # On sélectionne l'option choisis
+        for res in cur:
+            lst_gen.append(res)
+        cur.execute('SELECT nom_genre FROM genre EXCEPT SELECT nom_genre FROM genre WHERE nom_genre = %s;', (genre,)) # On sélectionne les autres
+        for res in cur:
+            lst_gen.append(res) # On obtient la liste des genres, avec en tête le genre choisi
+        # Editeur
+        cur.execute('SELECT nom FROM entreprise WHERE nom = %s;', (editeur,))
+        for res in cur:
+            lst_edi.append(res)
+        cur.execute('SELECT nom FROM entreprise EXCEPT SELECT nom FROM entreprise WHERE nom = %s ;', (editeur,))
+        for res in cur:
+            lst_edi.append(res)
+        # Dev
+        cur.execute('SELECT nom FROM entreprise WHERE nom = %s;', (dev,))
+        for res in cur:
+            lst_dev.append(res)
+        cur.execute('SELECT nom FROM entreprise EXCEPT SELECT nom FROM entreprise WHERE nom = %s ;', (dev,))
+        for res in cur:
+            lst_dev.append(res)
+        ## Si on a trouvé aucun jeu correspondant aux filtres, on affiche à l'utilisateur qu'on a trouvé aucun jeu
+        if not lst_jeu:
+                return render_template("/recherche.html", user = session['user_nickname'], solde = solde, lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+    return render_template("/recherche.html", user = session['user_nickname'], solde = solde, lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+    
+@app.route("/supp_filtre_recherche")
+def supp_filtre_recherche():
+    return redirect(url_for('recherche'))
 
-"""
 ## Fin des requêtes pour la recherche
 ############################################################################################################
 ## Début des requêtes pour le profil

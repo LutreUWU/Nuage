@@ -15,8 +15,16 @@ body{
     font-size: 1.3em;
     top: 1%;
     left: 1%;
-    transition: all 0.15s ease-in-out;
     color: brown;
+    text-shadow: 1px 1px 1px black;
+}
+
+.currency{
+    position: absolute;
+    font-size: 1em;
+    top: 5%;
+    left: 1%;
+    color: grey;
     text-shadow: 1px 1px 1px black;
 }
 

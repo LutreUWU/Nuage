@@ -14,6 +14,7 @@
 
 <div style="background-color: rgba(173, 216, 230, 0.15);">
     <span class="user">UTILISATEUR : {{user}}</span>
+    <span class="currency"><u>Solde :</u> {{solde}} €</span>
     <header class="text-overlay-neon">
         <h1>NUAGE</h1>
     </header>
@@ -29,4 +30,70 @@
     <form method="post" action="disconnect">
         <input class="disconnect" type=submit value="← Se déconnecter">
     </form>
+</div>
+
+<div class='mainDiv'>
+    <h1>Rechercher un jeu</h1>
+    <form method="get" action="search_game">
+            {% if default[0]%}
+            <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche" value = {{default[0]}}>
+            {% else %}
+            <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche">
+            {% endif %}
+        <span>
+            <span>Filtrer par :</span>
+            <select class="filtre_button" name="recherche_genre">
+                {%if not default[1]%}
+                <option value="" disabled selected hidden>Genre
+                {%endif%}
+                {%for elem in lst_genre%}
+                <option value={{elem.nom_genre}}>{{elem.nom_genre.replace('_', ' ')}}
+                {%endfor%}
+            </select>
+            <select class="filtre_button" name="recherche_editeur">
+                {%if not default[2]%}
+                <option value="" disabled selected hidden>Editeur
+                {%endif%}
+                {%for elem in lst_editeur%}
+                <option value={{elem.nom}}>{{ elem.nom.replace('_', ' ') }}
+                {%endfor%}           
+            </select>
+            <select class="filtre_button" name="recherche_developpeur">
+                {%if not default[3]%}
+                <option value="" disabled selected hidden>Développeur
+                {%endif%}
+                {%for elem in lst_developpeur%}
+                <option value={{elem.nom}}>{{ elem.nom.replace('_', ' ') }}
+                {%endfor%}    
+            </select>
+        </span>
+            <input class="search" type=submit value="Rechercher">
+    </form>
+    {% if filtre%}
+    <form style="display:block;" methods="post" action="supp_filtre_recherche" onclick="submit()">
+        <p class="filtre" type=submit> • Supprimer le filtre</p>
+    </form>
+    {%endif%}
+    {% if nothing%}
+            <p style='text-align: center; font-size:3em;'>Aucun jeu ne correspond à vos critères.</p>
+        {% endif %}
+    <div class='allGame'>
+        {% for elem in lst_jeu %}
+            <div class='Game'>
+                <img src={{elem.url_img}}>
+                <h4>{{elem.titre}}</h4>
+                {% if elem.prix == 0.0 %}
+                    <h5>Gratuit</h5>
+                {% else%}
+                <h5>{{elem.prix}} €</h5>
+                {% endif %}
+                <h6>{{elem.date_sortie}}</h6>
+                {% if elem.moyenne == None %}
+                    <p>Aucune note</p>
+                {% else%}
+                    <p>{{elem.moyenne}}<img class='star' src='../static/img/star.png'></p>
+                {% endif %}
+            </div>
+        {% endfor%}
+    </div>
 </div>
