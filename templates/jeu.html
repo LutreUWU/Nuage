@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<title>Nuage</title>
+</html>
+
+<head>
+    <link rel="stylesheet" href="../static/general.css">
+    <link rel="stylesheet" href="../static/page/jeu.css">
+    <!--On récupère une font sur Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
+</head>
+
+<div style="background-color: rgba(173, 216, 230, 0.15);">
+    <span class="user">UTILISATEUR : {{user}}</span>
+    <span class="currency"><u>Solde :</u> {{solde}} €</span>
+    <header class="text-overlay-neon">
+        <h1>NUAGE</h1>
+    </header>
+    <nav>
+    <form action="/boutique">
+        <input type=submit value="Boutique">
+    </form>
+    <form action="/recherche">
+        <input type=submit value="Recherche">
+    </form>
+    <form action="/profil">
+        <input type=submit value="Profil">
+    </form>
+    </nav>
+    <form method="/post" action="/disconnect">
+        <input class="disconnect" type=submit value="← Se déconnecter">
+    </form>
+</div>
+
+<div class="mainDiv">
+    <div class="bg_jeu" ><img src={{lst_jeu.url_img}}></div>
+    <div class="info_jeu">
+        <div class="left_div">
+            <img class="img_jeu" src={{lst_jeu.url_img}}>
+            <img class="img_jeu_blur" src={{lst_jeu.url_img}}>
+        </div>
+        <div class="right_div">
+            <h2>{{lst_jeu.titre}}</h2>
+            <h3>{{lst_jeu.synopsis}}</h3>
+            <ul>
+                {% if lst_jeu.moyenne == None %}
+                    <li><h5>Note moyenne : Aucune note</h5></li>
+                {% else%}
+                    <li><h5>Note moyenne : {{lst_jeu.moyenne}} <img src='../static/img/star.png'> </h5> </li>
+                {% endif %}
+                <li><h5>Date de sortie : {{lst_jeu.date_sortie}}</h5></li>
+                <li><h5>Editeur : {{lst_jeu.nom_edite.replace('_', ' ')}}</h5></li>
+                <li><h5>Développement : {{lst_jeu.nom_dev.replace('_', ' ')}}</h5></li>
+            </ul> 
+            <h4 style='color:grey'><u>Genre</u> :
+                {% for elem in lst_genre %}
+                    {% if elem == lst_genre[-1] %}
+                    {{elem.nom_genre}}
+                    {% else%}
+                    {{elem.nom_genre}}, 
+                    {% endif %}
+                {% endfor%}
+            </h4>
+            <form class= "Game", methods="get" action="buy_game/{{lst_jeu.titre}}">
+                {% if lst_jeu.prix == 0.0 %}
+                <input type=submit value="Obtenir">
+                {%else%}
+                <input type=submit value="Acheter">
+                {% endif %}
+                {% if lst_jeu.prix != 0.0 %}
+                <span>{{lst_jeu.prix}} €                
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>

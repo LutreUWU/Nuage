@@ -81,6 +81,7 @@
         {% for elem in lst_jeu %}
             <div class='Game'>
                 <img src={{elem.url_img}}>
+                <img class="img_jeu_blur" src={{elem.url_img}}>
                 <h4>{{elem.titre}}</h4>
                 {% if elem.prix == 0.0 %}
                     <h5>Gratuit</h5>

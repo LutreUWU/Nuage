@@ -6,6 +6,8 @@ body{
     image-rendering: pixelated;
     font-size: 1.2vw;
     font-family: "VT323", monospace;
+    background-repeat: no-repeat;
+    background-color: rgb(2, 6, 4);
     margin: 0;
 }
 
@@ -40,7 +42,7 @@ nav form input{
     font-family: "VT323", monospace;
     font-size: 2.3em;
     width: 15vw;
-    height: 9vh;
+    height: 8vh;
     background-color: transparent;
     text-align: center;
     color: white;

@@ -34,7 +34,7 @@
 
 <div class='mainDiv'>
     <h1 style="display:inline-block;">Liste des jeux : </h1>
-    <form  style="display:inline-block;" methods="get" action="add_filtre">
+    <form style="display:inline-block;" methods="get" action="add_filtre">
         <select class="filtre_button" name="type" onchange="submit()">
             <option value="default">{{default}}
             {% for elem in lst_type %}
@@ -49,8 +49,9 @@
     {%endif%}
     <div class='allGame'>
         {% for elem in lst_jeu %}
-        <div class='Game'>
+        <form class='Game', methods="get" action="game_click/{{elem.titre.replace('/', '%2F')}}" onclick="submit()">
             <img src={{elem.url_img}}>
+            <img class="img_jeu_blur" src={{elem.url_img}}>
             <h4>{{elem.titre}}</h4>
             {% if elem.prix == 0.0 %}
                 <h5>Gratuit</h5>
@@ -63,7 +64,7 @@
             {% else%}
                 <p>{{elem.moyenne}}<img class='star' src='../static/img/star.png'></p>
             {% endif %}
-        </div>
+        </form>
         {% endfor%}
     </div>
 </div>

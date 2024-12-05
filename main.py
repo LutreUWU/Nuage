@@ -11,7 +11,6 @@ def connexion():
     error_condition = False
     return render_template("/connexion/connexion.html", error = error_condition)
 
-solde = 0
 ## Lorsqu'on appuie sur le bouton "Se connecter"
 app.secret_key = b'988d6b3b992fe9df993a4cb5190fd54a785cf5549eada60c7600e7aa0b03de89'
 @app.route("/connexion/login", methods = ['POST'])
@@ -30,10 +29,10 @@ def login():
             # On vérifie si le mdp correspond aux mdp hashés de l'utilisateur
             password_ctx = CryptContext(schemes=['bcrypt'])
             if password_ctx.verify(mdp, res.mdp): # Alors l'utilisateur s'est connecté avec succès
-                # On récupère le solde du joueur, qu'on va afficher tout le long du site
-                cur.execute('SELECT solde FROM joueur WHERE pseudo = %s', (pseudo,))
+                cur.execute('SELECT solde FROM joueur WHERE pseudo = %s', (session['user_nickname'],))
                 for res in cur:
-                    solde = res.solde 
+                    session['solde'] = res.solde
+                # On récupère le solde du joueur, qu'on va afficher tout le long du site
                 session['user_nickname'] = pseudo # On enregistre la session, pour éviter qu'il se reconnecte à chaque fois
                 return redirect(url_for("accueil"))
         return render_template ("/connexion/connexion.html", error = True, error_msg = "Nom d'utilisateur ou mot de passe incorrect !") ## Nom d'utilisateur incorrect
@@ -70,8 +69,9 @@ def back_to_connexion():
 @app.route("/accueil")
 def accueil():
     if 'user_nickname' not in session:
-        return redirect(url_for('connexion'))
-    return render_template("/accueil.html", user = session['user_nickname'], solde = solde)
+        return redirect(url_for('connexion'))       
+    return render_template("/accueil.html", user = session['user_nickname'], solde = session['solde'])
+
 ############################################################################################################
 ## Début des requêtes pour la boutique
 @app.route("/boutique")
@@ -91,7 +91,7 @@ def boutique():
         ## On récupère le titre, prix, date de sortie, url de l'img, la moyenne de ses notes
         cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;')
         lst_jeu = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], solde = solde, lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
+    return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
 
 @app.route("/add_filtre", methods = ['GET'])
 def add_filtre():
@@ -138,7 +138,7 @@ def recherche():
         lst_gen = cur.fetchall()
         cur.execute('SELECT nom FROM entreprise;')
         lst_entreprise = cur.fetchall()
-    return render_template("/recherche.html", user = session['user_nickname'], solde = solde, lst_jeu = [], lst_genre = lst_gen, lst_editeur = lst_entreprise, lst_developpeur = lst_entreprise, default = ['', False, False, False])
+    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = [], lst_genre = lst_gen, lst_editeur = lst_entreprise, lst_developpeur = lst_entreprise, default = ['', False, False, False])
 
 ## Pour trier les jeux en fonctions de la barre de recherche ET de ses filtres 
 @app.route("/search_game", methods=['GET'])
@@ -239,8 +239,8 @@ def search_game():
             lst_dev.append(res)
         ## Si on a trouvé aucun jeu correspondant aux filtres, on affiche à l'utilisateur qu'on a trouvé aucun jeu
         if not lst_jeu:
-                return render_template("/recherche.html", user = session['user_nickname'], solde = solde, lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
-    return render_template("/recherche.html", user = session['user_nickname'], solde = solde, lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+                return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
     
 @app.route("/supp_filtre_recherche")
 def supp_filtre_recherche():
@@ -248,6 +248,35 @@ def supp_filtre_recherche():
 
 ## Fin des requêtes pour la recherche
 ############################################################################################################
+## Début des requêtes pour les jeux
+
+@app.route("/game_click/<string:type>", methods=['GET'])
+def game_click(type):
+    ## type = type.replace("%2F", "/")
+    type = type.replace("%20", " ") ## Le caractère %20 est la touche espace convertit, on remplace donc le caractère %20 par des ' '
+    if 'user_nickname' not in session:
+        return redirect(url_for('connexion'))
+    ## On sélectionne toutes les informations en lien avec le JEU pour qu'on puisse les afficher sur le site 
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On récupère le titre, prix, date de sortie, url de l'img, la moyenne de ses notes
+        cur.execute('SELECT titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img HAVING titre = %s;', (type,))
+        lst_jeu = cur.fetchone()
+        cur.execute('SELECT * FROM achat NATURAL JOIN jeu WHERE titre = %s;', (lst_jeu.titre,))
+        lst_avis = cur.fetchall()
+        cur.execute('SELECT nom_genre FROM jeu NATURAL JOIN classer NATURAL JOIN genre WHERE titre = %s', (lst_jeu.titre,))
+        lst_genre = cur.fetchall()
+    return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  lst_jeu = lst_jeu, lst_avis = lst_avis, lst_genre = lst_genre)
+
+@app.route("/game_click/buy_game/<string:type>", methods=['GET'])
+def buy_game(type):
+    print(type)
+    return type
+
+## FIN des requêtes pour les jeux
+
+
+
 ## Début des requêtes pour le profil
 @app.route("/profil")
 def profil():
@@ -255,7 +284,7 @@ def profil():
         return redirect(url_for('connexion'))
     return render_template("/profil.html", user = session['user_nickname'])
 
-@app.route("/disconnect", methods = ['POST'])
+@app.route("/disconnect")
 def disconnect():
     session.pop('user_nickname', None)
     return redirect(url_for('connexion'))
