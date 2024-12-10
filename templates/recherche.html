@@ -36,7 +36,7 @@
     <h1>Rechercher un jeu</h1>
     <form method="get" action="search_game">
             {% if default[0]%}
-            <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche" value = {{default[0]}}>
+            <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche" value ={{default[0]}}>
             {% else %}
             <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche">
             {% endif %}

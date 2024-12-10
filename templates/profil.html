@@ -5,33 +5,59 @@
 
 <head>
     <link rel="stylesheet" href="../static/general.css">
-    <link rel="stylesheet" href="../static/page/jeu.css">
+    <link rel="stylesheet" href="../static/page/profil.css">
     <!--On récupère une font sur le site Google Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
 </head>
 
-<!--DEBUT DIV POUR LA BARRE DE NAVIGATION -->
-<div class="nav" style="background-color: rgba(173, 216, 230, 0.15);">
-    <span class="user">UTILISATEUR : {{user}}</span>
-    <span class="currency"><u>Solde :</u> {{solde}} €</span>
-    <header class="text-overlay-neon">
-        <h1>NUAGE</h1>
-    </header>
-    <nav>
-    <form action="/boutique">
-        <input type=submit value="Boutique">
-    </form>
-    <form action="/recherche">
-        <input type=submit value="Recherche">
-    </form>
-    <form action="/profil">
-        <input type=submit value="Profil">
-    </form>
-    </nav>
-    <form method="post" action="/disconnect">
-        <input class="disconnect" type=submit value="← Se déconnecter">
-    </form>
-</div>
-<!--FIN DIV POUR LA BARRE DE NAVIGATION -->
+<body>
+    <!--DEBUT DIV POUR LA BARRE DE NAVIGATION -->
+    <div class="nav" style="background-color: rgba(173, 216, 230, 0.15);">
+        <span class="user">UTILISATEUR : {{user.pseudo}}</span>
+        <span class="currency"><u>Solde :</u> {{solde}} €</span>
+        <header class="text-overlay-neon">
+            <h1>NUAGE</h1>
+        </header>
+        <nav>
+        <form action="/boutique">
+            <input type=submit value="Boutique">
+        </form>
+        <form action="/recherche">
+            <input type=submit value="Recherche">
+        </form>
+        <form action="/profil">
+            <input type=submit value="Profil">
+        </form>
+        </nav>
+        <form method="post" action="/disconnect">
+            <input class="disconnect" type=submit value="← Se déconnecter">
+        </form>
+    </div>
+    <!--FIN DIV POUR LA BARRE DE NAVIGATION -->
+
+    <!--DIV pour les informations du joueurs-->
+    <div class="first_row">
+        <div class="left_first_row">
+            <img class="avatar_user" src="../static/img/chauve.jpeg">
+            <p>{{user.pseudo}}<p>
+        </div>
+        <div class="right_first_row">
+            <h3>Bienvenue sur votre Profil <span style="color:darkred">{{user.pseudo}}</span></h3>
+            <ul>
+                <li>Nom : {{user.nom}}</li>
+                <li>Mail : {{user.mail}}</li>
+                <li>Date de naissance : {{user.date_naissance}}</li>
+            </ul>
+            <h4>Vous avez acheté {{nbr_jeu}} jeux</h4>
+            <h4>On vous a partagé X jeux</h4>
+            <h4>Vous avez partagé X jeux</h4>
+        </div>
+    </div>
+    <!--DIV pour la liste d'ami du joueur-->
+    <h1>Liste d'ami</h1>
+    <div class="second_row">
+        
+    </div>
+</bodu>

@@ -184,6 +184,7 @@ h2{
     border-radius: 10px;
     backdrop-filter: blur(2px) brightness(60%);
     box-shadow: 0px 10px 30px rgb(0, 0, 0);
+    z-index: 10;
 }
 
 .in{
@@ -365,7 +366,6 @@ h2{
     margin-top: 1%;
     background : linear-gradient( to bottom left, rgba(173, 216, 230, 0.119) 5%, rgba(83, 87, 147, 0.119) 100%); 
     backdrop-filter: blur(2px);
-
 }
 
 
@@ -395,7 +395,7 @@ h2{
     display: flex;
     align-items: top;
     gap: 1vw;
-    width: 30%;
+    min-width: 24%;
 }
 
 .avatar_user{
@@ -485,7 +485,6 @@ h2{
     column-gap: 1vw;
     row-gap: 1vh;
     margin: 3%;
-    height: 5vw;
 }
 
 

@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS  entreprise CASCADE;
 DROP TABLE IF EXISTS  genre CASCADE;
 DROP TABLE IF EXISTS  joueur CASCADE;
 DROP TABLE IF EXISTS  jeu CASCADE;
+DROP TABLE IF EXISTS  ami CASCADE;
 DROP TABLE IF EXISTS  succes CASCADE;
 DROP TABLE IF EXISTS  classer CASCADE;
 DROP TABLE IF EXISTS  reapprovisionner CASCADE;
@@ -28,6 +29,15 @@ CREATE TABLE joueur(
     solde numeric(4, 2) default 0 NOT NULL
 );
 
+CREATE TABLE ami(
+    pseudo1 varchar(20),
+    pseudo2 varchar(20),
+    statut int, -- 0 = attente ; 1 = accepté 
+    PRIMARY KEY (pseudo1, pseudo2),
+    FOREIGN KEY (pseudo1) REFERENCES joueur(pseudo),
+    FOREIGN KEY (pseudo2) REFERENCES joueur(pseudo)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE jeu(
     id_jeu serial PRIMARY KEY,
@@ -183,17 +193,17 @@ INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance) VALUES
 ('BlazedSora', 'oliver123', 'Oliver Grey', 'oliver@mail.com', '1992-11-01'),
 ('Gammandi', 'Gammandi123', 'Sophia Black', 'sophia@mail.com', '1990-10-12'),
 ('Zerio', 'liam123', 'Liam Turner', 'liam@mail.com', '1994-06-20'),
-('Mia', 'mia123', 'Mia Lee', 'mia@mail.com', '1988-08-09'),
-('Lucas', 'lucas123', 'Lucas Hall', 'lucas@mail.com', '1996-12-15'),
-('Amelia', 'amelia123', 'Amelia Scott', 'amelia@mail.com', '1995-04-02'),
-('Noah', 'noah123', 'Noah White', 'noah@mail.com', '1993-03-23'),
-('Ava', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15'),
-('James', 'james123', 'James Harris', 'james@mail.com', '1987-02-14'),
-('Isabella', 'isabella123', 'Isabella Carter', 'isabella@mail.com', '1999-01-25');
+('Shing', 'Shing123', 'Shing Lee', 'Shing@mail.com', '1988-08-09'),
+('LeCrapuleux', 'LeCrapuleux123', 'LeCrapuleux Hall', 'LeCrapuleux@mail.com', '1996-12-15'),
+('RolandLover19', 'RolandLover19123', 'RolandLover19 Scott', 'RolandLover19@mail.com', '1995-04-02'),
+('IsThatTheRedMist2', 'IsThatTheRedMist2123', 'IsThatTheRedMist2 White', 'IsThatTheRedMist2@mail.com', '1993-03-23'),
+('Gregor14', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15'),
+('Rocinante', 'Rocinante123', 'Rocinante Harris', 'Rocinante@mail.com', '1987-02-14'),
+('KebabIsGood24', 'KebabIsGood24123', 'KebabIsGood24 Carter', 'KebabIsGood24@mail.com', '1999-01-25');
 
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, solde) VALUES
-('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada', 'dada@gmail;com', '2006-01-10', 50);
-
+('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', 50), --MDP : 123
+('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', 60); --MDP : 123
 -- Jeux
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
 ('Lobotomy Corp', 22.99, '2018-04-18', 18, 
@@ -249,6 +259,10 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 ('Convergence', 29.99, '2023-05-23', 12,
 'Découvrez les bas-fonds de Zaun avec Ekko un jeune inventeur qui ne cesse d''innover et qui traverse Zaun et mets des raclées à ceux qui le mérite avec sa machine à remonter le temps ! Créez de nouveaux Gadgets et débloquez de nouvelles façon de les utiliser au cours de votre aventure.',
 'Double_Stallion', 'Riot_Forge', '../static/img/game_cover/Convergence.webp'
+),
+('Library of Ruina', 24.99, '2021-08-10', 18,
+'Roland, un gars à l''apparence plutôt banal se retrouve par accident dans la "Library" et sera forcé de travailler pour la directrice des lieux. Affrontez les invités avec une système de combat qui force la réfléxion. Transformez-les en livres pour agrandir la bibliothèque ou apprendres de nouvelles technniques. ',
+'Project_Moon', 'Project_Moon', '../static/img/game_cover/Library.webp'
 );
 
 -- Classer les jeux dans des genres
@@ -314,65 +328,100 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S040', 'Quintuplé', 'Tuer 5 ennemis en même temps', 11),
 ('S041', 'Grand Helmet Bro', 'Vaincre le casque du géant', 11),
 ('S042', 'Traumatisme Ancien', 'Vaincre Rayn à Devineur', 11),
-('S043', 'Détournement', 'Copier les Compétences ennemis 200 fois', 11);
+('S043', 'Détournement', 'Copier les Compétences ennemis 200 fois', 11),
+('S044', 'Immortel ', 'Finissez le jeu sans mourir', 13),
+('S045', 'Plus dure sera la chute', 'Parez l''attaque d''un boss', 13),
+('S046', 'Apprendre de ses erreurs', 'Subissez une attaque, remontez le temps, puis parez cette même attaque.', 13),
+('S047', 'Bon Voisin', 'Ne tabassez le voisinage', 13),
+('S048', 'La gâchette Folle', 'Vainquez Jinx', 13),
+('S049', 'Ego emprunté', 'Utilisez une page E.G.O', 14),
+('S050', 'Gambling', 'Utilisez "Boundary of death" plusieurs fois dans la même réception', 14),
+('S051', 'Seul contre tous', 'Réussissez une réception avec un seul personnage face à un groupe d''au moins 4 invités', 14),
+('S052', '"That''s that and this is this"', 'Revisionnez tout les moments où Roland dit "That''s that and this is this"', 14),
+('S053', 'Un invité inattendu', 'Envoyez une invitation générale', 14),
+('S054', 'Revenant', 'Mourrez, puis ressuscitez pour la première fois.', 12),
+('S055', 'Les pilleurs de tombes', 'Rencontrez les pilleurs de tombes.', 12),
+('S056', 'Lame Révérée', 'Vous avez reçu "Kusabimaru" de la part de kuro.', 12),
+('S057', 'Traumatisme', 'Mourrez plus de 20 fois sur le même boss.', 12),
+('S058', 'Seigneur d''Elden', 'Atteindre la fin "seigneur d''Elden"', 4),
+('S059', 'Loyale Monture', 'Mourrez avec torrent, votre monture.', 4),
+('S060', 'Ton pire ennemi?', 'Mourrez de chute lors d''un combat de boss', 4),
+('S061', 'A l''aide !', 'Gagnez un combat de boss grâce à un joueur invoqué', 4)
+;
 
 -- Reapprovisionner (argent ajouté au porte-monnaie)
 INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
 ('BlazedSora', '2024-11-01', 300),
 ('Gammandi', '2024-11-05', 400),
 ('Zerio', '2024-11-10', 500),
-('Mia', '2024-11-12', 600),
-('Lucas', '2024-11-15', 700),
-('Amelia', '2024-11-17', 800),
-('Noah', '2024-11-20', 150),
-('Ava', '2024-11-22', 900),
-('James', '2024-11-25', 1100),
-('Isabella',  '2024-11-26', 1300);
+('Shing', '2024-11-12', 600),
+('LeCrapuleux', '2024-11-15', 700),
+('RolandLover19', '2024-11-17', 800),
+('IsThatTheRedMist2', '2024-11-20', 150),
+('Gregor14', '2024-11-22', 900),
+('Rocinante', '2024-11-25', 1100),
+('KebabIsGood24',  '2024-11-26', 1300);
 
 -- Achats de jeux
 INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('BlazedSora', 1, 4.9, 'J''ai attaqué un piaf qui s''est échappé et il a tué tout mes employés, BANGER', '2021-10-09'),
 ('Gammandi', 1, 4.2, 'Je suis désormais traumatisé à vie mais au moins j''ai finit le jeu', '2023-03-16'),
 ('Zerio', 1, 4.7, 'Je serais prêt à me faire lobotomiser pour oublier ce jeu et le redécouvrir', '2021-05-14'),
+
 ('BlazedSora', 6, 3.9, 'J''ai eu un bon perso dès le début ducoup c''est forcément un bon jeu 👍', '2023-06-12'),
 ('Gammandi', 6, 4.8, 'C''est un banger absolu, une histoire incroyable avec un système de combat particulier et une D.A magnifique.', '2021-01-06'),
 ('Zerio', 6, 4.9, 'J''adore le systèle de dispense qui permet d''avoir le perso que tu souhaites en F2P même si tu es malchanceux. Meilleur Gacha.', '2022-02-12'),
+
 ('BlazedSora', 3, 3.1, 'Le gameplay est intéressant pour certains perso mais reste tout de même limité. En plus, le jeu n''est pas très très beau.', '2021-05-02'),
 ('Gammandi', 3, 4.9, 'Bien que le gameplay soit désagréable par moment, le jeu reste incroyable au niveau de l''histoire et du développement du personnage principal. Le héros évolue bien au fil du jeu et la tension est palpable par moment. Certains artwork sont magnifiques et embeillissent le design de plusieurs personnages.', '2021-07-11'),
 ('Zerio', 3, 4.1, 'Quelques musiques sont bien, l''histoire très cool. Le gameplay est cool de manière général. Malheureusement le jeu est parfois beau mais pas toujours.', '2021-11-12'),
+
 ('BlazedSora', 11, 4.3, 'League Of Legends c''est caca mais ce jeu est très bien. Validé par la street', '2022-08-02'),
 ('Gammandi', 11, 5, 'En tant que main Sylas, je dis haut et fort que ce jeu est un banger absolu et résume bien l''histoire de mon champion préféré. Des mécaniques de gameplay incroyable et des combat de boss que j''ai adoré.', '2024-05-11'),
 ('Zerio', 11, 4, 'Jsuis pas fan des graphismes mais le gameplay est sympa et l''histoire plutôt cool donc ça rattrape.', '2024-12-22'),
-('Mia', 4, 4.0, 'Le gameplay est top mais parfois répétitif.', '2024-11-14'),
-('Lucas', 5, 4.5, 'Cyberpunk 2077 reste l''un des meilleurs jeux d''action.', '2024-11-17'),
-('Amelia', 6, 4.5, 'Histoire excellente, mais la fin était décevante.', '2024-11-18'),
-('Noah', 7, 4.5, 'Trop fun, un véritable jeu de tir à la Borderlands!', '2024-11-19'),
-('Ava', 8, 5.0, 'Le meilleur jeu multijoueur que j''ai joué.', '2024-11-21'),
-('James', 9, 3.5, 'Je l''ai trouvé un peu facile mais très mignon.', '2024-11-23'),
-('Isabella', 10, 5, 'Un jeu vraiment bien conçu et riche en contenu.', '2024-11-25'),
+
+('Shing', 12, 4.7, 'Un Souls-like qui ne déçoit pas ! Bien qu''il soit assez différents des autres jeux fromsoftware, il a une belle histoire et des boss très satisfaisant à vaincre', '2024-01-10'),
+('LeCrapuleux', 12, 3.6, 'Le jeu est trop dur pour moi donc j''ai beaucoup de mal mais ce n''est pas un mauvais jeu pour autant.  Je suis sûr qu''il va plaire à d''autres personnes', '2024-02-17'),
+('RolandLover19', 12, 4.2, 'Je suis un grand fan du japon féodal, jouer à ce jeu qui respecte bien les mentalités de l''époque est un vrai plaisir. De plus, les décor sont magnifiques', '2024-02-18'),
+
+('IsThatTheRedMist2', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
+('Gregor14', 4, 5.0, 'La difficulté est au rendez-vous (sauf si vous jouez mage) avec des tas de builds différents (sauf mage) et le jeu est fun et demande un peu de réflexion sur certains boss (sauf pour les mages).', '2023-08-21'),
+('Rocinante', 4, 3.5, 'Le jeu offre une diversité tel que peu de joueurs auront une aventure très similaire. Bien que l''histoire de base reste la même pour tout les joueurs à quelques exception près. Vous décidez de où vous allez et de ce que VOUS jouez. Tracez votre propre route et profitez.', '2023-07-23'),
+
+('KebabIsGood24', 13, 4.6, 'Le jeu est sympa visuellement, les combats sont cool avec des boss plus ou moins difficiles. En bref, c''est un bon jeu !', '2022-09-25'),
+('LeCrapuleux', 13, 4.4, 'Les mécaniques de combats sont amusants à utiliser et l''histoire est assez prenante. Cependant le jeu est beaucoup trop court ! J''ai finis en mode difficile le jeu d''une traite et ça m''a pris moins d''une journée.', '2022-11-22'),
+('RolandLover19', 13, 3.9, 'League Of Legends c''est toujours caca mais j''aime bien Ekko alors ça va', '2022-11-15'),
+
+('BlazedSora', 14, 5.0,'Mon jeu préféré. L''histoire est incroyable, les personnages sont attachant et stylé, le système de combat est incroyable et détaillé. Le jeu devient progressivement très difficile ce qui force la réfléxion à certains moments. J''adore.','2021-09-10'),
+('Gammandi', 14, 4.9,'Un banger trop peu connu. L''écriture des personnages, les musiques, l''histoire, tout est incroyable. Ceux qui disent que ce jeu est guez n''y ont jamais joué où sont éclatax au jeu. ','2022-10-10'),
+('IsThatTheRedMist2', 14, 4.5,'A l''aide, j''ai finit le jeu depuis plusieurs mois et je n''arrive pas à me sortir "That''s that and this is this" de ma tête.  J''en suis au point où j''ai rétorqué ça à ma femme lorsqu''elle est partie avec les gosses... Cependant le jeu est bien','2023-11-13'),
+('david', 14, 4.7,'Les musiques sont tellement banger que maintenant j''ai besoin d''en écouter une quotidiennement.','2022-08-07'),
+('Gregor14', 14, 4.8,'Je n''arrive plus à progresser dans le jeu tant il est difficile. Ce n''est pas pour autant déplaisant puisque le système de combat fait beaucoup réfléchir et j''aime ça.','2023-12-09'),
+
+
 ('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2024-11-25'),
 ('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25');
 
 -- Partages de jeux entre joueurs
 INSERT INTO partage (pseudo1, pseudo2, id_jeu, date_partage) VALUES
 ('BlazedSora', 'Gammandi', 1, '2024-11-03'),
-('Zerio', 'Mia', 3, '2024-11-07'),
-('Lucas', 'Amelia', 5, '2024-11-12'),
-('Noah', 'Ava', 7, '2024-11-16'),
-('James', 'Isabella', 9, '2024-11-22');
+('Zerio', 'Shing', 3, '2024-11-07'),
+('LeCrapuleux', 'RolandLover19', 5, '2024-11-12'),
+('IsThatTheRedMist2', 'Gregor14', 7, '2024-11-16'),
+('Rocinante', 'KebabIsGood24', 9, '2024-11-22');
 
 -- Déblocages supplémentaires de succès
 INSERT INTO debloquer (pseudo, id_jeu, code, date_obtention) VALUES
 ('BlazedSora', 1, 'S011', '2024-11-04'),
 ('Gammandi', 2, 'S012', '2024-11-07'),
 ('Zerio', 3, 'S013', '2024-11-10'),
-('Mia', 4, 'S014', '2024-11-13'),
-('Lucas', 5, 'S015', '2024-11-16'),
-('Amelia', 6, 'S016', '2024-11-18'),
-('Noah', 7, 'S017', '2024-11-20'),
-('Ava', 8, 'S018', '2024-11-22'),
-('James', 9, 'S019', '2024-11-24'),
-('Isabella', 10, 'S020', '2024-11-27'),
+('Shing', 4, 'S014', '2024-11-13'),
+('LeCrapuleux', 5, 'S015', '2024-11-16'),
+('RolandLover19', 6, 'S016', '2024-11-18'),
+('IsThatTheRedMist2', 7, 'S017', '2024-11-20'),
+('Gregor14', 8, 'S018', '2024-11-22'),
+('Rocinante', 9, 'S019', '2024-11-24'),
+('KebabIsGood24', 10, 'S020', '2024-11-27'),
 ('david', 2, 'S012', '2024-11-24'),
 ('david', 2, 'S013', '2024-11-24'),
 ('david', 10, 'S022', '2024-11-24');

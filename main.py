@@ -46,6 +46,7 @@ def cree_compte():
     error_condition = False
     return render_template("/connexion/cree_compte.html", error = error_condition)
 
+import re
 ## On suppose que l'adresse mail est bien tapé, et qu'on peut avoir comme nom d'utilisateur '       '
 @app.route("/connexion/new_compte", methods=['POST'])
 def new_compte():
@@ -53,6 +54,10 @@ def new_compte():
     value_list = request.form.getlist("value") # value_list = [Pseudo, MDP, prénom et nom, mail, date de naissance]
     if any(elem == '' for elem in value_list): ## Si un élément de la liste est égale à '', alors on n'a pas remplit une case
          return render_template("/connexion/cree_compte.html", error = True, error_msg = "Veuillez remplir toutes les informations !")
+    # On vérifie qu'on a bien tapé une adresse mail valide grâce au module re.match()
+    valid = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value_list[3])
+    if not(valid):
+         return render_template("/connexion/cree_compte.html", error = True, error_msg = "Veuillez renseigner une adresse mail correcte !")
     with db.connect() as conn:
         cur = conn.cursor()
         ## On vérifie que ce pseudo n'a pas déjà été pris
@@ -376,7 +381,13 @@ def send_commentaire():
 def profil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    return render_template("/accueil.html", user = session['user_nickname'], solde = session['solde'])
+    with db.connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT pseudo, nom, mail, date_naissance FROM joueur WHERE pseudo = %s;", (session['user_nickname'],))
+        user_info = cur.fetchone()
+        cur.execute("SELECT pseudo, count(id_jeu) AS nbr FROM achat GROUP BY pseudo HAVING pseudo = %s;", (session['user_nickname'],))
+        nbr_jeu = cur.fetchone()
+    return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr, solde = session['solde'])
 
 @app.route("/disconnect", methods = ['POST'])
 def disconnect():
@@ -384,6 +395,10 @@ def disconnect():
     session.pop('solde', None)
     session.pop('age', None)
     return redirect(url_for('connexion'))
+
+@app.route("/add_ami")
+def add_ami():
+    return
 
 if __name__ == '__main__':
   app.run()

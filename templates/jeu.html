@@ -147,7 +147,7 @@
             <div class="avis_and_send_div">
                 <div>
                     <img src="../static/img/star.png"> <!--Note-->
-                    <input class="rate" type="number" name="note_jeu" min="0" max="5" step="0.5" value="5" required/>
+                    <input class="rate" type="number" name="note_jeu" min="0" max="5" step="0.1" value="5" required/>
                 </div>
                 <input class="send" style="padding:0.3% 0.5%;" type=submit value="Envoyer">
             </div>
@@ -171,7 +171,7 @@
                                 <p>{{elem.pseudo}}</p>
                                 <div style="display:flex; align-items:center; height:2vh">
                                     <img class="star" src="../static/img/star.png">
-                                    <input class="rate_own" type="number" name="note_jeu" min="0" max="5" step="0.5" value={{elem.note}} required/>
+                                    <input class="rate_own" type="number" name="note_jeu" min="0" max="5" step="0.1" value={{elem.note}} required/>
                                 </div>                            
                                 <p style="color:grey; font-size:0.7em; text-decoration:underline" >Acheté le :</p>
                                 <p style="color:grey; font-size:0.7em;">{{elem.date_achat}}</p>
