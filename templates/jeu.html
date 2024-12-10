@@ -6,13 +6,14 @@
 <head>
     <link rel="stylesheet" href="../static/general.css">
     <link rel="stylesheet" href="../static/page/jeu.css">
-    <!--On récupère une font sur Google Font-->
+    <!--On récupère une font sur le site Google Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
 </head>
 
-<div style="background-color: rgba(173, 216, 230, 0.15);">
+<!--DEBUT DIV POUR LA BARRE DE NAVIGATION -->
+<div class="nav" style="background-color: rgba(173, 216, 230, 0.15);">
     <span class="user">UTILISATEUR : {{user}}</span>
     <span class="currency"><u>Solde :</u> {{solde}} €</span>
     <header class="text-overlay-neon">
@@ -29,31 +30,40 @@
         <input type=submit value="Profil">
     </form>
     </nav>
-    <form method="/post" action="/disconnect">
+    <form method="post" action="/disconnect">
         <input class="disconnect" type=submit value="← Se déconnecter">
     </form>
 </div>
+<!--FIN DIV POUR LA BARRE DE NAVIGATION -->
 
+<!--Main div qui va permettre d'afficher les informations du jeu -->
 <div class="mainDiv">
-    <div class="bg_jeu" ><img src={{lst_jeu.url_img}}></div>
+    <!--DIV pour mettre le background avec l'image du jeu-->
+    <div class="bg_jeu" ><img src={{jeu.url_img}}></div>
+    <!--1er DIV qui va contenir les infos du jeu-->
     <div class="info_jeu">
+        <!--La partie gauche contient l'image seulement-->
         <div class="left_div">
-            <img class="img_jeu" src={{lst_jeu.url_img}}>
-            <img class="img_jeu_blur" src={{lst_jeu.url_img}}>
+            <img class="img_jeu" src={{jeu.url_img}}>
+            <img class="img_jeu_blur" src={{jeu.url_img}}> <!--Pour permettre le fond de couleur derrière l'image-->
         </div>
+        <!--La partie droite contient les informations du jeu-->
         <div class="right_div">
-            <h2>{{lst_jeu.titre}}</h2>
-            <h3>{{lst_jeu.synopsis}}</h3>
+            <h2>{{jeu.titre}}</h2> <!--Le titre-->
+            <h3>{{jeu.synopsis}}</h3> <!--Le synopsis-->
             <ul>
-                {% if lst_jeu.moyenne == None %}
-                    <li><h5>Note moyenne : Aucune note</h5></li>
-                {% else%}
-                    <li><h5>Note moyenne : {{lst_jeu.moyenne}} <img src='../static/img/star.png'> </h5> </li>
+                <!--La moyenne des notes-->
+                {% if jeu.moyenne == None %} <!--Si on n'a aucune note, on affiche un message-->
+                    <li>Note moyenne : Aucune note</h5></li>
+                {% else%} 
+                    <li><h5>Note moyenne : {{jeu.moyenne}} <img src='../static/img/star.png'> </h5> </li>
                 {% endif %}
-                <li><h5>Date de sortie : {{lst_jeu.date_sortie}}</h5></li>
-                <li><h5>Editeur : {{lst_jeu.nom_edite.replace('_', ' ')}}</h5></li>
-                <li><h5>Développement : {{lst_jeu.nom_dev.replace('_', ' ')}}</h5></li>
+                <!--Date de sortie, Editeur, Developpeur-->
+                <li><h5>Date de sortie : {{jeu.date_sortie}}</h5></li>
+                <li><h5>Editeur : {{jeu.nom_edite.replace('_', ' ')}}</h5></li> <!--Dans la BDD les " " sont remplacées par le caractère "_" d'où le remplacement -->
+                <li><h5>Développement : {{jeu.nom_dev.replace('_', ' ')}}</h5></li>
             </ul> 
+            <!--Le genre du jeu-->
             <h4 style='color:grey'><u>Genre</u> :
                 {% for elem in lst_genre %}
                     {% if elem == lst_genre[-1] %}
@@ -63,16 +73,167 @@
                     {% endif %}
                 {% endfor%}
             </h4>
-            <form class= "Game", methods="get" action="buy_game/{{lst_jeu.titre}}">
-                {% if lst_jeu.prix == 0.0 %}
-                <input type=submit value="Obtenir">
+        </div>
+    </div>
+    <!--2ème div qui cette fois-ci va contenir des informations concernant le joueur et s'il a acheté le jeu ou pas -->
+    <form class= "Game" action="{{url_for('buy_game')}}" method="POST">
+        <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input> <!--Input hidden qui va permettre de récupérer le jeu -->
+        <!--Si on a déjà acheté le jeu-->
+        {% if already_game %}
+        <div class="already_buy">
+            <span style="text-wrap:nowrap"> Vous avez déjà acheté le jeu !</span>
+        <!--Si on n'a pas déjà acheté le jeu-->
+        {% else %}
+            <div class="buy_div" style="width:43%; margin-left: 56.7%">
+            <!--Si l'utilisateur est pauvre-->
+            {%  if no_money %}
+            <span style="text-wrap:nowrap;"> Vous êtes PAUVRE !</span>
+            {% else %}
+                <!--Si on a pas l'âge requis-->
+                {% if no_age %} 
+                <span style="text-wrap:nowrap; font-size:0.8em"> Vous êtes TROP JEUNE</span>
+                {% else %}
+                    <!--Sinon, on a l'âge requis et l'argent nécessaire pour acheter le jeu-->
+                    {% if jeu.prix == 0.0 %} <!--Dans le cas où le jeu est gratuit-->
+                    <button type="button" id="buy" > Obtenir</button>
+                    <span>Gratuit</span>
+                    {% else %}
+                        <button type="button" id="buy"> Acheter</button>
+                        <span>{{jeu.prix}} €</span>        
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        </div>
+        <!--Si on a appuyé sur le bouton pour acheter-->
+        <div class="confirm_buy"> <!--Par défaut, la div est hidden-->
+            <p style="text-decoration:underline" >Vous vous apprêtez à acheter le jeu suivant :</p>
+            <p style="font-size:1.2em; color: darkred;" >{{jeu.titre}}</p>
+            <h6>Votre solde après cet achat sera à : <span style="color:red; font-size:1.1em;">{{solde_restant}} €</span></h6>
+            <div style="display:flex; align-items:center; justify-content: centre">
+                <button type=submit>Acheter</button>
+                <button type=button id="no_buy">Ne pas acheter</button>
+            </div>
+        </div>
+        <!--Script qui permet de gérer l'animation quand on clique sur le bouton-->
+        <script>
+            document.getElementById('buy').addEventListener('click', function() {
+                confirm = document.querySelector(".confirm_buy")
+                confirm.style.display= "block";
+                confirm.classList.add('in');
+                setTimeout(function() {
+                    confirm.classList.remove('in');
+                }, 400);
+            })
+            document.getElementById('no_buy').addEventListener('click', function() {
+                confirm = document.querySelector(".confirm_buy")
+                confirm.classList.add('out');
+                setTimeout(function() {
+                    confirm.classList.remove('out');
+                    confirm.style.display= "none";
+                }, 400);
+            })
+        </script>
+    </form>
+    <!--3ème div qui cette fois-ci va contenir les commentaires et les succès-->
+    <!--Si l'utilisateur a acheté le jeu mais qu'il n'a pas mit de note, on lui propose d'en mettre-->
+    {% if already_game and no_commentaire%}
+        <form class="send_commentaire" action="/send_commentaire" method="POST">
+            <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
+            <h2>Donnez un avis sur <u style="color:rgb(32, 97, 204);">{{jeu.titre}} :</u></h2>
+            <div class="send_commentaire_div"> <!--Commentaire-->
+                <textarea name="commentaire" rows="30" cols="230" placeholder="Ecrire un commentaire ..." required></textarea>
+            </div>
+            <div class="avis_and_send_div">
+                <div>
+                    <img src="../static/img/star.png"> <!--Note-->
+                    <input class="rate" type="number" name="note_jeu" min="0" max="5" step="0.5" value="5" required/>
+                </div>
+                <input class="send" style="padding:0.3% 0.5%;" type=submit value="Envoyer">
+            </div>
+        </form>
+    {% endif %}
+    <!--On affiche la liste des commentaires et succès en rapport avec le jeu-->
+    <div class="lst_commentaire_and_succes"> <!--Les commentaires seront à gauche, et les succès à droite-->
+        <!--DIV pour les commentaires-->
+        <div class="lst_commentaire">
+            <h3>Évaluations des joueurs :</h3>
+            <!--Pour chaque commentaire sur le jeu ...-->
+            {% for elem in lst_commentaire %}
+                <!--Si le commentaire appartient à l'utilisateur, on lui propose de modifier son commentaire et sa note-->
+                {% if (elem.pseudo == user) %}
+                <form action="/send_commentaire" method="POST">
+                    <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
+                    <div class="commentaire">
+                        <div class="head_commentaire" >
+                            <img class="avatar_user" src="../static/img/chauve.jpeg" style="height:5vw;">
+                            <div>
+                                <p>{{elem.pseudo}}</p>
+                                <div style="display:flex; align-items:center; height:2vh">
+                                    <img class="star" src="../static/img/star.png">
+                                    <input class="rate_own" type="number" name="note_jeu" min="0" max="5" step="0.5" value={{elem.note}} required/>
+                                </div>                            
+                                <p style="color:grey; font-size:0.7em; text-decoration:underline" >Acheté le :</p>
+                                <p style="color:grey; font-size:0.7em;">{{elem.date_achat}}</p>
+                            </div>
+                        </div>
+                        <div class="content_commentaire" style="border-color:whitesmoke">
+                            <textarea rows="10" cols="130" name="commentaire">{{elem.commentaire}}</textarea>
+                        </div>
+                        <input class="modif_button" type=submit value="Modifier">
+                    </div>
+                </form>
+                <!--Sinon on affiche un commentaire classique sans qu'on puisse pouvoir le modifier-->
                 {%else%}
-                <input type=submit value="Acheter">
+                    <div class="commentaire">
+                        <div class="head_commentaire" >
+                            <img class="avatar_user" src="../static/img/chauve.jpeg" style="height:5vw;">
+                            <div>
+                                <p>{{elem.pseudo}}</p>
+                                <p style="color:lightblue;"><img src="../static/img/star.png" style="height:2vh;">{{elem.note}}</p>
+                                <p style="color:grey; font-size:0.7em; text-decoration:underline" >Acheté le :</p>
+                                <p style="color:grey; font-size:0.7em" >{{elem.date_achat}}</p>
+                            </div>
+                        </div>
+                        <div class="content_commentaire">
+                            <p>{{elem.commentaire}}<p>
+                        </div>
+                    </div>
                 {% endif %}
-                {% if lst_jeu.prix != 0.0 %}
-                <span>{{lst_jeu.prix}} €                
-                {% endif %}
-            </form>
+            {% endfor %}
+        </div>
+        <!--DIV pour les succes-->
+        <div class="succes_div">
+            <h3>Succès:</h3>
+            <!--On vérifie d'abord qu'il existe des succès pour ce jeu-->
+            {% if lst_succes_debloque or lst_succes_bloque %}
+                <div class="all_succes" id="succes">
+                <!--Pour chaque succès que le joueur a débloqué-->
+                {% for elem in lst_succes_debloque%}
+                <div class="succes">
+                    <img class="succes_img" src="../static/img/succes_debloque.webp">
+                    <div class="succes_intitule">
+                        <p style="text-decoration:underline; font-weight:bold;" >{{elem.intitule}}</p>
+                        <p>{{elem.condition}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                <!--Pour chaque succès que le joueur n'a pas débloqué-->
+                {% for elem in lst_succes_bloque%}
+                <div class="succes" id="succes">
+                    <img class="succes_img" src="../static/img/succes_bloque.webp">
+                    <div class="succes_intitule">
+                        <p style="text-decoration:underline; font-weight:bold;" >{{elem.intitule}}</p>
+                        <p>{{elem.condition}}</p>
+                    </div>
+                </div>
+                {% endfor%}
+            </div>
+            <!--Si aucun succès existe pour ce jeu, on affiche un message spécial -->
+            {%else%}
+                <p style="text-align:center;">Il n'y a aucun succès pour ce jeu</p>
+            {%endif%}
         </div>
     </div>
 </div>
+</body>

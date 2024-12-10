@@ -1,9 +1,9 @@
 
 .bg_jeu{
-    position: absolute;
+    position: fixed;
     z-index: -1;
     opacity: 0.3;
-    top: 25%;
+    top: 20%;
     left: 50%;
     transform: translate(-50%, 0);
     width: 100%;
@@ -27,9 +27,9 @@
 }
 
 .mainDiv{
+    position: relative;
     margin: 3vh auto 0 auto;
     width: 75%;
-    height: 60%;
     color: white;
     text-shadow: 1px 1px 1px black;
 }
@@ -40,46 +40,58 @@ h2{
 
 .info_jeu{
     position: relative;
-    width: 100%;
-    height: 100%;
     border-radius: 10px;
     display: flex;
     backdrop-filter: blur(2px);
     gap: 2vw;
 }
 
-.info_jeu::before{
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    filter: blur(3px);
-    z-index: -1;
-}
-
 
 .left_div{
-    flex-basis: 50%;
+    flex-basis: 57%;
     position: relative;
 }
 
-.left_div img{
+.img_jeu{
     width: 100%;
     border: 2px inset #0b5991;
     border-radius: 5px;
+    animation: moving_img 3s ease-in-out infinite;
+    animation-direction: alternate;
+}
+
+@keyframes moving_img {
+    from{
+        transform: translateY(-3%);
+    }
+    to{
+        transform: translateY(1%);
+    }
 }
 
 .img_jeu_blur{
     top: 0;
     left: 0;
     position: absolute;
-    transform: scale(1.1);
-    filter: blur(20px) brightness(0.5);
-
+    width: 100%;
     z-index: -1;
+    animation: moving_img_blur 3s ease-in-out infinite;
+    animation-direction: alternate;
 }
+
+@keyframes moving_img_blur {
+    from{
+        transform: scale(1.05) translateY(-3%);
+        filter: blur(10px) brightness(0.5);
+    }
+    to{
+        transform: scale(1.1) translateY(1%);
+        filter: blur(20px) brightness(0.5);
+    }
+}
+
 .right_div{
-    flex-basis: 50%;
+    flex-basis: 43%;
 }
 
 .right_div h2{
@@ -110,15 +122,27 @@ h2{
     margin: 1%;
 }
 
-.right_div form{
-    padding: 1%;
+.Game{
+    position: relative;
+    width: 100%;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     font-size: 1.5em;
-    background-color:  rgba(130, 130, 130, 0.5);
 }
 
-.right_div input{
+.Game .buy_div{
+    height: 5vh;
+    background-color:  rgba(130, 130, 130, 0.5);
+    border: 2px solid #0b5991;
+    position: relative;
+}
+
+.Game .buy_div span{
+    margin-left: 0.5vw;
+    line-height: 5vh;
+}
+
+.Game button{
     background : linear-gradient( to bottom, #6fa720 5%, #588a1b 95%); 
     padding: 1% 2%;   
     width: fit-content;
@@ -131,9 +155,380 @@ h2{
     transition: all 0.1s ease-in-out;
 }
 
-.right_div input:hover{
+.Game button:hover{
     background : linear-gradient( to bottom, #85ca24 5%, #69ab19 95%); 
     color: white;
     cursor: pointer;
 }
 
+.Game button:focus body{
+    background-color: rgba(0, 0, 0, 0.508);
+    pointer-events: none;
+}
+
+.Game button:focus #confirm_buy{
+    animation: transi 0.4s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.confirm_buy{
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+    width: 40vw;
+    height: 20vw;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid whitesmoke;
+    border-radius: 10px;
+    backdrop-filter: blur(2px) brightness(60%);
+    box-shadow: 0px 10px 30px rgb(0, 0, 0);
+}
+
+.in{
+    animation: transi 0.4s ease-in-out forwards;
+}
+
+.out{
+    animation: transi 0.4s ease-in-out reverse forwards;
+}
+@keyframes transi {
+    from{
+        top: 40%;
+        opacity: 0;
+        filter: blur(10px) brightness(0);
+    }
+    to{
+        top:50%;
+        opacity: 1;
+        filter: blur(0px) brightness(1);
+    }
+}
+
+.confirm_buy p{
+    text-align: center;
+}
+
+.confirm_buy h6{
+    color: grey;
+    text-align: center;
+}
+
+.confirm_buy div button{
+    flex-basis: 40%;
+}
+
+.confirm_buy div button:nth-child(2){
+    background : linear-gradient( to bottom, #a72020 5%, #700c0c 95%); 
+    color: #eecece;
+}
+
+.confirm_buy div button:nth-child(2):hover{
+    background : linear-gradient( to bottom, #cb1a1a 5%, #bf0a0a 95%); 
+    color: white;
+}
+
+.already_buy{
+    background : linear-gradient( to bottom, #6fa720 5%, #588a1b 95%); 
+    height: 5vh;
+    line-height: 5vh;
+    padding: 0 1%;
+    color: #d2efa9;
+    font-size: 1.1em;
+    font-family: "VT323", monospace;
+    transition: all 0.1s ease-in-out;
+}
+.send_commentaire{
+    border-top: 2px solid rgb(32, 97, 154);
+    background : linear-gradient( to bottom, rgba(80, 80, 80, 0.2) 5%, rgba(58, 58, 58, 0.2) 95%); 
+    height: 40vh;
+    width: 100%;
+    position: relative;
+    backdrop-filter: blur(2px);
+}
+
+.send_commentaire h2{
+    margin-left: 1vw;
+}
+
+.send_commentaire textarea{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    max-width: 90%;
+    font-size: 1em;
+    max-height: 25vh;
+    color:white;
+    background : linear-gradient( to bottom, #222b35 5%, #243344 95%); 
+    box-shadow: inset 1px 1px 10px rgb(70, 70, 70);
+    border-radius: 10px;
+    padding: 1%;
+    font-family: "VT323", monospace;
+}
+
+.send_commentaire textarea:focus{
+    outline: none;
+    box-shadow: inset 1px 1px 10px rgb(136, 136, 136);
+    border: 1px solid grey;
+}
+
+.avis_and_send_div{
+    position: absolute;
+    bottom: 1.2%;
+    padding: 0 2%;
+    width: 96%;
+    height: 5vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 2px solid rgba(105, 105, 105, 0.6);
+    border-bottom: 2px solid rgb(32, 97, 154);
+}
+
+.avis_and_send_div div{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1%;
+    border-radius: 5px;
+    
+}
+
+.avis_and_send_div div img{
+    height: 70%;
+}
+
+.send{
+    border: solid;
+    border: 2px solid rgb(32, 97, 154);
+    border-radius: 10px;
+}
+
+.rate{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-family: "VT323", monospace;
+    font-size: 1.5em;
+    transition: all 0.15s ease-in-out;
+    border: none;
+    padding: 2% 4%;
+    border: 2px solid rgb(32, 97, 154);
+    border-radius: 10px;
+}
+
+.rate_own{
+    background-color: transparent;
+    color: lightblue;
+    font-family: "VT323", monospace;
+    font-size: 1em;
+    transition: all 0.15s ease-in-out;
+    border: none;
+    text-shadow: 1px 1px 1px black;
+}
+
+.rate_own:focus{
+    outline: none;
+    border: none;
+}
+
+.star{
+    height: 100%;
+}
+
+.rate:focus{
+    outline: none;
+    border: 0.5px solid white;
+}
+
+.send{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-family: "VT323", monospace;
+    font-size: 1.5em;
+    transition: all 0.15s ease-in-out;
+}
+
+
+.send:hover{
+    transform: scale(1.05);
+    cursor: pointer;
+    letter-spacing: 1px;
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+}
+
+.lst_commentaire_and_succes{
+    width: 100%;
+    display: flex;
+    margin-top: 1%;
+    background : linear-gradient( to bottom left, rgba(173, 216, 230, 0.119) 5%, rgba(83, 87, 147, 0.119) 100%); 
+    backdrop-filter: blur(2px);
+
+}
+
+
+.lst_commentaire{
+    display: block;
+    flex-basis: 83%;
+}
+
+.lst_commentaire h3{
+    width: calc(100% - 1vw);
+    margin: 0;
+    padding: 1vh 0% 1vh 1vw;
+    background : linear-gradient( to bottom left, rgba(20, 151, 199, 0.5) 5%, rgba(13, 121, 143, 0.5) 100%); 
+    border-bottom: 2px solid grey;
+}
+
+.commentaire{
+    padding: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 3vw;
+    position: relative;
+}
+
+.head_commentaire{
+    display: flex;
+    align-items: top;
+    gap: 1vw;
+    width: 30%;
+}
+
+.avatar_user{
+    border: 3px solid rgb(32, 97, 154);
+    border-radius: 5px;
+}
+
+.head_commentaire div{
+    height: 100%;
+}
+
+.head_commentaire div p{
+    display: flex;
+    align-items: center;
+    margin: 0;
+
+}
+
+.content_commentaire{
+    width: 100%;
+    min-height: 5vw;
+    background : linear-gradient( to bottom left, rgba(173, 216, 230, 0.119) 5%, rgba(83, 87, 147, 0.119) 100%); 
+    border: 2px solid rgb(68, 149, 219);
+    position: relative;
+}
+
+.content_commentaire p{
+    margin: 1% 2%;
+}
+
+.content_commentaire textarea{
+    width: 96%;
+    max-height: 4vw;
+    background-color: transparent;
+    color: white;
+    font-family: "VT323", monospace;
+    padding: 1% 2%;
+    font-size: 1em;
+    border: 1px solid white;
+    border-bottom: none;
+    text-shadow: 1px 1px 1px black;
+}
+
+.content_commentaire textarea:focus{
+   outline: none;
+   background : linear-gradient( to bottom left, rgba(54, 184, 227, 0.119) 5%, rgba(46, 56, 188, 0.119) 100%); 
+
+}
+
+.modif_button{
+    position: absolute;
+    font-family: "VT323", monospace;
+    background : linear-gradient( to bottom left, rgba(54, 184, 227, 0.119) 5%, rgba(46, 56, 188, 0.119) 100%); 
+    border: 2px solid white;
+    font-size: 1vw;
+    height: 25%;
+    right: 2%;
+    bottom: 16.5%;
+    color: white;
+    text-shadow: 1px 1px 1px black;
+}
+
+.modif_button:hover{
+    background : linear-gradient( to bottom left, rgba(255, 255, 255, 0.8) 5%, rgba(209, 209, 209, 0.8) 100%); 
+    color: black;
+    text-shadow: none;
+    cursor: pointer;
+}
+
+.succes_div{
+    display: block;
+    flex-basis: 17%;
+    border-left: 2px solid grey;
+}
+
+.succes_div h3{
+    width: calc(100% - 1vw);
+    margin: 0;
+    padding: 1vh 0% 1vh 1vw;
+    background : linear-gradient( to bottom left, rgba(20, 151, 199, 0.5) 5%, rgba(13, 121, 143, 0.5) 100%); 
+    border-bottom: 2px solid grey;
+}
+
+.all_succes{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 1vw;
+    row-gap: 1vh;
+    margin: 3%;
+    height: 5vw;
+}
+
+
+.succes{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.succes_img{
+    width: 100%;
+}
+
+.succes_intitule{
+    opacity: 0;
+    pointer-events: none;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-wrap:balance;
+    width: 9vw;
+    padding: 0 5%;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+    position: absolute;
+    font-size: 0.7em;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    transition: all 0.15s ease-in-out;
+}
+
+.succes_intitule::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent; 
+  }
+
+.succes:hover .succes_intitule:last-child{
+    opacity: 1;
+    z-index: 100;
+}

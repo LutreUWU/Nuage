@@ -25,14 +25,14 @@ CREATE TABLE joueur(
     nom varchar(30) NOT NULL,
     mail varchar(50) NOT NULL,
     date_naissance date NOT NULL,
-    solde int default 0 NOT NULL
+    solde numeric(4, 2) default 0 NOT NULL
 );
 
 
 CREATE TABLE jeu(
     id_jeu serial PRIMARY KEY,
     titre varchar(100) NOT NULL, --On considére qu'un jeu n'a pas forcement un titre unique
-    prix numeric(5, 2) default 0 NOT NULL,
+    prix numeric(4, 2) default 0 NOT NULL,
     date_sortie date NOT NULL,
     age_min numeric(2, 0) NOT NULL,
     synopsis text, 
@@ -46,8 +46,8 @@ CREATE TABLE jeu(
 
 CREATE TABLE succes(
     code varchar(4) PRIMARY KEY,
-    intitule varchar(30) NOT NULL,
-    condition varchar(100),
+    intitule varchar(200) NOT NULL,
+    condition varchar(200),
     id_jeu int,
     FOREIGN KEY (id_jeu) REFERENCES jeu(id_jeu)
     ON DELETE CASCADE ON UPDATE CASCADE
@@ -177,12 +177,12 @@ INSERT INTO genre (nom_genre) VALUES
 ('Multijoueur'),
 ('Jeu de rôle');
 
-
+-- Attention, les INSERTS sont pas oufs
 -- Joueurs
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance) VALUES
-('Oliver', 'oliver123', 'Oliver Grey', 'oliver@mail.com', '1992-11-01'),
-('Sophia', 'sophia123', 'Sophia Black', 'sophia@mail.com', '1990-10-12'),
-('Liam', 'liam123', 'Liam Turner', 'liam@mail.com', '1994-06-20'),
+('BlazedSora', 'oliver123', 'Oliver Grey', 'oliver@mail.com', '1992-11-01'),
+('Gammandi', 'Gammandi123', 'Sophia Black', 'sophia@mail.com', '1990-10-12'),
+('Zerio', 'liam123', 'Liam Turner', 'liam@mail.com', '1994-06-20'),
 ('Mia', 'mia123', 'Mia Lee', 'mia@mail.com', '1988-08-09'),
 ('Lucas', 'lucas123', 'Lucas Hall', 'lucas@mail.com', '1996-12-15'),
 ('Amelia', 'amelia123', 'Amelia Scott', 'amelia@mail.com', '1995-04-02'),
@@ -190,6 +190,9 @@ INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance) VALUES
 ('Ava', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15'),
 ('James', 'james123', 'James Harris', 'james@mail.com', '1987-02-14'),
 ('Isabella', 'isabella123', 'Isabella Carter', 'isabella@mail.com', '1999-01-25');
+
+INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, solde) VALUES
+('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada', 'dada@gmail;com', '2006-01-10', 50);
 
 -- Jeux
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
@@ -201,7 +204,7 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 'Dans une école coupée du monde extérieur, vous êtes forcé de trouver meutrier en passant par une phase d''enquête pour ensuite utiliser ces preuves pour briser les arguments erroné afin de découvrir l''identité du coupable.',
 'Spike_Chunsoft', 'Spike_Chunsoft', '../static/img/game_cover/DanganronpaTriggerHappyHavoc.webp'),
 
-('Fate / Samurai Remnant', 69.99, '2023-09-29', 18, 
+('Fate Samurai Remnant', 69.99, '2023-09-29', 18, 
 'Dans un paisible village à l''èree d''edo au Japon, un étrange Rituel invoque plusieurs esprits héroïques du passé chacun rattaché à un maître qui leur est propre. Il est dit que celui qui arrive à venir au bout des autres servant aura son voeu exaucé.', 
 'KOEI_TECMO', 'KOEI_TECMO', '../static/img/game_cover/FateSamuraiRemnant.webp'),
 
@@ -279,22 +282,45 @@ INSERT INTO classer (id_jeu, id_genre) VALUES
 (13, 12);
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
-('S011', 'Survivant', 'Survivre 7 jours dans Resident Evil 4', 1),
-('S012', 'Vainqueur de la Guerre', 'Terminer tous les chapitres de Final Fantasy VII Remake', 2),
-('S013', 'République Fallout', 'Construire un abri complet dans Fallout 76', 3),
-('S014', 'Maître des Armes', 'Tuer 500 ennemis dans Destiny 2', 4),
-('S015', 'Cyber Hacker', 'Compléter toutes les missions secondaires de Cyberpunk 2077', 5),
-('S016', 'Survivant Ultime', 'Terminer le jeu sur la difficulté la plus élevée dans The Last of Us', 6),
-('S017', 'Voleur', 'Voler 100 véhicules dans Borderlands 3', 7),
-('S018', 'Légende', 'Obtenir tous les champions dans League of Legends', 8),
-('S019', 'Turbo', 'Compléter le jeu à 100% dans Sonic the Hedgehog', 9),
-('S020', 'Viking', 'Construire un village complet dans Assassin''s Creed Valhalla', 10);
+('S011', 'Angela.', 'Finir le jeu Loboymy Corp', 1),
+('S012', 'Désespoir', 'Vous avez succombé aux désespoirs.', 2),
+('S013', 'Espoir ??', 'Terminez le jeu.', 2),
+('S014', 'Samurai forever', 'Devenez l''ultime Samourai', 3),
+('S015', 'Malania EZ', 'Tuer Malania en NO HIT', 4),
+('S016', 'Pigeon', 'Faire une transaction sur Waven', 5),
+('S017', 'Lament.', 'Télécharger le jeu Limbus Company', 6),
+('S018', 'Let us be free', 'Finir le Canto V', 6),
+('S019', 'J''ai pas d''idee', 'Succes sur Tsushima', 7),
+('S020', 'One try', 'Gagner votre première partie', 8),
+('S021', 'It''s just teddy !', 'Trouver un ours en peluche', 9),
+('S022', 'Hope blooms', 'Finir Danganronpa 2', 10),
+('S023', 'Matrixé par LoL', 'Finir Mageseeker', 11),
+('S024', 'J''ai pas d''idee aussi', 'Succes sur Tsushima', 12),
+('S025', 'Matrixé par Arcane', 'Finir Convergence', 13),
+('S026', 'Léger accident', 'Tuez tout vos employé', 1),
+('S027', 'Aucune perte à signaler', 'Finissez une journée sans pertes à déplorer', 1),
+('S028', 'Efficacité > Nombre', 'Finissez une journée avec uniquement des employés au niveau maximum', 1),
+('S029', 'Il était une fois, trois oiseaux dans une forêt.. ', 'Faites un travail avec les abnormalités suivantes : Oiseau de la punition,  Oiseau du jugement , Gros oiseau', 1),
+('S030', 'Vroom-vroom', 'Finissez le prologue', 6),
+('S031', 'Chanceux', 'Obtenez deux identités 3Ø différentes lors d''une extraction', 6),
+('S032', 'Malchanceux', 'Invoquez 4 fois de suites sans avoir de 3Ø ', 6),
+('S033', 'Mon bras a changé...', 'utilisez l''E.G.O de Gregor à la fin du Canto 1', 6),
+('S034', 'Dégommeur de monstre', 'Vaincre un monstre pour la première fois', 3),
+('S035', 'Rénovation', 'Constuire l''atelier pour la première fois', 3),
+('S036', 'Âme d''épéiste', 'Apprendre toutes les postures', 3),
+('S037', 'Pas mal pour un mortel.', 'Vendre une statue de bouddha à Babyloni-ya', 3),
+('S038', 'Collectionneur', 'Acquérir toute les décorations', 3),
+('S039', 'Pour Demacia', 'Combattre Garen au début du jeu', 11),
+('S040', 'Quintuplé', 'Tuer 5 ennemis en même temps', 11),
+('S041', 'Grand Helmet Bro', 'Vaincre le casque du géant', 11),
+('S042', 'Traumatisme Ancien', 'Vaincre Rayn à Devineur', 11),
+('S043', 'Détournement', 'Copier les Compétences ennemis 200 fois', 11);
 
 -- Reapprovisionner (argent ajouté au porte-monnaie)
 INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
-('Oliver', '2024-11-01', 300),
-('Sophia', '2024-11-05', 400),
-('Liam', '2024-11-10', 500),
+('BlazedSora', '2024-11-01', 300),
+('Gammandi', '2024-11-05', 400),
+('Zerio', '2024-11-10', 500),
 ('Mia', '2024-11-12', 600),
 ('Lucas', '2024-11-15', 700),
 ('Amelia', '2024-11-17', 800),
@@ -305,35 +331,49 @@ INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
 
 -- Achats de jeux
 INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
-('Oliver', 1, 4.5, 'Superbes graphismes et ambiance. Bien stressant.', '2024-11-02'),
-('Sophia', 1, 5.0, 'Une expérience incroyable, la meilleure des rééditions.', '2024-11-06'),
-('Liam', 3, 3.8, 'Je suis encore un peu perdu dans ce monde ouvert.', '2024-11-12'),
+('BlazedSora', 1, 4.9, 'J''ai attaqué un piaf qui s''est échappé et il a tué tout mes employés, BANGER', '2021-10-09'),
+('Gammandi', 1, 4.2, 'Je suis désormais traumatisé à vie mais au moins j''ai finit le jeu', '2023-03-16'),
+('Zerio', 1, 4.7, 'Je serais prêt à me faire lobotomiser pour oublier ce jeu et le redécouvrir', '2021-05-14'),
+('BlazedSora', 6, 3.9, 'J''ai eu un bon perso dès le début ducoup c''est forcément un bon jeu 👍', '2023-06-12'),
+('Gammandi', 6, 4.8, 'C''est un banger absolu, une histoire incroyable avec un système de combat particulier et une D.A magnifique.', '2021-01-06'),
+('Zerio', 6, 4.9, 'J''adore le systèle de dispense qui permet d''avoir le perso que tu souhaites en F2P même si tu es malchanceux. Meilleur Gacha.', '2022-02-12'),
+('BlazedSora', 3, 3.1, 'Le gameplay est intéressant pour certains perso mais reste tout de même limité. En plus, le jeu n''est pas très très beau.', '2021-05-02'),
+('Gammandi', 3, 4.9, 'Bien que le gameplay soit désagréable par moment, le jeu reste incroyable au niveau de l''histoire et du développement du personnage principal. Le héros évolue bien au fil du jeu et la tension est palpable par moment. Certains artwork sont magnifiques et embeillissent le design de plusieurs personnages.', '2021-07-11'),
+('Zerio', 3, 4.1, 'Quelques musiques sont bien, l''histoire très cool. Le gameplay est cool de manière général. Malheureusement le jeu est parfois beau mais pas toujours.', '2021-11-12'),
+('BlazedSora', 11, 4.3, 'League Of Legends c''est caca mais ce jeu est très bien. Validé par la street', '2022-08-02'),
+('Gammandi', 11, 5, 'En tant que main Sylas, je dis haut et fort que ce jeu est un banger absolu et résume bien l''histoire de mon champion préféré. Des mécaniques de gameplay incroyable et des combat de boss que j''ai adoré.', '2024-05-11'),
+('Zerio', 11, 4, 'Jsuis pas fan des graphismes mais le gameplay est sympa et l''histoire plutôt cool donc ça rattrape.', '2024-12-22'),
 ('Mia', 4, 4.0, 'Le gameplay est top mais parfois répétitif.', '2024-11-14'),
 ('Lucas', 5, 4.5, 'Cyberpunk 2077 reste l''un des meilleurs jeux d''action.', '2024-11-17'),
-('Amelia', 6, 4.2, 'Histoire excellente, mais la fin était décevante.', '2024-11-18'),
-('Noah', 7, 4.8, 'Trop fun, un véritable jeu de tir à la Borderlands!', '2024-11-19'),
+('Amelia', 6, 4.5, 'Histoire excellente, mais la fin était décevante.', '2024-11-18'),
+('Noah', 7, 4.5, 'Trop fun, un véritable jeu de tir à la Borderlands!', '2024-11-19'),
 ('Ava', 8, 5.0, 'Le meilleur jeu multijoueur que j''ai joué.', '2024-11-21'),
 ('James', 9, 3.5, 'Je l''ai trouvé un peu facile mais très mignon.', '2024-11-23'),
-('Isabella', 10, 4.9, 'Un jeu vraiment bien conçu et riche en contenu.', '2024-11-25');
+('Isabella', 10, 5, 'Un jeu vraiment bien conçu et riche en contenu.', '2024-11-25'),
+('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2024-11-25'),
+('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25');
 
 -- Partages de jeux entre joueurs
 INSERT INTO partage (pseudo1, pseudo2, id_jeu, date_partage) VALUES
-('Oliver', 'Sophia', 1, '2024-11-03'),
-('Liam', 'Mia', 3, '2024-11-07'),
+('BlazedSora', 'Gammandi', 1, '2024-11-03'),
+('Zerio', 'Mia', 3, '2024-11-07'),
 ('Lucas', 'Amelia', 5, '2024-11-12'),
 ('Noah', 'Ava', 7, '2024-11-16'),
 ('James', 'Isabella', 9, '2024-11-22');
 
 -- Déblocages supplémentaires de succès
 INSERT INTO debloquer (pseudo, id_jeu, code, date_obtention) VALUES
-('Oliver', 1, 'S011', '2024-11-04'),
-('Sophia', 2, 'S012', '2024-11-07'),
-('Liam', 3, 'S013', '2024-11-10'),
+('BlazedSora', 1, 'S011', '2024-11-04'),
+('Gammandi', 2, 'S012', '2024-11-07'),
+('Zerio', 3, 'S013', '2024-11-10'),
 ('Mia', 4, 'S014', '2024-11-13'),
 ('Lucas', 5, 'S015', '2024-11-16'),
 ('Amelia', 6, 'S016', '2024-11-18'),
 ('Noah', 7, 'S017', '2024-11-20'),
 ('Ava', 8, 'S018', '2024-11-22'),
 ('James', 9, 'S019', '2024-11-24'),
-('Isabella', 10, 'S020', '2024-11-27');
+('Isabella', 10, 'S020', '2024-11-27'),
+('david', 2, 'S012', '2024-11-24'),
+('david', 2, 'S013', '2024-11-24'),
+('david', 10, 'S022', '2024-11-24');
 

@@ -1,13 +1,14 @@
 import db
 from flask import Flask, render_template, request, redirect, url_for, session
 from passlib.context import CryptContext
-import random
-
+import decimal
 app = Flask(__name__)
 
 ## Page de connexion
 @app.route("/connexion/connexion")
 def connexion():
+    if 'user_nickname' in session:
+        return redirect(url_for('accueil'))  
     error_condition = False
     return render_template("/connexion/connexion.html", error = error_condition)
 
@@ -29,11 +30,14 @@ def login():
             # On vérifie si le mdp correspond aux mdp hashés de l'utilisateur
             password_ctx = CryptContext(schemes=['bcrypt'])
             if password_ctx.verify(mdp, res.mdp): # Alors l'utilisateur s'est connecté avec succès
-                cur.execute('SELECT solde FROM joueur WHERE pseudo = %s', (session['user_nickname'],))
+                # On récupère dans une session, son solde, son age et son pseudo
+                cur.execute('SELECT solde FROM joueur WHERE pseudo = %s', (pseudo,))
                 for res in cur:
                     session['solde'] = res.solde
-                # On récupère le solde du joueur, qu'on va afficher tout le long du site
-                session['user_nickname'] = pseudo # On enregistre la session, pour éviter qu'il se reconnecte à chaque fois
+                cur.execute('SELECT EXTRACT(YEAR FROM age(date_naissance)) AS age FROM joueur WHERE pseudo = %s;', (pseudo,))
+                for res in cur:
+                    session['age'] = res.age
+                session['user_nickname'] = pseudo 
                 return redirect(url_for("accueil"))
         return render_template ("/connexion/connexion.html", error = True, error_msg = "Nom d'utilisateur ou mot de passe incorrect !") ## Nom d'utilisateur incorrect
 
@@ -252,41 +256,133 @@ def supp_filtre_recherche():
 
 @app.route("/game_click/<string:type>", methods=['GET'])
 def game_click(type):
+    """
+    Fonction qui s'active lorsqu'on clique sur un jeu, on utilise la méthode GET
+    pour conserver les informations sur l'url de la page 
+
+    Args:
+        type (_type_): variable de type str, qui est égale au nom du jeu
+    """
     ## type = type.replace("%2F", "/")
-    type = type.replace("%20", " ") ## Le caractère %20 est la touche espace convertit, on remplace donc le caractère %20 par des ' '
+    type = type.replace("%20", " ") ## Le caractère %20 est la touche espace convertit dans l'url, on remplace donc le caractère %20 par des ' '
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    ## On sélectionne toutes les informations en lien avec le JEU pour qu'on puisse les afficher sur le site 
+    ## On sélectionne toutes les informations en lien avec le JEU clické pour qu'on puisse les afficher sur le site 
     with db.connect() as conn:
         cur = conn.cursor()
-        ## On récupère le titre, prix, date de sortie, url de l'img, la moyenne de ses notes
+        ## on récupère l'ID du jeu
+        cur.execute('SELECT id_jeu FROM jeu WHERE titre = %s', (type,) )
+        for res in cur:
+            id_jeu = res.id_jeu
+        ## On récupère le titre, prix, date de sortie, age_min, synopsis, editeur, dev, url de l'img, la moyenne de ses notes
         cur.execute('SELECT titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img HAVING titre = %s;', (type,))
-        lst_jeu = cur.fetchone()
-        cur.execute('SELECT * FROM achat NATURAL JOIN jeu WHERE titre = %s;', (lst_jeu.titre,))
-        lst_avis = cur.fetchall()
-        cur.execute('SELECT nom_genre FROM jeu NATURAL JOIN classer NATURAL JOIN genre WHERE titre = %s', (lst_jeu.titre,))
+        jeu = cur.fetchone()
+        ## On récupère tout les genres associés à ce jeu
+        cur.execute('SELECT nom_genre FROM jeu NATURAL JOIN classer NATURAL JOIN genre WHERE titre = %s', (jeu.titre,))
         lst_genre = cur.fetchall()
-    return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  lst_jeu = lst_jeu, lst_avis = lst_avis, lst_genre = lst_genre)
+        ## On récupère tout les commentaires/avis de ce jeu
+        cur.execute('SELECT pseudo, note, commentaire, date_achat FROM achat WHERE id_jeu = %s AND commentaire IS NOT NULL', (id_jeu,))
+        lst_commentaire = cur.fetchall()
+        ## On récupère le solde restant du joueur s'il décide d'acheter le jeu
+        solde_restant = decimal.Decimal(session['solde']) - jeu.prix
+        ## On récupère la liste des succès que le joueur a débloqué sur ce jeu
+        cur.execute('SELECT intitule, condition FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, session['user_nickname'],))
+        lst_succes_debloque = cur.fetchall()
+        ## On récupère la liste des succès que le joueur n'a pas débloqué
+        cur.execute('SELECT intitule, condition FROM succes WHERE id_jeu = %s EXCEPT SELECT intitule, condition FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, id_jeu, session['user_nickname'],))
+        lst_succes_bloque = cur.fetchall()
+        ## On vérifie si l'utilisateur a acheté le jeu
+        cur.execute('SELECT pseudo, id_jeu, commentaire FROM achat WHERE pseudo = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
+        ## Si la requête ne trouve rien, alors l'utilisateur n'a pas acheté le jeu et on saute la boucle
+        for res in cur:
+            ## Si c'est le cas, alors on vérifie s'il a mit un commentaire
+            if res.commentaire != None:   
+                ## Si ce n'est pas le cas, alors on lui return la template pour qu'il puisse mettre un commentaire
+                return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, no_commentaire = False, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+            ## Sinon on return la tamplate normal
+            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, no_commentaire = True, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+        ## On vérifie que l'utilisateur peut acheter le jeu
+        if solde_restant < 0:  ## Si ce n'est pas le cas, on le prévient
+            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, no_money = True, solde_restant = solde_restant, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+        ## On vérifie aussi qu'il a l'âge pour jouer, si ce n'est pas le cas, on le prévient
+        elif int(session['age']) < jeu.age_min:
+            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, no_age = True, solde_restant = solde_restant, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+    ## Si on arrive ici, alors le joueur peut acheter le jeu
+    return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'] ,  jeu = jeu, lst_genre = lst_genre, solde_restant = solde_restant, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
 
-@app.route("/game_click/buy_game/<string:type>", methods=['GET'])
-def buy_game(type):
-    print(type)
-    return type
+@app.route("/buy_game", methods=['POST'])
+def buy_game():
+    """
+    Fonction qui s'active lorsqu'on appuie sur le boutton
+    pour acheter un jeu, on utilise la methode POST pour
+    éviter qu'on puisse acheter un jeu en passant par une URL.
+    """
+    ## On récupère le nom du jeu
+    name = request.form.get("nom_jeu")
+    ## On a convertit le nom du jeu en format URL car request.form.get ne peut pas récupérer une suite de mot
+    ## Le format URL convertit les " " en "%20", donc en enlève le format URL
+    name = name.replace("%20", " ")
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On récupère l'ID et le prix du jeu qu'on souhaite acheter 
+        cur.execute('SELECT id_jeu, prix FROM jeu WHERE titre = %s;', (name,) )
+        for res in cur:
+            id_jeu, prix_jeu = res.id_jeu, res.prix
+        ## SEULEMENT dans le cas où on veut acheter alors qu'a déjà le jeu (Si on fait un retour en arrière après avoir acheté le jeu)
+        cur.execute('SELECT id_jeu, pseudo FROM achat WHERE id_jeu = %s AND pseudo = %s', (id_jeu, session['user_nickname']))
+        for res in cur:
+            return redirect(url_for('game_click', type=name))
+        ## On insère dans la table "achat", l'achat qu'on vient de faire.
+        ## ATTETION !! On n'insère pas de commentaire, ni de note dans la table "achat"
+        cur.execute('INSERT INTO achat (pseudo, id_jeu, date_achat) VALUES (%s, %s, DATE(NOW()));', (session['user_nickname'], id_jeu, ))
+        ## On actualise le solde du joueur dans la session et la table
+        session['solde'] = decimal.Decimal(session['solde']) - prix_jeu
+        cur.execute('UPDATE joueur SET solde = %s WHERE pseudo = %s;', (session['solde'], session['user_nickname'], ))
+    name = name.replace(" ", "%20")
+    return redirect(url_for('game_click', type=name))
 
+@app.route("/send_commentaire", methods=['POST'])
+def send_commentaire():
+    '''
+    Fonction qui permet de mettre un commentaire sur un jeu
+    Cette fonction est appelé seulement si l'utilisateur a déjà le jeu 
+    
+    ATTENTION !! On appelle aussi cette fonction pour mettre à jour le commentaire et la note
+    la fonction pour modifier un commentaire étant la MEME, c'est inutile de créer une fonction "modif_commentaire"
+    qui est la même que celle-là.
+    '''
+    ## On récupère le nom du jeu
+    name = request.form.get("nom_jeu")
+    name = name.replace("%20", " ")
+    ## On récupère le commentaire et la note
+    commentaire = request.form.get("commentaire")
+    rate = request.form.get("note_jeu")
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On récupère l'ID du jeu
+        cur.execute('SELECT id_jeu FROM jeu WHERE titre = %s;', (name,) )
+        for res in cur:
+            id_jeu = res.id_jeu
+        ## On update la table achat qui contient la facture du jeu de l'utilisateur, et on ajoute son acommentaire ainsi que sa note 
+        cur.execute('UPDATE achat SET commentaire = %s, note = %s WHERE pseudo = %s AND id_jeu = %s;', (commentaire, rate, session['user_nickname'], id_jeu, ))
+    name = name.replace(" ", "%20")
+    return redirect(url_for('game_click', type=name))
 ## FIN des requêtes pour les jeux
 
-
+############################################################################################################
 
 ## Début des requêtes pour le profil
 @app.route("/profil")
 def profil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    return render_template("/profil.html", user = session['user_nickname'])
+    return render_template("/accueil.html", user = session['user_nickname'], solde = session['solde'])
 
-@app.route("/disconnect")
+@app.route("/disconnect", methods = ['POST'])
 def disconnect():
     session.pop('user_nickname', None)
+    session.pop('solde', None)
+    session.pop('age', None)
     return redirect(url_for('connexion'))
 
 if __name__ == '__main__':
