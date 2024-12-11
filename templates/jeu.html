@@ -166,7 +166,7 @@
                     <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
                     <div class="commentaire">
                         <div class="head_commentaire" >
-                            <img class="avatar_user" src="../static/img/chauve.jpeg" style="height:5vw;">
+                            <img class="avatar_user" src={{elem.url_avatar}} style="height:5vw;">
                             <div>
                                 <p>{{elem.pseudo}}</p>
                                 <div style="display:flex; align-items:center; height:2vh">
@@ -187,7 +187,7 @@
                 {%else%}
                     <div class="commentaire">
                         <div class="head_commentaire" >
-                            <img class="avatar_user" src="../static/img/chauve.jpeg" style="height:5vw;">
+                            <img class="avatar_user" src={{elem.url_avatar}} style="height:5vw;">
                             <div>
                                 <p>{{elem.pseudo}}</p>
                                 <p style="color:lightblue;"><img src="../static/img/star.png" style="height:2vh;">{{elem.note}}</p>
@@ -215,6 +215,8 @@
                     <div class="succes_intitule">
                         <p style="text-decoration:underline; font-weight:bold;" >{{elem.intitule}}</p>
                         <p>{{elem.condition}}</p>
+                        <p style="margin:1% 0 3% 0; text-decoration:underline; color:grey;" >Obtenue le :</p>
+                        <p style="margin:1% 0 3% 0; color:grey;" >{{elem.date_obtention}}</p>
                     </div>
                 </div>
                 {% endfor %}

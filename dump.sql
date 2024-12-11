@@ -26,6 +26,7 @@ CREATE TABLE joueur(
     nom varchar(30) NOT NULL,
     mail varchar(50) NOT NULL,
     date_naissance date NOT NULL,
+    url_avatar varchar(200) NOT NULL,
     solde numeric(4, 2) default 0 NOT NULL
 );
 
@@ -167,7 +168,8 @@ INSERT INTO entreprise (nom, pays) VALUES
 ('Digital_Sun', 'Espagne'),
 ('Riot_Forge', 'USA'),
 ('Activision', 'USA'),
-('Double_Stallion', 'Canada');
+('Double_Stallion', 'Canada'),
+('Roblox_Corporation', 'USA');
 
 -- Genres de jeux
 INSERT INTO genre (nom_genre) VALUES
@@ -179,31 +181,33 @@ INSERT INTO genre (nom_genre) VALUES
 ('Sandbox'),
 ('Musique'),
 ('Puzzle'),
-('Horreur'),
-('Indépendant'),
+('Horreur'), 
+('Indépendant'), --10
 ('Aventure'),
 ('Action'),
 ('RPG'),
 ('Multijoueur'),
-('Jeu de rôle');
+('Jeu de rôle'),
+('Bac à sable'),
+('MMO');
 
 -- Attention, les INSERTS sont pas oufs
 -- Joueurs
-INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance) VALUES
-('BlazedSora', 'oliver123', 'Oliver Grey', 'oliver@mail.com', '1992-11-01'),
-('Gammandi', 'Gammandi123', 'Sophia Black', 'sophia@mail.com', '1990-10-12'),
-('Zerio', 'liam123', 'Liam Turner', 'liam@mail.com', '1994-06-20'),
-('Shing', 'Shing123', 'Shing Lee', 'Shing@mail.com', '1988-08-09'),
-('LeCrapuleux', 'LeCrapuleux123', 'LeCrapuleux Hall', 'LeCrapuleux@mail.com', '1996-12-15'),
-('RolandLover19', 'RolandLover19123', 'RolandLover19 Scott', 'RolandLover19@mail.com', '1995-04-02'),
-('IsThatTheRedMist2', 'IsThatTheRedMist2123', 'IsThatTheRedMist2 White', 'IsThatTheRedMist2@mail.com', '1993-03-23'),
-('Gregor14', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15'),
-('Rocinante', 'Rocinante123', 'Rocinante Harris', 'Rocinante@mail.com', '1987-02-14'),
-('KebabIsGood24', 'KebabIsGood24123', 'KebabIsGood24 Carter', 'KebabIsGood24@mail.com', '1999-01-25');
+INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar) VALUES
+('BlazedSora', 'oliver123', 'Oliver Grey', 'oliver@mail.com', '1992-11-01','../static/img/avatar/Nagito_Komaeda_Report_Card_Profile.webp'),
+('Gammandi', 'Gammandi123', 'Sophia Black', 'sophia@mail.com', '1990-10-12', '../static/img/avatar/Akane_Owari_Report_Card_Profile.webp'),
+('Zerio', 'liam123', 'Liam Turner', 'liam@mail.com', '1994-06-20', '../static/img/avatar/Fuyuhiko_Kuzuryu_Report_Card_Profile.webp'),
+('Shing', 'Shing123', 'Shing Lee', 'Shing@mail.com', '1988-08-09', '../static/img/avatar/Hiyoko_Saionji_Report_Card_Profile.webp'),
+('LeCrapuleux', 'LeCrapuleux123', 'LeCrapuleux Hall', 'LeCrapuleux@mail.com', '1996-12-15', '../static/img/avatar/Mikan_Tsumiki_Report_Card_Profile.webp'),
+('RolandLover19', 'RolandLover19123', 'RolandLover19 Scott', 'RolandLover19@mail.com', '1995-04-02', '../static/img/avatar/Mahiru_Koizumi_Report_Card_Profile.webp'),
+('IsThatTheRedMist2', 'IsThatTheRedMist2123', 'IsThatTheRedMist2 White', 'IsThatTheRedMist2@mail.com', '1993-03-23', '../static/img/avatar/Teruteru_Hanamura_Report_Card_Profile.webp'),
+('Gregor14', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15', '../static/img/avatar/Kazuichi_Soda_Report_Card_Profile.webp'),
+('Rocinante', 'Rocinante123', 'Rocinante Harris', 'Rocinante@mail.com', '1987-02-14', '../static/img/avatar/Ultimate_Imposter_Report_Card_Profile.webp'),
+('KebabIsGood24', 'KebabIsGood24123', 'KebabIsGood24 Carter', 'KebabIsGood24@mail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp');
 
-INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, solde) VALUES
-('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', 50), --MDP : 123
-('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', 60); --MDP : 123
+INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar, solde) VALUES
+('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', '../static/img/avatar/Chiaki.jpg', 50), --MDP : 123
+('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', '../static/img/avatar/chauve.jpg', 60); --MDP : 123
 -- Jeux
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
 ('Lobotomy Corp', 22.99, '2018-04-18', 18, 
@@ -263,6 +267,10 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 ('Library of Ruina', 24.99, '2021-08-10', 18,
 'Roland, un gars à l''apparence plutôt banal se retrouve par accident dans la "Library" et sera forcé de travailler pour la directrice des lieux. Affrontez les invités avec une système de combat qui force la réfléxion. Transformez-les en livres pour agrandir la bibliothèque ou apprendres de nouvelles technniques. ',
 'Project_Moon', 'Project_Moon', '../static/img/game_cover/Library.webp'
+),
+('Roblox', 0, '2006-09-01', 3,
+'Profitez de la colossale diversité qu''offre Roblox avec ses milliers de jeux ! Des tonnes de jeux différents vous attendent avec une aventure qui varie énormément. Jouez avec vos amis ou faites-vous en ligne. ',
+'Roblox_Corporation', 'Roblox_Corporation', '../static/img/game_cover/Roblox.webp'
 );
 
 -- Classer les jeux dans des genres
@@ -293,7 +301,12 @@ INSERT INTO classer (id_jeu, id_genre) VALUES
 (12, 11), -- Sekiro est un jeu Action et Aventure
 (12, 12),
 (13, 11), -- Convergence est un jeu Action et Aventure
-(13, 12);
+(13, 12),
+(14, 10),
+(14, 13),
+(14, 2),
+(15, 16),
+(15, 17);
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S011', 'Angela.', 'Finir le jeu Loboymy Corp', 1),
@@ -346,8 +359,28 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S058', 'Seigneur d''Elden', 'Atteindre la fin "seigneur d''Elden"', 4),
 ('S059', 'Loyale Monture', 'Mourrez avec torrent, votre monture.', 4),
 ('S060', 'Ton pire ennemi?', 'Mourrez de chute lors d''un combat de boss', 4),
-('S061', 'A l''aide !', 'Gagnez un combat de boss grâce à un joueur invoqué', 4)
-;
+('S061', 'A l''aide !', 'Gagnez un combat de boss grâce à un joueur invoqué', 4),
+('S062', 'Découverte','Tester votre premier jeu !', 15),
+('S063', 'Pouah L''odeur', 'Essayez plus de 200 jeux différents', 15),
+('S064', 'Pay2Win', 'Achetez vos premiers Robux', 15),
+('S065', 'Trop d''amis', 'Ajoutez en amis 200 personnes différentes', 15),
+('S066', 'Opportunités d''affaires', 'Ébranlez des ennemis 50 fois', 12),
+('S067', 'Stylé', 'Obtenez 50 éléments cosmétiques', 12),
+('S068', 'Preuve de gratitude', 'Récuperez 10 faveurs', 12),
+('S069', 'Inauguration', 'Achetez quelque chose chez Baku le silenceux en nouvelle partie + THE BLACK SILENCE??????', 12),
+('S070', 'Oupupupupupu', 'Trouve tout les Monokumas cachés', 10),
+('S071', 'Homme de culture', 'Récupère les sous-vêtement de tout les personnages', 10),
+('S072', 'Gundham a de la concurrence !', 'Prenez soin de votre Tamagotchi', 10),
+('S073', 'Wallah c''est toi', 'Tombez à 0 PV pour la première fois', 10),
+('S074', 'Archisage', 'Avoir un sort de chaque type de concentration dans votre deck', 8),
+('S075', 'Puissance écrasante', 'Récupérer un sort de calamité', 8),
+('S076', 'À deux pas d''Eden', 'Atteindre le portail', 8),
+('S077', 'Et ils vécurent heureux...', 'Épargnez Terraferox', 8),
+('S078', 'Eleveur pro', 'Complétez le donjons des bouftous pour la 10e fois', 5),
+('S079', 'Au top du top !', 'Soyez niveau max avec des équipement et des sorts aussi au niveau max sur au moins un personnage.', 5),
+('S080', 'On n''a jamais assez de Kamas.', 'Obtenez votre premier million de Kamas', 5),
+('S081', 'Sois le feu et la terre !', 'Rencontrez tout les membres de la confrérie du Tofu.', 5),
+('S082', 'Damn le Sport !', 'Finissez tous les free time avec Sakura', 2);
 
 -- Reapprovisionner (argent ajouté au porte-monnaie)
 INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
@@ -384,9 +417,9 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('LeCrapuleux', 12, 3.6, 'Le jeu est trop dur pour moi donc j''ai beaucoup de mal mais ce n''est pas un mauvais jeu pour autant.  Je suis sûr qu''il va plaire à d''autres personnes', '2024-02-17'),
 ('RolandLover19', 12, 4.2, 'Je suis un grand fan du japon féodal, jouer à ce jeu qui respecte bien les mentalités de l''époque est un vrai plaisir. De plus, les décor sont magnifiques', '2024-02-18'),
 
-('IsThatTheRedMist2', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
+('Rocinante', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
 ('Gregor14', 4, 5.0, 'La difficulté est au rendez-vous (sauf si vous jouez mage) avec des tas de builds différents (sauf mage) et le jeu est fun et demande un peu de réflexion sur certains boss (sauf pour les mages).', '2023-08-21'),
-('Rocinante', 4, 3.5, 'Le jeu offre une diversité tel que peu de joueurs auront une aventure très similaire. Bien que l''histoire de base reste la même pour tout les joueurs à quelques exception près. Vous décidez de où vous allez et de ce que VOUS jouez. Tracez votre propre route et profitez.', '2023-07-23'),
+('IsThatTheRedMist2', 4, 3.5, 'Le jeu offre une diversité tel que peu de joueurs auront une aventure très similaire. Bien que l''histoire de base reste la même pour tout les joueurs à quelques exception près. Vous décidez de où vous allez et de ce que VOUS jouez. Tracez votre propre route et profitez.', '2023-07-23'),
 
 ('KebabIsGood24', 13, 4.6, 'Le jeu est sympa visuellement, les combats sont cool avec des boss plus ou moins difficiles. En bref, c''est un bon jeu !', '2022-09-25'),
 ('LeCrapuleux', 13, 4.4, 'Les mécaniques de combats sont amusants à utiliser et l''histoire est assez prenante. Cependant le jeu est beaucoup trop court ! J''ai finis en mode difficile le jeu d''une traite et ça m''a pris moins d''une journée.', '2022-11-22'),
@@ -395,11 +428,34 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('BlazedSora', 14, 5.0,'Mon jeu préféré. L''histoire est incroyable, les personnages sont attachant et stylé, le système de combat est incroyable et détaillé. Le jeu devient progressivement très difficile ce qui force la réfléxion à certains moments. J''adore.','2021-09-10'),
 ('Gammandi', 14, 4.9,'Un banger trop peu connu. L''écriture des personnages, les musiques, l''histoire, tout est incroyable. Ceux qui disent que ce jeu est guez n''y ont jamais joué où sont éclatax au jeu. ','2022-10-10'),
 ('IsThatTheRedMist2', 14, 4.5,'A l''aide, j''ai finit le jeu depuis plusieurs mois et je n''arrive pas à me sortir "That''s that and this is this" de ma tête.  J''en suis au point où j''ai rétorqué ça à ma femme lorsqu''elle est partie avec les gosses... Cependant le jeu est bien','2023-11-13'),
+
 ('david', 14, 4.7,'Les musiques sont tellement banger que maintenant j''ai besoin d''en écouter une quotidiennement.','2022-08-07'),
 ('Gregor14', 14, 4.8,'Je n''arrive plus à progresser dans le jeu tant il est difficile. Ce n''est pas pour autant déplaisant puisque le système de combat fait beaucoup réfléchir et j''aime ça.','2023-12-09'),
 
+('Rocinante', 15, 5.0, 'C tro bien jeu sui joueure pro adopte me j''ai fini le jeux o moin cinque foi', '2016-07-13'),
+('KebabIsGood24', 15, 0.5, 'Le synopsis le plus faux possible, y a que des jeux qui se ressemble et quand tu rejoins un jeu t''as 40 000 onglet pour payer in-game. C''est du caca en béton', '2019-09-15'),
+('LeCrapuleux', 15, 0.1, 'Nan sérieux Roblox HAHAHAHAHAHA', '2020-11-12'),
+('RolandLover19', 15, 3.5, 'Y a que des copie de jeux et le reste est P2W, mis à part quelques jeux qui sont banger et qui ne mérite pas d''être sur Roblox le reste c''est nul.', '2023-01-10'),
+--
+('Shing', 7, 4.7, 'J''ai bien aimé le mode histoire qui est assez complet et permet d''admirer de beau paysages. Je recommande fortement aux fans du japon comme moi. Malheureusement, il y a quelques défauts d''optimisation mais rien de très grave.', '2023-02-10'),
+('LeCrapuleux', 7, 5.0, 'Ayant pratiqué le kendo pendant plusieurs années, j''ai beaucoup aimé l''authenticité des technniques au sabre. Et de manière générale, le jeu reste très fidèles au Japon. On remarque comment les devs se sont bien renseignés pour rendre le jeu le plus réaliste possible. Je valide fort. ', '2021-03-15'),
+('RolandLover19', 7, 4.5, 'J''ai acheté avant tout pour l''aspect multijoueur pour en profiter avec mon frère et on s''est bien amusés, quelques soucis de connection et optimisation mais c''est assez léger donc ça va.', '2023-02-18'),
 
-('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2024-11-25'),
+('Gammandi', 10, 4.6, 'J''ai adoré, il y a un peu trop de fan-service mais sinon l''histoire est incroyable et les musiques banger. J''ai aussi bien aimé comment fonctionne le jeu dans sa globalité.', '2017-10-10'),
+('Zerio', 10, 4.2, 'J''ai bien aimé le fan-service mais les phases de gameplay sont parfois un peu trop difficiles. J''ai pas l''habitude de ce genre de jeu.', '2018-09-11'),
+('BlazedSora', 10, 5.0, 'Le premier était déjà un pure banger mais là l''histoire est presque aboutis et c''est juste magnifique. Les musiques sont toujours un plaisir à écouter. Sans doute ma série de jeu préférée .', '2020-07-13'),
+
+('KebabIsGood24', 8, 4.8, 'Un jeu de rythme vraiment sympa et qui manque pas de difficulté ! les musiques sont très cool et ambiance vraiment la partie.', '2023-09-25'),
+('LeCrapuleux', 8, 4.4, 'J''ai beaucoup aimé les musiques (logique c''est un jeu de rythme) mais le gameplay est assez particulier et c''est plutôt agréable. Dommage qu''il n''y a que du combat en ligne et pas de coop sans être en local.', '2021-09-22'),
+('RolandLover19', 8, 4.7, 'Le jeu se distingue pas mal au gameplay avec des OST au rythme effrénés et enjolivant. L''histoire aussi est sympa bien que, pour moi, ce n''est pas ce qui rends le jeu aussi bien.', '2023-10-15'),
+
+('KebabIsGood24', 5, 4.7, 'Je n''ai pas vraiment aimé dofus donc je me suis mis à essayez Waven. Et je ne suis pas déçu ! Avec des amis c''est l''éclate la plus totale. les stratégie et builds sont très divers ce qui offre plusieurs style de jeu différents. Je conseille fort si vous avez des amis prêt à vous rejoindre.', '2021-10-20'),
+('LeCrapuleux', 5, 3.8, 'Le jeu est assez dur seul mais avec des amis c''est bien plus simple et permet d''avancer dans le jeu en groupe. Le jeu est un peu trop simple et il n''y a pas énormément de truc à faire mais ça reste cool.', '2022-09-10'),
+('RolandLover19', 5, 4.8, 'L''histoire est très divertissante et vous fera rire à coups sûr. L''humour d''Ankama c''est toujours incroyable et dans Waven, ça ne fait pas exception. Le jeu est aussi assez cool sur le gameplay et le multijouer est très amusant. ', '2021-09-15'),
+
+('Zerio', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
+('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
+
 ('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25');
 
 -- Partages de jeux entre joueurs

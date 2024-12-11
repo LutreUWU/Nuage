@@ -401,6 +401,10 @@ h2{
 .avatar_user{
     border: 3px solid rgb(32, 97, 154);
     border-radius: 5px;
+    width: 5vw;
+    height: 5vh;
+    object-fit: cover;
+    object-position: center;
 }
 
 .head_commentaire div{

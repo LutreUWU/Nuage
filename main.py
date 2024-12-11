@@ -46,10 +46,16 @@ def cree_compte():
     error_condition = False
     return render_template("/connexion/cree_compte.html", error = error_condition)
 
-import re
-## On suppose que l'adresse mail est bien tapé, et qu'on peut avoir comme nom d'utilisateur '       '
+import re ## Pour le mail
+import os ## Pour les avatars
+import random ## Pour choisir un avatar aléatoire lors de la création du compte
 @app.route("/connexion/new_compte", methods=['POST'])
 def new_compte():
+    ## Pour l'avatar du joueur, on récupère les images et on lui associe un avatar au hasard
+    images = []
+    for fichier in os.listdir('static/img/avatar/'):
+        images.append(fichier)
+    avatar = random.choice(images)
     ## On récupère toutes les informations sous forme de liste
     value_list = request.form.getlist("value") # value_list = [Pseudo, MDP, prénom et nom, mail, date de naissance]
     if any(elem == '' for elem in value_list): ## Si un élément de la liste est égale à '', alors on n'a pas remplit une case
@@ -67,7 +73,7 @@ def new_compte():
         ## On hash son MDP, puis ensuite on ajoute les données dans la BDD 
         password_ctx = CryptContext(schemes=['bcrypt']) 
         hash_pw = password_ctx.hash(value_list[1])
-        cur.execute("INSERT INTO joueur VALUES (%s, %s, %s, %s, %s)", (value_list[0], hash_pw, value_list[2], value_list[3], value_list[4],))
+        cur.execute("INSERT INTO joueur VALUES (%s, %s, %s, %s, %s, %s)", (value_list[0], hash_pw, value_list[2], value_list[3], value_list[4], avatar,))
     return render_template("/connexion/connexion.html", create_compte = True, msg = "Le compte a été crée avec succès !")
 
 @app.route("/connexion/back_to_connexion", methods=['POST'])
@@ -286,12 +292,12 @@ def game_click(type):
         cur.execute('SELECT nom_genre FROM jeu NATURAL JOIN classer NATURAL JOIN genre WHERE titre = %s', (jeu.titre,))
         lst_genre = cur.fetchall()
         ## On récupère tout les commentaires/avis de ce jeu
-        cur.execute('SELECT pseudo, note, commentaire, date_achat FROM achat WHERE id_jeu = %s AND commentaire IS NOT NULL', (id_jeu,))
+        cur.execute('SELECT pseudo, note, commentaire, url_avatar, date_achat FROM achat NATURAL JOIN joueur WHERE id_jeu = %s AND commentaire IS NOT NULL', (id_jeu,))
         lst_commentaire = cur.fetchall()
         ## On récupère le solde restant du joueur s'il décide d'acheter le jeu
         solde_restant = decimal.Decimal(session['solde']) - jeu.prix
         ## On récupère la liste des succès que le joueur a débloqué sur ce jeu
-        cur.execute('SELECT intitule, condition FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, session['user_nickname'],))
+        cur.execute('SELECT intitule, condition, date_obtention FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, session['user_nickname'],))
         lst_succes_debloque = cur.fetchall()
         ## On récupère la liste des succès que le joueur n'a pas débloqué
         cur.execute('SELECT intitule, condition FROM succes WHERE id_jeu = %s EXCEPT SELECT intitule, condition FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, id_jeu, session['user_nickname'],))
