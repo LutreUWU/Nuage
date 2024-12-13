@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS  partage CASCADE;
 DROP TABLE IF EXISTS  debloquer CASCADE;
 
 CREATE TABLE entreprise(
-    nom varchar(20) PRIMARY KEY,
+    nom varchar(30) PRIMARY KEY,
     pays varchar(20)
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE joueur(
 CREATE TABLE ami(
     pseudo1 varchar(20),
     pseudo2 varchar(20),
-    statut int, -- 0 = attente ; 1 = accepté 
+    statut int default 0, -- 0 = attente ; 1 = accepté 
     PRIMARY KEY (pseudo1, pseudo2),
     FOREIGN KEY (pseudo1) REFERENCES joueur(pseudo),
     FOREIGN KEY (pseudo2) REFERENCES joueur(pseudo)
@@ -47,8 +47,8 @@ CREATE TABLE jeu(
     date_sortie date NOT NULL,
     age_min numeric(2, 0) NOT NULL,
     synopsis text, 
-    nom_edite varchar(20), 
-    nom_dev varchar(20),
+    nom_edite varchar(30), 
+    nom_dev varchar(30),
     url_img varchar(200) NOT NULL,
     FOREIGN KEY (nom_edite) REFERENCES entreprise(nom),
     FOREIGN KEY (nom_dev) REFERENCES entreprise(nom)
@@ -137,7 +137,7 @@ CREATE VIEW rapport AS
         GROUP BY id_jeu, date_partage
     ) AS partage_jeu NATURAL LEFT JOIN
     (
-       SELECT id_jeu, date_obtention AS jour, count(*) AS nb_succe
+       SELECT id_jeu, date_obtention AS jour, count(id_jeu) AS nb_succe
        FROM debloquer
        GROUP BY id_jeu, date_obtention
     ) AS debloque_jeu 
@@ -169,7 +169,10 @@ INSERT INTO entreprise (nom, pays) VALUES
 ('Riot_Forge', 'USA'),
 ('Activision', 'USA'),
 ('Double_Stallion', 'Canada'),
-('Roblox_Corporation', 'USA');
+('Roblox_Corporation', 'USA'),
+('Motion_Twin','France'),
+('Zeekerss', '??'),
+('Arrowhead_Game_Studios', 'Suède');
 
 -- Genres de jeux
 INSERT INTO genre (nom_genre) VALUES
@@ -203,7 +206,10 @@ INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar) VALUES
 ('IsThatTheRedMist2', 'IsThatTheRedMist2123', 'IsThatTheRedMist2 White', 'IsThatTheRedMist2@mail.com', '1993-03-23', '../static/img/avatar/Teruteru_Hanamura_Report_Card_Profile.webp'),
 ('Gregor14', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15', '../static/img/avatar/Kazuichi_Soda_Report_Card_Profile.webp'),
 ('Rocinante', 'Rocinante123', 'Rocinante Harris', 'Rocinante@mail.com', '1987-02-14', '../static/img/avatar/Ultimate_Imposter_Report_Card_Profile.webp'),
-('KebabIsGood24', 'KebabIsGood24123', 'KebabIsGood24 Carter', 'KebabIsGood24@mail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp');
+('KebabIsGood24', 'KebabIsGood24123', 'KebabIsGood24 Carter', 'KebabIsGood24@mail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp'),
+('Lanius', '123', 'Lanus', 'Lanus24@mail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp')
+;
+
 
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar, solde) VALUES
 ('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', '../static/img/avatar/Chiaki.jpg', 50), --MDP : 123
@@ -271,7 +277,20 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 ('Roblox', 0, '2006-09-01', 3,
 'Profitez de la colossale diversité qu''offre Roblox avec ses milliers de jeux ! Des tonnes de jeux différents vous attendent avec une aventure qui varie énormément. Jouez avec vos amis ou faites-vous en ligne. ',
 'Roblox_Corporation', 'Roblox_Corporation', '../static/img/game_cover/Roblox.webp'
-);
+),
+('Dead Cells',24.99, '2018-06-09', 16,
+'Dead Cells est un jeu d''action / plateforme rogue-lite intégrant des éléments de Metroidvania. Explorez un château tentaculaire en perpétuelle évolution… Pas de points de contrôle. Tuer, mourir, apprendre, recommencer.',
+'Motion_Twin', 'Motion_Twin', '../static/img/game_cover/DeadCells.webp'
+),
+('Lethal Company', 9.75, '2023-09-23', 16,
+'Vous travaillez pour la Compagnie, votre job est de récolter de la feraille venant de planètes abandonnées afin de remplir le quota de la Compagnie ! Rien de plus facile non ?',
+'Zeekerss','Zeekerss','../static/img/game_cover/Lethal_Company.webp'
+),
+('Helldivers 2', 39.99, '2024-02-08', 16,
+'"Vive la démocratie" sera votre mantra durant votre quête de protection de la super-terre. Tuez ces vilains aliens et automates qui veulent nuire à votre démocratie ! Battez vous pour la liberté, pour la démocratie, pour Helldivers.',
+'Arrowhead_Game_Studios','PlayStation_Studio','../static/img/game_cover/helldivers2.webp'
+)
+;
 
 -- Classer les jeux dans des genres
 INSERT INTO classer (id_jeu, id_genre) VALUES
@@ -302,11 +321,17 @@ INSERT INTO classer (id_jeu, id_genre) VALUES
 (12, 12),
 (13, 11), -- Convergence est un jeu Action et Aventure
 (13, 12),
-(14, 10),
+(14, 10), -- Library of Ruina est un jeu Indépendant, RPG, Stratégie
 (14, 13),
 (14, 2),
-(15, 16),
-(15, 17);
+(15, 16), -- Roblox est un jeu bac à sable et MMO 
+(15, 17),
+(16, 11), -- Dead Cells est un Action, Aventure, Indépendant
+(16, 12),
+(16, 10),
+(17, 9), -- Lethal est un jeu d'horreur et multi
+(17, 14),
+(18, 11); -- Helldivers 2 est un jeu d'action
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S011', 'Angela.', 'Finir le jeu Loboymy Corp', 1),
@@ -380,7 +405,16 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S079', 'Au top du top !', 'Soyez niveau max avec des équipement et des sorts aussi au niveau max sur au moins un personnage.', 5),
 ('S080', 'On n''a jamais assez de Kamas.', 'Obtenez votre premier million de Kamas', 5),
 ('S081', 'Sois le feu et la terre !', 'Rencontrez tout les membres de la confrérie du Tofu.', 5),
-('S082', 'Damn le Sport !', 'Finissez tous les free time avec Sakura', 2);
+('S082', 'Damn le Sport !', 'Finissez tous les free time avec Sakura', 2),
+('S083', 'L''air frais a du bon','Vous avez atteint la Promenade des condamnés pour la première fois !', 16),
+('S084', 'Fini les chatouillis !','Vous avez absorbé la Rune des vignes !', 16),
+('S085', 'Une vue magnifique','Vous avez atteint les Toits de la prison pour la première fois !', 16),
+('S086', 'Pas besoin de plombier italien','Vous avez atteint les Égoûts toxiques pour la première fois !', 16),
+('S087', 'Patriote','Jouez au moins 50 missions', 18 ),
+('S088', 'Promotion synergétique', 'Aidez un allié à recharger un arme', 18 ),
+('S089', 'Trop cool pour regard- AAAAH !', 'Volez sur au moins 25 mètres suite à une explosion', 18 ),
+('S090', 'Ce qui ne vous tue pas...', 'Endurez une blessure à chaque membre', 18)
+;
 
 -- Reapprovisionner (argent ajouté au porte-monnaie)
 INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
@@ -452,6 +486,20 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('KebabIsGood24', 5, 4.7, 'Je n''ai pas vraiment aimé dofus donc je me suis mis à essayez Waven. Et je ne suis pas déçu ! Avec des amis c''est l''éclate la plus totale. les stratégie et builds sont très divers ce qui offre plusieurs style de jeu différents. Je conseille fort si vous avez des amis prêt à vous rejoindre.', '2021-10-20'),
 ('LeCrapuleux', 5, 3.8, 'Le jeu est assez dur seul mais avec des amis c''est bien plus simple et permet d''avancer dans le jeu en groupe. Le jeu est un peu trop simple et il n''y a pas énormément de truc à faire mais ça reste cool.', '2022-09-10'),
 ('RolandLover19', 5, 4.8, 'L''histoire est très divertissante et vous fera rire à coups sûr. L''humour d''Ankama c''est toujours incroyable et dans Waven, ça ne fait pas exception. Le jeu est aussi assez cool sur le gameplay et le multijouer est très amusant. ', '2021-09-15'),
+
+('Gammandi', 16, 5.0, 'Le jeu est trop cool, le concept est génial et j''aime bien la DA mais je n''ai jamais dépassé 1h sans mourrir ...', '2022-02-15'),
+('KebabIsGood24', 16, 5.0, 'Un vrai banger !', '2023-03-12'),
+
+
+('Lanius', 17, 5.0, 'J''ai battu mon pote à mort avec un panneau STOP avant de jeter son corps aux monstres, would play again', '2023-11-19'),
+('LeCrapuleux', 17, 0.0, 'Pourquoi c''est autorisé de tuer ses propres coéquipiers avec un panneau STOP?', '2024-01-10'),
+('Gammandi', 17, 4.8, 'C''est très cool, j''ai bien aimé enfermer mes amis avec des tourelles, sinon le gameplay est un peu répétitif', '2024-03-12'),
+('BlazedSora', 17, 4.7, 'Seul c''est guez mais avec des amis c''est banger, j''adore surtout voir leurs cadavres', '2024-04-15'),
+
+('BlazedSora', 18, 4.8, 'Devenvez un helldivers et rejoignez nous dans la lutte interspaciale pour la liberté ! Meilleure phrase d''accroche possible. Je valide fort.', '2024-03-10'),
+('Gammandi', 18, 5.0, 'J''ai rarement eu autant de fou rire avec mes amis sur un jeu. C''est hilarant comment le jeu fonctionne, genre tu te balades pour aller à l''objectif et hop tu vois ton pote voler au dessus pour finir dans un nids. Allez tester je recommande de fou.', '2024-03-20'),
+('RolandLover19', 18, 4.0, 'Le jeu est un peu répétitif mais ça ne se remarque pas si on joue avec des amis donc c''est tranquille. Vive la démocratie !', '2024-06-10'),
+
 
 ('Zerio', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
 ('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
