@@ -30,10 +30,11 @@ def login():
             # On vérifie si le mdp correspond aux mdp hashés de l'utilisateur
             password_ctx = CryptContext(schemes=['bcrypt'])
             if password_ctx.verify(mdp, res.mdp): # Alors l'utilisateur s'est connecté avec succès
-                # On récupère dans une session, son solde, son age et son pseudo
-                cur.execute('SELECT solde FROM joueur WHERE pseudo = %s', (pseudo,))
+                # On récupère dans une session, son solde, son avatar, son age et son pseudo
+                cur.execute('SELECT solde, url_avatar FROM joueur WHERE pseudo = %s', (pseudo,))
                 for res in cur:
                     session['solde'] = res.solde
+                    session['avatar'] = res.url_avatar
                 cur.execute('SELECT EXTRACT(YEAR FROM age(date_naissance)) AS age FROM joueur WHERE pseudo = %s;', (pseudo,))
                 for res in cur:
                     session['age'] = res.age
@@ -85,7 +86,7 @@ def back_to_connexion():
 def accueil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))       
-    return render_template("/accueil.html", user = session['user_nickname'], solde = session['solde'])
+    return render_template("/accueil.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'])
 
 ############################################################################################################
 ## Début des requêtes pour la boutique
@@ -106,7 +107,8 @@ def boutique():
         ## On récupère le titre, prix, date de sortie, url de l'img, la moyenne de ses notes
         cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;')
         lst_jeu = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
+    return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'],
+                           lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
 
 @app.route("/add_filtre", methods = ['GET'])
 def add_filtre():
@@ -133,7 +135,8 @@ def add_filtre():
         type_default = lst_type[type_trie]
         del lst_type[type_trie] ## On supprime le filtre qu'on a appliqué pour éviter qu'on le selectionne
         lst_jeu = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], lst_jeu = lst_jeu, lst_type = lst_type.values(), default = type_default, filtre = True)
+    return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
+                           lst_jeu = lst_jeu, lst_type = lst_type.values(), default = type_default, filtre = True)
 
 @app.route("/supp_filtre")
 def supp_filtre():
@@ -153,7 +156,8 @@ def recherche():
         lst_gen = cur.fetchall()
         cur.execute('SELECT nom FROM entreprise;')
         lst_entreprise = cur.fetchall()
-    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = [], lst_genre = lst_gen, lst_editeur = lst_entreprise, lst_developpeur = lst_entreprise, default = ['', False, False, False])
+    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'],
+                           lst_jeu = [], lst_genre = lst_gen, lst_editeur = lst_entreprise, lst_developpeur = lst_entreprise, default = ['', False, False, False])
 
 ## Pour trier les jeux en fonctions de la barre de recherche ET de ses filtres 
 @app.route("/search_game", methods=['GET'])
@@ -254,8 +258,12 @@ def search_game():
             lst_dev.append(res)
         ## Si on a trouvé aucun jeu correspondant aux filtres, on affiche à l'utilisateur qu'on a trouvé aucun jeu
         if not lst_jeu:
-                return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
-    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+                return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
+                                       lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, 
+                                       lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'],  avatar = session['avatar'],
+                           lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, 
+                           lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
     
 @app.route("/supp_filtre_recherche")
 def supp_filtre_recherche():
@@ -304,24 +312,35 @@ def game_click(type):
         lst_succes_bloque = cur.fetchall()
         ## On vérifie si l'utilisateur a acheté le jeu
         cur.execute('SELECT pseudo, id_jeu, commentaire FROM achat WHERE pseudo = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
-
-        cur.execute("SELECT ")
         ## Si la requête ne trouve rien, alors l'utilisateur n'a pas acheté le jeu et on saute la boucle
         for res in cur:
             ## Si c'est le cas, alors on vérifie s'il a mit un commentaire
             if res.commentaire != None:   
                 ## Si ce n'est pas le cas, alors on lui return la template pour qu'il puisse mettre un commentaire
-                return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, no_commentaire = False, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+                return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],  
+                                       jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, 
+                                       no_commentaire = False, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
+                                       lst_succes_bloque = lst_succes_bloque)
             ## Sinon on return la tamplate normal
-            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, no_commentaire = True, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
+                                   jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, 
+                                   no_commentaire = True, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
+                                   lst_succes_bloque = lst_succes_bloque)
         ## On vérifie que l'utilisateur peut acheter le jeu
         if solde_restant < 0:  ## Si ce n'est pas le cas, on le prévient
-            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, no_money = True, solde_restant = solde_restant, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
+                                   jeu = jeu, lst_genre = lst_genre, no_money = True, solde_restant = solde_restant, 
+                                   lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
+                                   lst_succes_bloque = lst_succes_bloque)
         ## On vérifie aussi qu'il a l'âge pour jouer, si ce n'est pas le cas, on le prévient
         elif int(session['age']) < jeu.age_min:
-            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'] ,  jeu = jeu, lst_genre = lst_genre, no_age = True, solde_restant = solde_restant, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'], 
+                                   jeu = jeu, lst_genre = lst_genre, no_age = True, solde_restant = solde_restant, lst_commentaire = lst_commentaire, 
+                                   lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
     ## Si on arrive ici, alors le joueur peut acheter le jeu
-    return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'] ,  jeu = jeu, lst_genre = lst_genre, solde_restant = solde_restant, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
+    return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'],  avatar = session['avatar'],  
+                           jeu = jeu, lst_genre = lst_genre, solde_restant = solde_restant, lst_commentaire = lst_commentaire, 
+                           lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
 
 @app.route("/buy_game", methods=['POST'])
 def buy_game():
@@ -385,7 +404,7 @@ def send_commentaire():
 ############################################################################################################
 
 ## Début des requêtes pour le profil
-@app.route("/profil", methods = ['POST', 'GET'])
+@app.route("/profil")
 def profil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
@@ -394,93 +413,56 @@ def profil():
     liste_pseudo = []
     with db.connect() as conn:
         cur = conn.cursor()
+        ## Les infos de l'utilisateur
         cur.execute('''
                     SELECT pseudo, nom, mail, date_naissance, url_avatar
                     FROM joueur WHERE pseudo = %s;''',
                     (session['user_nickname'],))
         user_info = cur.fetchone()
-
+        ## Les infos sur les jeux qu'ils possèdent
         cur.execute('''
-                    SELECT pseudo, count(id_jeu) AS nbr
-                    FROM achat GROUP BY pseudo HAVING pseudo = %s;''',
+                    SELECT joueur.pseudo, COUNT(achat.id_jeu) AS nbr FROM joueur AS joueur 
+                    LEFT JOIN achat AS achat ON joueur.pseudo = achat.pseudo 
+                    GROUP BY joueur.pseudo HAVING joueur.pseudo = %s;
+                    ''',
                     (session['user_nickname'],))
         nbr_jeu = cur.fetchone()
-        
-        lst_select = request.form.getlist("selectionner_invitation", None)
-        if (lst_select):
-            for pseudo in lst_select:
-                #ajoute la demande d'ami
-                cur.execute('''
-                            INSERT INTO ami(pseudo1, pseudo2, statut)
-                            VALUES (%s, %s, NULL)''',
-                            (session["user_nickname"], pseudo,))
-            recherche_lancer = False
-        
-        lst_select = request.form.getlist("selectionner_demande", None)
-        if (lst_select):
-            message = request.form.get("accepter", None)
-            if (message  == "True"):
-                for pseudo in lst_select:
-                    #accepte la demande d'ami
-                    cur.execute('''
-                                UPDATE ami
-                                SET statut = TRUE
-                                WHERE pseudo1 = %s AND pseudo2 = %s;
-                                DELETE FROM ami
-                                WHERE pseudo1 = %s AND pseudo2 = %s;''',
-                                (pseudo, session["user_nickname"], session["user_nickname"], pseudo))
-            elif (message == "False"):
-                for pseudo in lst_select:
-                    #refuser la demande d'ami
-                    cur.execute('''
-                                UPDATE ami
-                                SET statut = FALSE
-                                WHERE pseudo1 = %s AND pseudo2 = %s;
-                                DELETE FROM ami
-                                WHERE pseudo1 = %s AND pseudo2 = %s;''',
-                                (pseudo, session["user_nickname"], pseudo, session["user_nickname"],))
-    with db.connect() as conn:    
+        ## La liste de ses amis 
         cur.execute('''
                     SELECT DISTINCT pseudo, nom, mail, url_avatar
                     FROM ami JOIN joueur
                     ON ((joueur.pseudo = ami.pseudo1 AND  ami.pseudo2 = %s)
                     OR (joueur.pseudo = ami.pseudo2 AND  ami.pseudo1 = %s))
-                    WHERE ami.statut = TRUE ''',
+                    WHERE ami.statut = 1;''',
                     (session['user_nickname'], session['user_nickname'],))
         liste_ami = cur.fetchall()
-
+        ## La liste de ses requêtes d'amis
         cur.execute('''
                     SELECT pseudo1, nom, url_avatar
                     FROM ami JOIN joueur
                     ON joueur.pseudo = ami.pseudo1
-                    WHERE ami.statut is NULL AND pseudo2 = %s
+                    WHERE ami.statut = 0 AND pseudo2 = %s;
                     ''', ( session['user_nickname'],))
-        liste_demande = cur.fetchall()
-
-        if (pseudo):
-            print(pseudo)
-            maj =pseudo.upper()
-            cur.execute('''
-                        SELECT pseudo, nom, url_avatar
-                        FROM joueur
-                        WHERE (pseudo LIKE %s OR LOWER(pseudo) LIKE %s) AND pseudo <> %s
-                        AND pseudo NOT IN
-                            (
-                            SELECT pseudo2 FROM ami WHERE pseudo1 = %s
-                            ) AND pseudo NOT IN
-                            (
-                            SELECT pseudo1 FROM ami WHERE pseudo2 = %s AND (statut = TRUE)
-                            )''',
-                        ("%" + pseudo + '%', '%' + maj + '%', session["user_nickname"], session["user_nickname"], session["user_nickname"],))
-            liste_pseudo = cur.fetchall()
-            print(liste_pseudo)
-            recherche_lancer = True
-        
-        
+        liste_demande = cur.fetchall()    
+        ## La liste des demandes d'amis qu'il a fait
+        cur.execute('''
+                    SELECT pseudo2, nom, url_avatar
+                    FROM ami JOIN joueur
+                    ON joueur.pseudo = ami.pseudo2
+                    WHERE ami.statut = 0 AND pseudo1 = %s;
+                    ''', ( session['user_nickname'],))
+        lst_requete = cur.fetchall()  
+        ## La liste de tous les joueurs sur le site Nuage (En retirant ceux qui sont ami, et les requêtes d'amis) 
+        cur.execute('''
+                    SELECT pseudo, url_avatar FROM joueur WHERE pseudo <> %sEXCEPT 
+                    (SELECT pseudo1, url_avatar FROM ami NATURAL JOIN joueur WHERE pseudo2 = %s) EXCEPT 
+                    (SELECT pseudo2, url_avatar FROM ami NATURAL JOIN joueur WHERE pseudo1 = %s);
+                    ''', (session['user_nickname'], session['user_nickname'], session['user_nickname'],))
+        lst_joueur = cur.fetchall()
     return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr,
                            solde = session['solde'],liste_ami = liste_ami,
                            liste_pseudo = liste_pseudo, recherche_lancer = recherche_lancer,
-                           liste_demande = liste_demande)
+                           liste_demande = liste_demande, lst_joueur = lst_joueur, lst_requete = lst_requete)
 
 @app.route("/disconnect", methods = ['POST'])
 def disconnect():
@@ -489,9 +471,38 @@ def disconnect():
     session.pop('age', None)
     return redirect(url_for('connexion'))
 
-@app.route("/add_ami")
-def add_ami():
-    return
+@app.route("/request_ami", methods=['POST'])
+def request_ami():
+    message = request.form.get("accepter", None)
+    pseudo = request.form.get("pseudo", None)
+    with db.connect() as conn:
+        cur = conn.cursor()
+        if (message  == "True"):
+                cur.execute('''
+                            UPDATE ami
+                            SET statut = 1
+                            WHERE pseudo1 = %s AND pseudo2 = %s;
+                            DELETE FROM ami
+                            WHERE pseudo1 = %s AND pseudo2 = %s;''',
+                            (pseudo, session["user_nickname"], session["user_nickname"], pseudo))
+        elif (message == "False"):
+                cur.execute('''
+                            DELETE FROM ami
+                            WHERE pseudo1 = %s AND pseudo2 = %s;
+                            ''',
+                            (pseudo, session["user_nickname"],))
+    return redirect(url_for('profil'))
+
+@app.route("/send_request", methods=['POST'])
+def send_request():
+    pseudo = request.form.get("send", None)
+    with db.connect() as conn:
+        cur = conn.cursor()
+        cur.execute('''
+                    INSERT INTO ami VALUES (%s, %s, 0);
+                    ''', 
+                    (session["user_nickname"], pseudo,))
+    return redirect(url_for('profil'))
 
 if __name__ == '__main__':
   app.run()

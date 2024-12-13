@@ -12,9 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
 </head>
 
-<div style="background-color: rgba(173, 216, 230, 0.15);">
-    <span class="user">UTILISATEUR : {{user}}</span>
-    <span class="currency"><u>Solde :</u> {{solde}} €</span>
+<div class="nav">
+    <div class="nav_info">
+        <img class="nav_avatar" src={{avatar}}>
+        <div>
+            <p class="user">UTILISATEUR : {{user.pseudo}}</p>
+            <p class="currency"><u>Solde :</u> {{solde}} €</p>
+        </div>
+    </div>
     <header class="text-overlay-neon">
         <h1>NUAGE</h1>
     </header>

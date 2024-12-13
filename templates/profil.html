@@ -13,10 +13,15 @@
 </head>
 
 <body>
-    <!--DEBUT DIV POUR LA BARRE DE NAVIGATION -->
+<!--DEBUT DIV POUR LA BARRE DE NAVIGATION -->
     <div class="nav" style="background-color: rgba(173, 216, 230, 0.15);">
-        <span class="user">UTILISATEUR : {{user.pseudo}}</span>
-        <span class="currency"><u>Solde :</u> {{solde}} €</span>
+        <div class="nav_info">
+            <img class="nav_avatar" src="{{user.url_avatar}}">
+            <div>
+                <p class="user">UTILISATEUR : {{user.pseudo}}</p>
+                <p class="currency"><u>Solde :</u> {{solde}} €</p>
+            </div>
+        </div>
         <header class="text-overlay-neon">
             <h1>NUAGE</h1>
         </header>
@@ -35,12 +40,11 @@
             <input class="disconnect" type=submit value="← Se déconnecter">
         </form>
     </div>
-    <!--FIN DIV POUR LA BARRE DE NAVIGATION -->
-
-    <!--DIV pour les informations du joueurs-->
+<!--FIN DIV POUR LA BARRE DE NAVIGATION -->
+<!--DIV pour les informations du joueurs-->
     <div class="first_row">
         <div class="left_first_row">
-            <img class="avatar_user" src="../static/img/chauve.jpeg">
+            <img class="avatar_user" src="{{user.url_avatar}}">
             <p>{{user.pseudo}}<p>
         </div>
         <div class="right_first_row">
@@ -55,46 +59,113 @@
             <h4>Vous avez partagé X jeux</h4>
         </div>
     </div>
-
-
-    <!--DIV pour la liste d'ami du joueur-->
-    <h1>Liste d'ami</h1>
-    <div class="second_row">
-        {% for elem in liste_ami %}
-            {{ elem }}
-        {% endfor%}
+<!--DIV pour la liste d'ami du joueur-->
+    <h1>AMI</h1>
+    <!--DIV pour ajouter un ami -->
+    <button id="add">+ Ajouter un ami</button>
+    <div class="add_ami">
+        <span class="back">← Retour</span>
+        <p>Chercher un utilisateur de Nuage :</p>
+        <input id="search_bar" class="type_search" type=text placeholder="Chercher un ami..." name="titre_recherche">
+        <div class="all_joueur">
+            {% for elem in lst_joueur %}
+            <form action="send_request" method="POST">
+                <div class="joueur_div">
+                    <img class="joueur_avatar" src="{{elem.url_avatar}}">
+                    <span id="name">{{elem.pseudo}}</span>
+                    <button class="add_button joueur" value={{elem.pseudo}} type="submit" name ="send">Envoyer une requête</button>
+                </div>
+            </form>
+            {% endfor%}
+        </div>
     </div>
-
-    <h1>Liste de demande d'ami</h1>
+    <!--Script qui permet de gérer la barre de recherche-->
+    <script>
+        const search_bar = document.getElementById("search_bar")
+        const player_lst = document.querySelectorAll(".joueur_div")
+        search_bar.addEventListener('input', function() {
+            const searchValue = this.value.trim().toLowerCase();
+            player_lst.forEach(function(player) {
+                const name = player.querySelector('#name').textContent.toLowerCase();
+                if (name.includes(searchValue)) {
+                    player.style.display = 'block';
+                } else {
+                    player.style.display = 'none';
+                }
+                });
+        });
+    </script>
+    <!--Script qui permet de gérer l'animation quand on clique sur le bouton-->
+    <script>
+        document.getElementById('add').addEventListener('click', function() {
+            confirm = document.querySelector(".add_ami")
+            confirm.style.display= "block";
+            confirm.classList.add('in');
+            setTimeout(function() {
+                confirm.classList.remove('in');
+            }, 400);
+        })
+        document.querySelector('.back').addEventListener('click', function() {
+            confirm = document.querySelector(".add_ami")
+            confirm.classList.add('out');
+            setTimeout(function() {
+                confirm.classList.remove('out');
+                confirm.style.display= "none";
+            }, 400);
+        })
+    </script>
+    <!--DIV pour les amis -->
     <div class="second_row">
-        <form action="" method="POST">
+        <!-- La liste des amis -->     
+        <div class="left_second_row_div">
+            <h3 style="text-align:center; grid-column: 1 / span 6; margin:0%;">Vos amis</h3>
+            {% for elem in liste_ami %}
+            <div class="friend_div">
+                <img class="friend_avatar" src="{{elem.url_avatar}}">
+                <p>{{elem.pseudo}}</p>
+            </div>
+            {% endfor%}
+        </div>
+        <!-- La liste des demandes d'amis que l'utilisateur a reçu -->
+        <div class="right_second_row_div">
+            <h3>Demande d'ami</h3>
+            {% if not liste_demande%}
+                <p style="text-align:center;">Vous avez aucune requête</p>
+            {% endif %}
             {% for elem in liste_demande %}
-            <input type="checkbox"  name = "selectionner_demande" value = "{{ elem.pseudo1 }}"   id="{{ elem.pseudo }}">
-            <label for="{{ elem.pseudo }}"> {{ elem }}</label>
-            <br>
+                <form action="request_ami" method="POST">
+                    <input type="hidden" name="pseudo" value={{elem.pseudo1}}>
+                    <div class="request_div">
+                        <div class="avatar_div">
+                            <img class="request_avatar" src="{{elem.url_avatar}}">
+                        </div>
+                        <div class="text">
+                            <p>{{elem.pseudo1}}<p>
+                            <h5>veut devenir votre ami<h5>
+                        </div>
+                        <div class="button_div">
+                            <button style="background-color:green;" type="submit" name = "accepter" value="True">✓</button>
+                            <button style="background-color:darkred;" type="submit" name = "accepter" value="False">✗</button>
+                        </div>
+                    </div>
+                </form>
             {% endfor%}
-            <button type="submit" name = "accepter" value="True"> Accepter les demande </button>
-            <button type="submit" name = "accepter" value="False"> Refuser les demande </button>
-        </form>
-    </div>
-
-    <div>
-        <form action="" method="get">
-            <input type=text placeholder="Chercher un jeu..." name="pseudo">
-            <button type="submit">Rechercher</button>
-        </form>
-
-        <!-- s'affiche que si on a rechercher-->
-        {%if recherche_lancer %}
-        <form action="" method="POST">
-            {% for elem in liste_pseudo %}
-            <input type="checkbox"  name = "selectionner_invitation" value = "{{ elem.pseudo }}"   id="{{ elem.pseudo }}">
-            <label for="{{ elem.pseudo }}"> {{ elem }}</label>
-            <br>
+            <!-- La liste des demandes d'amis que l'utilisateur a fait -->
+            <h3 style="border-top:5px double grey; padding-top:1vh;">Vos demandes d'amis</h3>
+            {% if not lst_requete%}
+                <p style="text-align:center;">Vous avez fait aucune requête</p>
+            {% endif %}
+            {% for elem in lst_requete %}
+                <div class="request_div">
+                    <div class="avatar_div" style="flex-basis:20%">
+                        <img class="request_avatar" src="{{elem.url_avatar}}">
+                    </div>
+                    <div class="text" style="flex-basis:80%">
+                        <p>{{elem.pseudo2}}<p>
+                        <h5>Demande d'ami envoyée ...<h5>
+                    </div>
+                </div>
             {% endfor%}
-            <button type="submit"> Ajouter </button>
-        </form>
-        {%endif%}
-        <br>
+        </div>
     </div>
 </bodu>

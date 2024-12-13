@@ -11,21 +11,43 @@ body{
     margin: 0;
 }
 
-.user{
+.nav{
+    position: relative;
+    background-color: rgba(173, 216, 230, 0.15);
+}
+
+.nav_info{
     position: absolute;
-    text-decoration: underline;
-    font-size: 1.3em;
     top: 1%;
     left: 1%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+
+.nav_avatar{
+    height: 90%;
+    border: 2px solid #0b5991;
+}
+
+.nav_info p{
+    margin: 3% 0;
+    font-size: 100%;
+    text-wrap: nowrap;
+}
+
+.user{
+    text-decoration: underline;
+    font-size: 1.3em;
     color: brown;
     text-shadow: 1px 1px 1px black;
 }
 
+
+
 .currency{
-    position: absolute;
     font-size: 1em;
-    top: 5%;
-    left: 1%;
     color: grey;
     text-shadow: 1px 1px 1px black;
 }

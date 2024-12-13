@@ -224,7 +224,7 @@ INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar) VALUES
 
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar, solde) VALUES
 ('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', '../static/img/avatar/Chiaki.jpg', 50), --MDP : 123
-('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', '../static/img/avatar/chauve.jpg', 60); --MDP : 123
+('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', '../static/img/avatar/chauve.jpeg', 60); --MDP : 123
 -- Jeux
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
 ('Lobotomy Corp', 22.99, '2018-04-18', 18, 
@@ -545,9 +545,11 @@ INSERT INTO debloquer (pseudo, id_jeu, code, date_obtention) VALUES
 
 
 INSERT INTO ami(pseudo1, pseudo2, statut) VALUES
-('BlazedSora', 'david', FALSE),
-('david', 'BlazedSora', FALSE),
-('Gammandi', 'abdel', FALSE),
-('david', 'IsThatTheRedMist2', TRUE),
-('abdel', 'david', NULL),
-('abdel', 'Gregor14', FALSE);
+-- pseudo1 a envoyé une requête a pseudo 2
+('david', 'BlazedSora', 1),
+('david', 'IsThatTheRedMist2', 1),
+('KebabIsGood24', 'david', 1),
+('abdel', 'david', 0),
+('Gregor14', 'david', 0),
+('LeCrapuleux', 'david', 0),
+('david', 'Lanius', 0);
