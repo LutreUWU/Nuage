@@ -33,10 +33,10 @@ CREATE TABLE joueur(
 CREATE TABLE ami(
     pseudo1 varchar(20),
     pseudo2 varchar(20),
-    statut int default 0, -- 0 = attente ; 1 = accepté 
+    statut int, -- 0 = attente ; 1 = accepté 
     PRIMARY KEY (pseudo1, pseudo2),
-    FOREIGN KEY (pseudo1) REFERENCES joueur(pseudo),
-    FOREIGN KEY (pseudo2) REFERENCES joueur(pseudo)
+    FOREIGN KEY (pseudo1) REFERENCES joueur(pseudo), --celui qui demande
+    FOREIGN KEY (pseudo2) REFERENCES joueur(pseudo) --cellui qui recoit l'invitation d'ami
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -122,25 +122,36 @@ CREATE TABLE debloquer(
 
 CREATE VIEW rapport AS
 (
-    SELECT jour, nom_edite, titre, nb_vente, nb_partage,
-           vente_jeu.nb_vente * jeu.prix AS chiffre_affaire, --le chiffre d’affaire réalisé
-           moyenne_note, nb_succe
-    FROM jeu NATURAL LEFT JOIN
+    SELECT date, nom_edite, sum(nb_vente * prix) AS chiffre_affaire, sum(nb_vente) AS total_vente, sum(nb_partage) AS total_partage, sum(nb_succe) AS total_succe,--nom, nb_vente, nb_partage,
+            --le chiffre d’affaire réalisé
+           ROUND(avg(moyenne_note), 2) AS moyenne_note--moyenne_note, nb_succe, debloque_jeu.date_obtention, vente_jeu.date_achat, partage_jeu.date_partage
+    FROM
     (
-       SELECT id_jeu, date_achat AS jour, count(*) AS nb_vente, avg(note) AS moyenne_note
+	 	SELECT id_jeu, date_achat AS date FROM achat
+	 	UNION
+	 	SELECT id_jeu, date_partage FROM partage
+	 	UNION
+	 	SELECT id_jeu, date_obtention FROM debloquer
+	 ) AS date_rapport NATURAL LEFT JOIN
+    (
+       SELECT id_jeu, date_achat AS date, count(*) AS nb_vente, avg(note) AS moyenne_note
        FROM achat
        GROUP BY id_jeu, date_achat
-    ) AS vente_jeu NATURAL LEFT JOIN
+    ) AS vente_jeu NATURAL LEFT JOIN	
     (
-        SELECT id_jeu, date_partage AS jour, count(*) AS nb_partage
+        SELECT id_jeu, date_partage AS date, count(*) AS nb_partage
         FROM partage
         GROUP BY id_jeu, date_partage
-    ) AS partage_jeu NATURAL LEFT JOIN
+    ) AS partage_jeu NATURAL LEFT JOIN	
     (
-       SELECT id_jeu, date_obtention AS jour, count(id_jeu) AS nb_succe
+       SELECT id_jeu, date_obtention AS jour, count(*) AS nb_succe
        FROM debloquer
        GROUP BY id_jeu, date_obtention
-    ) AS debloque_jeu 
+    ) AS debloque_jeu NATURAL JOIN
+    (
+        SELECT nom_edite, id_jeu, prix FROM jeu JOIN entreprise ON jeu.nom_edite = entreprise.nom
+    ) AS rapport_nom_dev 
+    GROUP BY nom_edite, date ORDER BY date DESC
 
 );
 
@@ -511,6 +522,7 @@ INSERT INTO partage (pseudo1, pseudo2, id_jeu, date_partage) VALUES
 ('BlazedSora', 'Gammandi', 1, '2024-11-03'),
 ('Zerio', 'Shing', 3, '2024-11-07'),
 ('LeCrapuleux', 'RolandLover19', 5, '2024-11-12'),
+('LeCrapuleux', 'RolandLover19', 6, '2023-06-12'),
 ('IsThatTheRedMist2', 'Gregor14', 7, '2024-11-16'),
 ('Rocinante', 'KebabIsGood24', 9, '2024-11-22');
 
@@ -528,5 +540,14 @@ INSERT INTO debloquer (pseudo, id_jeu, code, date_obtention) VALUES
 ('KebabIsGood24', 10, 'S020', '2024-11-27'),
 ('david', 2, 'S012', '2024-11-24'),
 ('david', 2, 'S013', '2024-11-24'),
+('Gammandi', 6, 'S013 ', '2023-06-12'),
 ('david', 10, 'S022', '2024-11-24');
 
+
+INSERT INTO ami(pseudo1, pseudo2, statut) VALUES
+('BlazedSora', 'david', FALSE),
+('david', 'BlazedSora', FALSE),
+('Gammandi', 'abdel', FALSE),
+('david', 'IsThatTheRedMist2', TRUE),
+('abdel', 'david', NULL),
+('abdel', 'Gregor14', FALSE);

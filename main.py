@@ -304,6 +304,8 @@ def game_click(type):
         lst_succes_bloque = cur.fetchall()
         ## On vérifie si l'utilisateur a acheté le jeu
         cur.execute('SELECT pseudo, id_jeu, commentaire FROM achat WHERE pseudo = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
+
+        cur.execute("SELECT ")
         ## Si la requête ne trouve rien, alors l'utilisateur n'a pas acheté le jeu et on saute la boucle
         for res in cur:
             ## Si c'est le cas, alors on vérifie s'il a mit un commentaire
@@ -383,17 +385,102 @@ def send_commentaire():
 ############################################################################################################
 
 ## Début des requêtes pour le profil
-@app.route("/profil")
+@app.route("/profil", methods = ['POST', 'GET'])
 def profil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
+    pseudo = request.args.get("pseudo", None)
+    recherche_lancer = False
+    liste_pseudo = []
     with db.connect() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT pseudo, nom, mail, date_naissance FROM joueur WHERE pseudo = %s;", (session['user_nickname'],))
+        cur.execute('''
+                    SELECT pseudo, nom, mail, date_naissance, url_avatar
+                    FROM joueur WHERE pseudo = %s;''',
+                    (session['user_nickname'],))
         user_info = cur.fetchone()
-        cur.execute("SELECT pseudo, count(id_jeu) AS nbr FROM achat GROUP BY pseudo HAVING pseudo = %s;", (session['user_nickname'],))
+
+        cur.execute('''
+                    SELECT pseudo, count(id_jeu) AS nbr
+                    FROM achat GROUP BY pseudo HAVING pseudo = %s;''',
+                    (session['user_nickname'],))
         nbr_jeu = cur.fetchone()
-    return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr, solde = session['solde'])
+        
+        lst_select = request.form.getlist("selectionner_invitation", None)
+        if (lst_select):
+            for pseudo in lst_select:
+                #ajoute la demande d'ami
+                cur.execute('''
+                            INSERT INTO ami(pseudo1, pseudo2, statut)
+                            VALUES (%s, %s, NULL)''',
+                            (session["user_nickname"], pseudo,))
+            recherche_lancer = False
+        
+        lst_select = request.form.getlist("selectionner_demande", None)
+        if (lst_select):
+            message = request.form.get("accepter", None)
+            if (message  == "True"):
+                for pseudo in lst_select:
+                    #accepte la demande d'ami
+                    cur.execute('''
+                                UPDATE ami
+                                SET statut = TRUE
+                                WHERE pseudo1 = %s AND pseudo2 = %s;
+                                DELETE FROM ami
+                                WHERE pseudo1 = %s AND pseudo2 = %s;''',
+                                (pseudo, session["user_nickname"], session["user_nickname"], pseudo))
+            elif (message == "False"):
+                for pseudo in lst_select:
+                    #refuser la demande d'ami
+                    cur.execute('''
+                                UPDATE ami
+                                SET statut = FALSE
+                                WHERE pseudo1 = %s AND pseudo2 = %s;
+                                DELETE FROM ami
+                                WHERE pseudo1 = %s AND pseudo2 = %s;''',
+                                (pseudo, session["user_nickname"], pseudo, session["user_nickname"],))
+    with db.connect() as conn:    
+        cur.execute('''
+                    SELECT DISTINCT pseudo, nom, mail, url_avatar
+                    FROM ami JOIN joueur
+                    ON ((joueur.pseudo = ami.pseudo1 AND  ami.pseudo2 = %s)
+                    OR (joueur.pseudo = ami.pseudo2 AND  ami.pseudo1 = %s))
+                    WHERE ami.statut = TRUE ''',
+                    (session['user_nickname'], session['user_nickname'],))
+        liste_ami = cur.fetchall()
+
+        cur.execute('''
+                    SELECT pseudo1, nom, url_avatar
+                    FROM ami JOIN joueur
+                    ON joueur.pseudo = ami.pseudo1
+                    WHERE ami.statut is NULL AND pseudo2 = %s
+                    ''', ( session['user_nickname'],))
+        liste_demande = cur.fetchall()
+
+        if (pseudo):
+            print(pseudo)
+            maj =pseudo.upper()
+            cur.execute('''
+                        SELECT pseudo, nom, url_avatar
+                        FROM joueur
+                        WHERE (pseudo LIKE %s OR LOWER(pseudo) LIKE %s) AND pseudo <> %s
+                        AND pseudo NOT IN
+                            (
+                            SELECT pseudo2 FROM ami WHERE pseudo1 = %s
+                            ) AND pseudo NOT IN
+                            (
+                            SELECT pseudo1 FROM ami WHERE pseudo2 = %s AND (statut = TRUE)
+                            )''',
+                        ("%" + pseudo + '%', '%' + maj + '%', session["user_nickname"], session["user_nickname"], session["user_nickname"],))
+            liste_pseudo = cur.fetchall()
+            print(liste_pseudo)
+            recherche_lancer = True
+        
+        
+    return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr,
+                           solde = session['solde'],liste_ami = liste_ami,
+                           liste_pseudo = liste_pseudo, recherche_lancer = recherche_lancer,
+                           liste_demande = liste_demande)
 
 @app.route("/disconnect", methods = ['POST'])
 def disconnect():

@@ -55,9 +55,46 @@
             <h4>Vous avez partagé X jeux</h4>
         </div>
     </div>
+
+
     <!--DIV pour la liste d'ami du joueur-->
     <h1>Liste d'ami</h1>
     <div class="second_row">
-        
+        {% for elem in liste_ami %}
+            {{ elem }}
+        {% endfor%}
+    </div>
+
+    <h1>Liste de demande d'ami</h1>
+    <div class="second_row">
+        <form action="" method="POST">
+            {% for elem in liste_demande %}
+            <input type="checkbox"  name = "selectionner_demande" value = "{{ elem.pseudo1 }}"   id="{{ elem.pseudo }}">
+            <label for="{{ elem.pseudo }}"> {{ elem }}</label>
+            <br>
+            {% endfor%}
+            <button type="submit" name = "accepter" value="True"> Accepter les demande </button>
+            <button type="submit" name = "accepter" value="False"> Refuser les demande </button>
+        </form>
+    </div>
+
+    <div>
+        <form action="" method="get">
+            <input type=text placeholder="Chercher un jeu..." name="pseudo">
+            <button type="submit">Rechercher</button>
+        </form>
+
+        <!-- s'affiche que si on a rechercher-->
+        {%if recherche_lancer %}
+        <form action="" method="POST">
+            {% for elem in liste_pseudo %}
+            <input type="checkbox"  name = "selectionner_invitation" value = "{{ elem.pseudo }}"   id="{{ elem.pseudo }}">
+            <label for="{{ elem.pseudo }}"> {{ elem }}</label>
+            <br>
+            {% endfor%}
+            <button type="submit"> Ajouter </button>
+        </form>
+        {%endif%}
+        <br>
     </div>
 </bodu>
