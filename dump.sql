@@ -183,7 +183,10 @@ INSERT INTO entreprise (nom, pays) VALUES
 ('Roblox_Corporation', 'USA'),
 ('Motion_Twin','France'),
 ('Zeekerss', '??'),
-('Arrowhead_Game_Studios', 'Suède');
+('Arrowhead_Game_Studios', 'Suède'),
+('ZTEK_Studio', 'Japon'),
+('Theorycraft_Games', 'USA'),
+('Maxestlà', 'France');
 
 -- Genres de jeux
 INSERT INTO genre (nom_genre) VALUES
@@ -208,23 +211,36 @@ INSERT INTO genre (nom_genre) VALUES
 -- Attention, les INSERTS sont pas oufs
 -- Joueurs
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar) VALUES
-('BlazedSora', 'oliver123', 'Oliver Grey', 'oliver@mail.com', '1992-11-01','../static/img/avatar/Nagito_Komaeda_Report_Card_Profile.webp'),
-('Gammandi', 'Gammandi123', 'Sophia Black', 'sophia@mail.com', '1990-10-12', '../static/img/avatar/Akane_Owari_Report_Card_Profile.webp'),
-('Zerio', 'liam123', 'Liam Turner', 'liam@mail.com', '1994-06-20', '../static/img/avatar/Fuyuhiko_Kuzuryu_Report_Card_Profile.webp'),
-('Shing', 'Shing123', 'Shing Lee', 'Shing@mail.com', '1988-08-09', '../static/img/avatar/Hiyoko_Saionji_Report_Card_Profile.webp'),
-('LeCrapuleux', 'LeCrapuleux123', 'LeCrapuleux Hall', 'LeCrapuleux@mail.com', '1996-12-15', '../static/img/avatar/Mikan_Tsumiki_Report_Card_Profile.webp'),
-('RolandLover19', 'RolandLover19123', 'RolandLover19 Scott', 'RolandLover19@mail.com', '1995-04-02', '../static/img/avatar/Mahiru_Koizumi_Report_Card_Profile.webp'),
-('IsThatTheRedMist2', 'IsThatTheRedMist2123', 'IsThatTheRedMist2 White', 'IsThatTheRedMist2@mail.com', '1993-03-23', '../static/img/avatar/Teruteru_Hanamura_Report_Card_Profile.webp'),
-('Gregor14', 'ava123', 'Ava Martin', 'ava@mail.com', '1991-07-15', '../static/img/avatar/Kazuichi_Soda_Report_Card_Profile.webp'),
-('Rocinante', 'Rocinante123', 'Rocinante Harris', 'Rocinante@mail.com', '1987-02-14', '../static/img/avatar/Ultimate_Imposter_Report_Card_Profile.webp'),
-('KebabIsGood24', 'KebabIsGood24123', 'KebabIsGood24 Carter', 'KebabIsGood24@mail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp'),
-('Lanius', '123', 'Lanus', 'Lanus24@mail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp')
+('BlazedSora', '$2b$12$0VfNOiZzcdTGOlapxCxeOuMZPpy1xQp8xN59XoF0eQGv30ciE9Jku', 'Oliver Grey', 'oliver@gmail.com', '1992-11-01','../static/img/avatar/Nagito_Komaeda_Report_Card_Profile.webp'),
+('Gammandi', '$2b$12$6o7uSZLw5X02hL3SDqfuC.FhZ96aI4Scdh4TwpHYAD0g0WfbNC3WC', 'Sophia Black', 'sophia@gmail.com', '1990-10-12', '../static/img/avatar/Akane_Owari_Report_Card_Profile.webp'),
+('Zerio', '$2b$12$Mu/WWeEFXSyWrPxzB96Dn.wRNEy1pb895LBY2zHGbaZ9kFSgh6XFK', 'Liam Turner', 'liam@gmail.com', '1994-06-20', '../static/img/avatar/Fuyuhiko_Kuzuryu_Report_Card_Profile.webp'),
+('Shing', '$2b$12$J32ds.uJto0dMNf.ZcGiWexK.I7CBByvKKy7TlBjDMdeL4ysj1CZi', 'Shing Lee', 'Shing@gmail.com', '1988-08-09', '../static/img/avatar/Hiyoko_Saionji_Report_Card_Profile.webp'),
+('LeCrapuleux', '$2b$12$TYVNIjyHOmbsqMlLWYLMtuzSS6wy9CSea6KLsNfzlw92mZPvJm96C', 'LeCrapuleux Hall', 'LeCrapuleux@gmail.com', '1996-12-15', '../static/img/avatar/Mikan_Tsumiki_Report_Card_Profile.webp'),
+('RolandLover19', '$2b$12$.f9XVSR1.UJUM5HxnCH4N.iSG3vH6NHtdYapRk2E2FxlfodAvJ8.y', 'RolandLover19 Scott', 'RolandLover19@gmail.com', '1995-04-02', '../static/img/avatar/Mahiru_Koizumi_Report_Card_Profile.webp'),
+('IsThatTheRedMist2', '$2b$12$OmD8zjfyY9LLfnG3ijLfruBMHieakG6KdXh0yTbZJmkgPwd8vRxdC', 'IsThatTheRedMist2 White', 'IsThatTheRedMist2@gmail.com', '1993-03-23', '../static/img/avatar/Teruteru_Hanamura_Report_Card_Profile.webp'),
+('Gregor14', '$2b$12$7w/6pdxlRaTOAfLV1fFnhebCe.Z/lolBEpCj3XJEgAWnpOLuQduby', 'Ava Martin', 'ava@gmail.com', '1991-07-15', '../static/img/avatar/Kazuichi_Soda_Report_Card_Profile.webp'),
+('Rocinante', '$2b$12$hgbHe7H3Nq/beTk9g04zQOwFiguSuBvb0BByE3Ze08j.GRFkQF7Ju', 'Rocinante Harris', 'Rocinante@gmail.com', '1987-02-14', '../static/img/avatar/Ultimate_Imposter_Report_Card_Profile.webp'),
+('KebabIsGood24', '$2b$12$2RrbaB7Lg0X4fEWAtMmz4u4wjdZ28taxyg8anWAz.QkhjWEmI1OpK', 'KebabIsGood24 Carter', 'KebabIsGood24@gmail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp'),
+('Lanius', '$2b$12$RgmgbPujSft1YkIffOobqezLLf4WPEwywREIcLrxQgfV1PlzpvhU2', 'Lanus', 'Lanus24@gmail.com', '1999-01-25', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp'),
+('GlorieuseEvolution', '$2b$12$KQrr5n2N0DTbcrEP70mCxeWz4piXvSx1Q4v26UTwTq8Db9TFNhAyG', 'Antoine', 'Glorieuse@gmail.com', '2004-05-23', '../static/img/avatar/Aoi_Asahina_Assets_Report_Card_Portrait.webp'),
+('LaVipère', '$2b$12$6u49VzsBeUgQK0f49sk5e.0ZAEYNhdV25ySszohSES9DElhDgw6h2', 'Hesod', 'LaVipère@gmail.com', '2005-06-05', '../static/img/avatar/Byakuya_Togami_Assets_Report_Card_Portrait.webp'),
+('BookAngela', '$2b$12$dDeTaFJk3qQ3kHKrG8/hNe1C3xOZhubBMAxutKwCgYM4GTkaLnpJW', 'Angela', 'Angela@gmail.com', '2002-03-04', '../static/img/avatar/Celestia_Ludenberg_Assets_Report_Card_Portrait.webp'),
+('Nekomaru''s_Poop', '$2b$12$DiFTFM32aRjl8hUWat1mVuJ/cq5fSHTKiDX86MDL8mXsaygvVMLB6', 'Neko', 'poop@gmail.com', '2004-11-16', '../static/img/avatar/Nekomaru_Nidai_Report_Card_Profile.webp'),
+('Simp', '$2b$12$aSIhJNjGVOj3kpmgsbEicOdVDHHm8KeoDqIYcxY5vCwWy0KWIwsDy', 'Kazuichi', 'simp@gmail.com', '2005-02-25', '../static/img/avatar/Chihiro_Fujisaki_Assets_Report_Card_Portrait.webp'),
+('Philip', '$2b$12$gHfN8MkoprJ3.I..Lnq3Duizpd1XabkYtR9510On.BhFOMmNKjCsu', 'Philip', 'Philip@gmail.com', '2004-04-10', '../static/img/avatar/Hifumi_Yamada_Assets_Report_Card_Portrait.webp'),
+('LeDrogué', '$2b$12$aauEQLsK5HTXfKiG2qVDKOEUJUEaH.CWzm.lJwj/0dDZjtUGMM6SW', 'Pierre', 'pierre@gmail.com', '2009-06-25', '../static/img/avatar/Kiyotaka_Ishimaru_Assets_Report_Card_Portrait.webp'),
+('Oscar', '$2b$12$OZvvtxguhc/Z3i2gxL3LKOEc1MDvV/LhFOsYZu8d4yNC0QxUqfezi', 'Oscar', 'oscar@gmail.com', '1998-07-13', '../static/img/avatar/Kyoko_Kirigiri_Assets_Report_Card_Portrait.webp'),
+('TrisoMic', '$2b$12$82j.xjxR1uWxPWWSTE87DO8SIW5uVY0C.2zNJiaS8eFNLWdmkqKQ.', 'André', 'triso@gmail.com', '2007-09-10', '../static/img/avatar/Leon_Kuwata_Assets_Report_Card_Portrait.webp'),
+('PedroPedo', '$2b$12$xm7cxhhi1PK00lwCt520ievN/F16kFJkVyhljctJNkFEb8LDYyA36', 'Pedro', 'pedro@gmail.com', '1980-11-10', '../static/img/avatar/Makoto_Naegi_Assets_Report_Card_Portrait.webp'),
+('Refel', '$2b$12$r7jacaynTSkZ/Q27dzcnR.BpSwYiptycoF65zwcgK7K.BM754h/eS', 'Refel', 'refel@gmail.com', '2005-10-21', '../static/img/avatar/Mondo_Owada_Assets_Report_Card_Portrait.webp'),
+('GrosOiseau', '$2b$12$ftQutGC4zKeaKGt9a2pMSe.iuzRNCH8Y.k/X/xwlyhumg40AugJaq', 'grosoiseau', 'grosoiseau@gmail.com', '2010-02-23', '../static/img/avatar/Sakura_Ogami_Assets_Report_Card_Portrait.webp'),
+('Sucre', '$2b$12$qGVlteqLq4nIUGYQCPR63.Gb1TAgPevaFMGlZEb3Sz6b7KbfVOfFe', 'Sucre', 'Sucre@gmail.com', '2003-02-23', '../static/img/avatar/Ibuki_Mioda_Report_Card_Profile.webp')
 ;
-
 
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar, solde) VALUES
 ('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', '../static/img/avatar/Chiaki.jpg', 50), --MDP : 123
 ('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', '../static/img/avatar/chauve.jpeg', 60); --MDP : 123
+
 -- Jeux
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
 ('Lobotomy Corp', 22.99, '2018-04-18', 18, 
@@ -300,6 +316,20 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 ('Helldivers 2', 39.99, '2024-02-08', 16,
 '"Vive la démocratie" sera votre mantra durant votre quête de protection de la super-terre. Tuez ces vilains aliens et automates qui veulent nuire à votre démocratie ! Battez vous pour la liberté, pour la démocratie, pour Helldivers.',
 'Arrowhead_Game_Studios','PlayStation_Studio','../static/img/game_cover/helldivers2.webp'
+),
+
+('Panicore', 4.99, '2024-05-31', 16,
+'Un jeu de survie et d''horreur qui forcera la coopération avec vos amis afin de vous échappez d''un endroit lugubre. Le monstre qui vous pourchasse peut entendre votre voix ainsi que vos pas. Serez-vous capable de vous échapper',
+'ZTEK_Studio', 'ZTEK_Studio', '../static/img/game_cover/Panicore.webp'),
+
+('Supervive', 0,'2024-11-20', 3,
+'Un battle royale qui à un fonctionnement  similaire à un MOBA. Une fois sur la map tuez les petit monstres pour monter en niveau, ouvres des coffres pour de l''équipe et visez la victoire. Profitez d''une diversité de personnages avec des rôles et des compétences différentes. Jouez avec vos amis pour atteindre le top 1!',
+'Theorycraft_Games','Theorycraft_Games', '../static/img/game_cover/Supervive.webp'
+),
+
+('Upgun', 0, '2021-09-13', 6,
+'Mettez en pièce vos amis en brisant leurs écran dans Upgun ! Vous pouvez choisir une amélioration qui transformera votre partie au fil des rounds. Chaque partie sera différente étant donné la quantité colossale d''amélioration. ',
+'Maxestlà', 'Maxestlà', '../static/img/game_cover/Upgun.webp'
 )
 ;
 
@@ -342,7 +372,13 @@ INSERT INTO classer (id_jeu, id_genre) VALUES
 (16, 10),
 (17, 9), -- Lethal est un jeu d'horreur et multi
 (17, 14),
-(18, 11); -- Helldivers 2 est un jeu d'action
+(18, 11), -- Helldivers 2 est un jeu d'action
+(19, 11), -- Panicore est un jeu d'action et aventure
+(19, 12),
+(20, 11), -- Supervive est un jeu d'action
+(21, 11), -- UPgun est jeu d'action et indépendant
+(21, 12)
+;
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S011', 'Angela.', 'Finir le jeu Loboymy Corp', 1),
@@ -424,7 +460,19 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S087', 'Patriote','Jouez au moins 50 missions', 18 ),
 ('S088', 'Promotion synergétique', 'Aidez un allié à recharger un arme', 18 ),
 ('S089', 'Trop cool pour regard- AAAAH !', 'Volez sur au moins 25 mètres suite à une explosion', 18 ),
-('S090', 'Ce qui ne vous tue pas...', 'Endurez une blessure à chaque membre', 18)
+('S090', 'Ce qui ne vous tue pas...', 'Endurez une blessure à chaque membre', 18),
+('S091', 'Assurance vie', 'Echappez-vous de l''hôpital ', 19),
+('S092', 'Psychiatre', 'Collecter tout les fichier dans l''asile', 19),
+('S093', 'Traître professionnel', 'Trahissez un de vos amis en lui jetant une brique pour l''étourdir', 19),
+('S094', 'Docteur fou', 'Echappez-vous de l''asile avec la difficulté PANICORE', 19),
+('S095', 'VICTOIIIIIIRE !', 'Faites TOP 1', 20),
+('S096', 'Essaye de ne plus mourir d''accord?', 'Ramenez votre allié à la vie ', 20),
+('S097', 'Trop facile', 'Enchainez 5 TOP 1 d''affilé', 20),
+('S098', 'Collectionneur', 'Déverouillez tout les personnage jouables ', 20),
+('S099', 'Donne moi ton huile moteur', 'Vole 5000HP', 21),
+('S100', 'BOUUUUUUUUUUUH', 'BOUUUUUUUUUUUH (nice)', 21),
+('S101', 'Dangereux avec un grappin', 'Eliminez 25 joueurs au grappin', 21),
+('S102', 'Abracadabra', 'Téléportez vous 100 fois !', 21)
 ;
 
 -- Reapprovisionner (argent ajouté au porte-monnaie)
@@ -511,45 +559,49 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('Gammandi', 18, 5.0, 'J''ai rarement eu autant de fou rire avec mes amis sur un jeu. C''est hilarant comment le jeu fonctionne, genre tu te balades pour aller à l''objectif et hop tu vois ton pote voler au dessus pour finir dans un nids. Allez tester je recommande de fou.', '2024-03-20'),
 ('RolandLover19', 18, 4.0, 'Le jeu est un peu répétitif mais ça ne se remarque pas si on joue avec des amis donc c''est tranquille. Vive la démocratie !', '2024-06-10'),
 
+('BlazedSora', 19, 4.0, 'Le jeu n''a que 4 maps pour l''instant et peut parfois ne pas vouloir se lancer si vous avez un anti-virus efficace. Malgré ça, je me suis bien amusé avec mes amis même si le jeu n''a pas une très grande durée de vie.', '2024-12-13'),
+('Philip', 19, 4.7, 'J''ai eu de vraie frayeur avec mes amis sur ce jeu. J''ai bien aimé les quelques énigmes (si on peut les appelés ainsi). En bref, c''est sympa avec des amis mais seul ça ne doit pas être très amusant.', '2024-12-15'),
+('LeDrogué', 19, 4.0, 'Y a des monstres ils sont drôles et y a des monstres ils sont pas drôle.', '2024-09-12'), 
+
+('TrisoMic', 20, 5.0, 'J''aime beaucoup comment la coopération est cruciale dans ce jeu et comment ça peut fonctionner grâce à la diversités des persos. Le système de progression est aussi très agréable car partir à la chasse aux joueurs n''est pas la seule chose à faire pour gagner. Très cool je recommande fort !', '2024-11-29'),
+('Philip', 20, 4.2, 'Il y a quelques personnages qui sont mal équilibré mais il faut s''y attendre dans un jeu pareil. Mis à part ça, le jeu est sympa si vous jouez avec vos amis. Ne faites pas confiance aux inconnu, il y a beaucoup de troll.', '2024-11-21'),
+('Gammandi', 20, 4.5, 'J''adore faire pousser les arbres. Mais ici, ils donnent de l''argent en plus. C''est incroyable. Mon rêve est réalisé.', '2024-12-3'),
+
+('GrosOiseau', 21, 4.5, 'C''est plutôt sympa à jouez entre amis de temps en temps. Malheureusement le jeu ne se renouvelle plus trop au bout d''un moment mais ça n''empêche pas de bien s''amuser.', '2022-02-12'),
+('Lanius', 21, 4.8, 'J''aime beaucoup, le jeu offre une diversité assez intéressante et plus la partie dure, plus ça devient n''importe de quoi.. Amusement garantis entre amis (et rage aussi)', '2023-05-23'),
+('Philip', 21, 3.1, 'C''est dommage que le jeu n''est complet que si l''on paye le DLC, le jeu de base ne possède pas énormément de contenu ce qui limite les différents décors. j''ai quands même bien rigolé sur quelques parties mais rien de bien fou à l''usure.', '2024-04-18'), 
 
 ('Zerio', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
-('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
 
+('Sucre', 2, 3, 'DR 1 pose les bases de la série. C''est un jeu avec un concept original (des lycéens meurent lul). Les ost sont plutôt bonnes dans l''ensemble. Le style graphique pour les visuels est vraiment excellent selon moi. En point faible: l''histoire. Elle est trop courte et trop de personnages meurent avant que le joueur puisse mieux les connaitre.', '2017-05-20'),
+('Sucre', 10, 3.5, 'Pour DR2: Le jeu reprend les bases du 1 mais en corrigeant certains défauts. La durée de vie du jeu est plus longue et les personnages sont mieux exploités. De plus le cast des personnages est plus attachant que celui du 1. Le jeu a introduit aussi de nouvelles mécaniques notamment lors des procés, ce qui rend le visual novel plus dynamique.', '2017-08-19'),
+('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
 ('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25');
 
 -- Partages de jeux entre joueurs
 INSERT INTO partage (pseudo1, pseudo2, id_jeu, date_partage) VALUES
-('BlazedSora', 'Gammandi', 1, '2024-11-03'),
-('Zerio', 'Shing', 3, '2024-11-07'),
-('LeCrapuleux', 'RolandLover19', 5, '2024-11-12'),
-('LeCrapuleux', 'RolandLover19', 6, '2023-06-12'),
-('IsThatTheRedMist2', 'Gregor14', 7, '2024-11-16'),
-('Rocinante', 'KebabIsGood24', 9, '2024-11-22');
+-- pseudo 1 partage le jeu à pseudo 2
+('BlazedSora', 'david', 1, '2024-11-03'),
+('BlazedSora', 'KebabIsGood24', 10, '2024-11-03'),
+('david', 'Gammandi', 10, '2024-11-03'),
+('david', 'Zerio', 2, '2024-11-03');
+
 
 -- Déblocages supplémentaires de succès
 INSERT INTO debloquer (pseudo, id_jeu, code, date_obtention) VALUES
-('BlazedSora', 1, 'S011', '2024-11-04'),
-('Gammandi', 2, 'S012', '2024-11-07'),
-('Zerio', 3, 'S013', '2024-11-10'),
-('Shing', 4, 'S014', '2024-11-13'),
-('LeCrapuleux', 5, 'S015', '2024-11-16'),
-('RolandLover19', 6, 'S016', '2024-11-18'),
-('IsThatTheRedMist2', 7, 'S017', '2024-11-20'),
-('Gregor14', 8, 'S018', '2024-11-22'),
-('Rocinante', 9, 'S019', '2024-11-24'),
-('KebabIsGood24', 10, 'S020', '2024-11-27'),
-('david', 2, 'S012', '2024-11-24'),
-('david', 2, 'S013', '2024-11-24'),
-('Gammandi', 6, 'S013 ', '2023-06-12'),
-('david', 10, 'S022', '2024-11-24');
+('david', 2, 'S012', '2024-11-20'),
+('david', 2, 'S013', '2024-11-21'),
+('david', 10, 'S022', '2024-11-22');
 
 
 INSERT INTO ami(pseudo1, pseudo2, statut) VALUES
--- pseudo1 a envoyé une requête a pseudo 2
+-- pseudo1 a envoyé une requête d'ami à pseudo 2
 ('david', 'BlazedSora', 1),
 ('david', 'IsThatTheRedMist2', 1),
-('KebabIsGood24', 'david', 1),
+('david', 'Gammandi', 1),
+('david', 'Zerio', 1),
+('david', 'Lanius', 0),
 ('abdel', 'david', 0),
 ('Gregor14', 'david', 0),
 ('LeCrapuleux', 'david', 0),
-('david', 'Lanius', 0);
+('BlazedSora', 'KebabIsGood24', 1);

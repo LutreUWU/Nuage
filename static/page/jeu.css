@@ -535,3 +535,186 @@ h2{
     opacity: 1;
     z-index: 100;
 }
+
+.partage_div{
+    width: 100%;
+}
+
+.stop{
+    background-color: transparent;
+    color: white;
+    font-family: "VT323", monospace;
+    font-size: 1.2em;
+    height: 50%;
+    border: 2px solid white;
+    transition: all 0.15s ease-in-out;
+}
+
+.stop:hover{
+    color: black;
+    background-color: white;
+    cursor: pointer;
+}
+
+.partage_button{
+    background-color: rgba(20, 194, 26, 0.491);
+    color: white;
+    font-family: "VT323", monospace;
+    font-size: 1.2em;
+    border: 2px solid white;
+    transition: all 0.15s ease-in-out;
+    padding: 1%;
+    margin: 2% 0;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.partage_button:hover{
+    transform: translate(-50%) scale(1.1);
+    color: black;
+    background-color: white;
+    cursor: pointer;
+}
+
+.partage_user{
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    height: 55vh;
+    overflow-y: scroll;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 2px solid white;
+    backdrop-filter: blur(3px);
+    z-index: 99;
+}
+
+.in{
+    animation: transi 0.4s ease-in-out forwards;
+}
+
+.out{
+    animation: transi 0.4s ease-in-out reverse forwards;
+}
+
+@keyframes transi {
+    from{
+        top: 40%;
+        opacity: 0;
+        filter: blur(10px) brightness(0);
+    }
+    to{
+        top:50%;
+        opacity: 1;
+        filter: blur(0px) brightness(1);
+    }
+}
+
+.back{
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 1em;
+    color: darkred;
+    margin: 1%;
+    transition: 0.1s all ease-in-out;
+}
+
+.back:hover{
+    text-decoration: underline;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.partage_user p{
+    margin-top: 1%;
+    text-align: center;
+    font-size: 2em;
+}
+
+.type_search{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    font-family: "VT323", monospace;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid #0b5991;
+    font-size: 2em;
+    padding-left: 1%;
+    height: 4vw;
+    width: 45vw;
+    border-radius: 10px;
+    color: white;
+}
+
+.type_search:focus{
+    outline: none;
+    border: 2px solid whitesmoke;
+    box-shadow: 0px 0px 30px rgba(245, 245, 245, 0.5);
+}
+
+.all_joueur{
+    padding: 1%;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1vw;
+}
+
+.joueur_div{
+    height: 100%;
+    border: 2px solid #0b5991;
+    overflow: hidden;
+    position: relative;
+    transition: 0.1s all ease-in-out;
+}
+
+.joueur_avatar{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.joueur_div span{
+    width: 100%;
+    text-align: center;
+    font-size: 100%;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 70%, transparent);
+}
+
+.joueur{
+    position: absolute;
+    margin: 0;
+    top: -50%;
+    width: 100%;
+    font-size: 1em;
+    border: none;
+    text-shadow: 1px 1px 1px black;
+    transition: 0.2s all ease-in-out;
+    background-color: rgba(0, 0, 0, 0.7);
+
+}
+
+.joueur:hover{
+    background-color: rgba(245, 245, 245, 0.8);
+    text-shadow: 1px 1px 1px whitesmoke;
+}
+
+.joueur_div:hover{
+    border: 2px solid whitesmoke;
+    cursor: pointer;
+    transform: scale(1.1);
+    box-shadow: 1px 1px 10px whitesmoke;
+}
+
+.joueur_div:hover .joueur{
+    top: 0;
+}
+

@@ -55,10 +55,19 @@
                 <li>Date de naissance : {{user.date_naissance}}</li>
             </ul>
             <h4>Vous avez acheté {{nbr_jeu}} jeux</h4>
-            <h4>On vous a partagé X jeux</h4>
-            <h4>Vous avez partagé X jeux</h4>
+            <h4>On vous a partagé {{nbr_jeu_partage}} jeux</h4>
+            <h4>Vous avez partagé {{nbr_jeu_partage_me}} jeux</h4>
         </div>
     </div>
+
+<!--DIV pour le solde-->
+<div class="solde">
+    <form action="add_solde" method="POST">
+        Modifier son solde :
+        <input type="number" id="tentacles" name="solde" min="10" max="100" step=10 value={{solde}} />
+        <input type=submit value="Modifier"/>
+    </form>
+</div>
 <!--DIV pour la liste d'ami du joueur-->
     <h1>AMI</h1>
     <!--DIV pour ajouter un ami -->
@@ -69,7 +78,7 @@
         <input id="search_bar" class="type_search" type=text placeholder="Chercher un ami..." name="titre_recherche">
         <div class="all_joueur">
             {% for elem in lst_joueur %}
-            <form action="send_request" method="POST">
+            <form action="send_request" method="POST" id="joueur">
                 <div class="joueur_div">
                     <img class="joueur_avatar" src="{{elem.url_avatar}}">
                     <span id="name">{{elem.pseudo}}</span>
@@ -82,7 +91,7 @@
     <!--Script qui permet de gérer la barre de recherche-->
     <script>
         const search_bar = document.getElementById("search_bar")
-        const player_lst = document.querySelectorAll(".joueur_div")
+        const player_lst = document.querySelectorAll("#joueur")
         search_bar.addEventListener('input', function() {
             const searchValue = this.value.trim().toLowerCase();
             player_lst.forEach(function(player) {
@@ -120,10 +129,13 @@
         <div class="left_second_row_div">
             <h3 style="text-align:center; grid-column: 1 / span 6; margin:0%;">Vos amis</h3>
             {% for elem in liste_ami %}
-            <div class="friend_div">
-                <img class="friend_avatar" src="{{elem.url_avatar}}">
-                <p>{{elem.pseudo}}</p>
-            </div>
+            <form action="supp_ami" method="POST">
+                <div class="friend_div">
+                    <img class="friend_avatar" src="{{elem.url_avatar}}">
+                    <p>{{elem.pseudo}}</p>
+                    <button class="supp_button" value={{elem.pseudo}} type="submit" name ="send">Supprimer</button>
+                </div>
+            </form>
             {% endfor%}
         </div>
         <!-- La liste des demandes d'amis que l'utilisateur a reçu -->
@@ -167,5 +179,56 @@
                 </div>
             {% endfor%}
         </div>
+    </div>
+<!--DIV pour les jeux-->
+    <h1>Vos Jeux</h1>
+    {%if not(lst_jeu)%}
+        <h2>Vous avez acheté aucun jeu</h2>
+    {%else%}
+        <div class='allGame'>
+            {% for elem in lst_jeu %}
+            <form class='Game', methods="get" action="game_click/{{elem.titre.replace('/', '%2F')}}" onclick="submit()">
+                <img src={{elem.url_img}}>
+                <img class="img_jeu_blur" src={{elem.url_img}}>
+                <h4>{{elem.titre}}</h4>
+                {% if elem.prix == 0.0 %}
+                    <h5>Gratuit</h5>
+                {% else%}
+                <h5>{{elem.prix}} €</h5>
+                {% endif %}
+                <h6>{{elem.date_sortie}}</h6>
+                {% if elem.moyenne == None %}
+                    <p>Aucune note</p>
+                {% else%}
+                    <p>{{elem.moyenne}}<img class='star' src='../static/img/star.png'></p>
+                {% endif %}
+            </form>
+            {% endfor%}
+    {% endif %}
+    </div>
+    <h1>Jeux partagés avec vous</h1>
+    {%if not(lst_jeu_partage)%}
+        <h2>Vous avez emprunté aucun jeu</h2>
+    {%else%}
+        <div class='allGame'>
+            {% for elem in lst_jeu_partage %}
+            <form class='Game', methods="get" action="game_click/{{elem.titre.replace('/', '%2F')}}" onclick="submit()">
+                <img src={{elem.url_img}}>
+                <img class="img_jeu_blur" src={{elem.url_img}}>
+                <h4>{{elem.titre}}</h4>
+                {% if elem.prix == 0.0 %}
+                    <h5>Gratuit</h5>
+                {% else%}
+                <h5>{{elem.prix}} €</h5>
+                {% endif %}
+                <h6>{{elem.date_sortie}}</h6>
+                {% if elem.moyenne == None %}
+                    <p>Aucune note</p>
+                {% else%}
+                    <p>{{elem.moyenne}}<img class='star' src='../static/img/star.png'></p>
+                {% endif %}
+            </form>
+            {% endfor%}
+    {%endif%}
     </div>
 </bodu>

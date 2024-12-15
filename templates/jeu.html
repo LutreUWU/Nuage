@@ -81,30 +81,36 @@
         </div>
     </div>
     <!--2ème div qui cette fois-ci va contenir des informations concernant le joueur et s'il a acheté le jeu ou pas -->
-    <form class= "Game" action="{{url_for('buy_game')}}" method="POST">
+    <form class="Game" action="{{url_for('buy_game')}}" method="POST">
         <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input> <!--Input hidden qui va permettre de récupérer le jeu -->
-        <!--Si on a déjà acheté le jeu-->
-        {% if already_game %}
-        <div class="already_buy">
-            <span style="text-wrap:nowrap"> Vous avez déjà acheté le jeu !</span>
-        <!--Si on n'a pas déjà acheté le jeu-->
+        <!--Si le jeu a été partagé-->
+        {% if partage %}
+            <div class="already_buy">
+            <span style="text-wrap:nowrap"> {{partage.pseudo1}} a partagé ce jeu avec vous !</span>
         {% else %}
-            <div class="buy_div" style="width:43%; margin-left: 56.7%">
-            <!--Si l'utilisateur est pauvre-->
-            {%  if no_money %}
-            <span style="text-wrap:nowrap;"> Vous êtes PAUVRE !</span>
+            <!--Si on a déjà acheté le jeu-->
+            {% if already_game %}
+            <div class="already_buy">
+            <span style="text-wrap:nowrap"> Vous avez déjà acheté le jeu !</span>
+            <!--Si on n'a pas déjà acheté le jeu-->
             {% else %}
-                <!--Si on a pas l'âge requis-->
-                {% if no_age %} 
-                <span style="text-wrap:nowrap; font-size:0.8em"> Vous êtes TROP JEUNE</span>
+                <div class="buy_div" style="width:43%; margin-left: 56.7%">
+                <!--Si l'utilisateur est pauvre-->
+                {% if no_money %}
+                <span style="text-wrap:nowrap;"> Vous êtes PAUVRE !</span>
                 {% else %}
-                    <!--Sinon, on a l'âge requis et l'argent nécessaire pour acheter le jeu-->
-                    {% if jeu.prix == 0.0 %} <!--Dans le cas où le jeu est gratuit-->
-                    <button type="button" id="buy" > Obtenir</button>
-                    <span>Gratuit</span>
+                    <!--Si on a pas l'âge requis-->
+                    {% if no_age %} 
+                    <span style="text-wrap:nowrap; font-size:0.8em"> Vous êtes TROP JEUNE</span>
                     {% else %}
-                        <button type="button" id="buy"> Acheter</button>
-                        <span>{{jeu.prix}} €</span>        
+                        <!--Sinon, on a l'âge requis et l'argent nécessaire pour acheter le jeu-->
+                        {% if jeu.prix == 0.0 %} <!--Dans le cas où le jeu est gratuit-->
+                        <button type="button" id="buy" > Obtenir</button>
+                        <span>Gratuit</span>
+                        {% else %}
+                            <button type="button" id="buy"> Acheter</button>
+                            <span>{{jeu.prix}} €</span>        
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -242,13 +248,70 @@
             {%endif%}
         </div>
     </div>
-</div>
-
-<div>
-    {% for elem in liste_partage %}
-        <ul>
-            <li>{{ elem }}</li>
-        </ul>
-    {% endfor%}
+    {% if already_game%}
+        {% if already_partage %}
+        <h2 style="width:100%; text-align:center;" >Vous avez déjà partagé ce jeu avec {{lst_joueur.pseudo2}}</h2>
+        <form style="width:100%;color:darkred; display:flex; justify-content:center; align-items:center; gap:1vw;"
+        action="/stop_partage" method="POST" id="joueur">
+                <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
+                <h2>Arrêter le partage</h2>
+                <button class="stop" value={{lst_joueur.pseudo2}} type="submit" name ="send">✗</button>
+        </form>
+        {%else%}
+            <button class="partage_button" id="partage_button"> Partager le jeu à un ami </button>
+            <div class="partage_user">
+                <span class="back">← Retour</span>
+                <p>Selectionnez un ami disponible :</p>
+                <input id="search_bar" class="type_search" type=text placeholder="Chercher un ami..." name="titre_recherche">
+                <div class="all_joueur">
+                    {% for elem in lst_joueur %}
+                    <form action="/send_partage" method="POST" id="joueur">
+                        <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
+                        <div class="joueur_div">
+                            <img class="joueur_avatar" src="{{elem.url_avatar}}">
+                            <span id="name">{{elem.pseudo}}</span>
+                            <button class="partage_button joueur" value={{elem.pseudo}} type="submit" name ="send">Partager le jeu</button>
+                        </div>
+                    </form>
+                    {% endfor%}
+            </div>
+        </div>
+        <!--Script qui permet de gérer la barre de recherche-->
+        <script>
+            const search_bar = document.getElementById("search_bar")
+            const player_lst = document.querySelectorAll("#joueur")
+            search_bar.addEventListener('input', function() {
+                const searchValue = this.value.trim().toLowerCase();
+                player_lst.forEach(function(player) {
+                    const name = player.querySelector('#name').textContent.toLowerCase();
+                    if (name.includes(searchValue)) {
+                        player.style.display = 'block';
+                    } else {
+                        player.style.display = 'none';
+                    }
+                    });
+            });
+        </script>
+        <!--Script qui permet de gérer l'animation quand on clique sur le bouton-->
+        <script>
+            document.getElementById('partage_button').addEventListener('click', function() {
+                confirm = document.querySelector(".partage_user")
+                confirm.style.display= "block";
+                confirm.classList.add('in');
+                setTimeout(function() {
+                    confirm.classList.remove('in');
+                }, 400);
+            })
+            document.querySelector('.back').addEventListener('click', function() {
+                confirm = document.querySelector(".partage_user")
+                confirm.classList.add('out');
+                setTimeout(function() {
+                    confirm.classList.remove('out');
+                    confirm.style.display= "none";
+                }, 400);
+            })
+        </script>
+        {% endif %}
+    {% endif %}
 </div>
 </body>

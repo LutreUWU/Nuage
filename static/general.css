@@ -24,6 +24,7 @@ body{
     display: flex;
     align-items: center;
     gap: 1vw;
+    z-index: 1;
 }
 
 .nav_avatar{
@@ -103,7 +104,8 @@ header{
 }
 
 header h1{
-    margin: 0; 
+    width: fit-content;
+    margin: auto;
     text-shadow: rgb(32, 141, 230) 0px 0 15px;
 }
 

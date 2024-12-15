@@ -74,7 +74,11 @@ def new_compte():
         ## On hash son MDP, puis ensuite on ajoute les données dans la BDD 
         password_ctx = CryptContext(schemes=['bcrypt']) 
         hash_pw = password_ctx.hash(value_list[1])
-        cur.execute("INSERT INTO joueur VALUES (%s, %s, %s, %s, %s, %s)", (value_list[0], hash_pw, value_list[2], value_list[3], value_list[4], avatar,))
+        cur.execute('''
+                    INSERT INTO joueur 
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    ''', 
+                    (value_list[0], hash_pw, value_list[2], value_list[3], value_list[4], avatar,))
     return render_template("/connexion/connexion.html", create_compte = True, msg = "Le compte a été crée avec succès !")
 
 @app.route("/connexion/back_to_connexion", methods=['POST'])
@@ -105,7 +109,10 @@ def boutique():
     with db.connect() as conn:
         cur = conn.cursor()
         ## On récupère le titre, prix, date de sortie, url de l'img, la moyenne de ses notes
-        cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;')
+        cur.execute(''' SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne 
+                        FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) 
+                        GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;
+                    ''')
         lst_jeu = cur.fetchall()
     return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'],
                            lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
@@ -126,14 +133,26 @@ def add_filtre():
         cur = conn.cursor()
         ## En fonction de son résultat, on fait la requête approprié pour trier les jeux
         if type_trie == "Date":
-            cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img ORDER BY date_sortie DESC;')
+            cur.execute('''
+                        SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu 
+                        LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img 
+                        ORDER BY date_sortie DESC;
+                        ''')
         if type_trie == "Nombre":
-            cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img ORDER BY count(jeu.id_jeu) DESC;')
+            cur.execute('''
+                        SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu 
+                        LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img 
+                        ORDER BY count(jeu.id_jeu) DESC;
+                        ''')
         if type_trie == "Note":
-            cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img ORDER BY avg(note) DESC;')
+            cur.execute('''
+                        SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu 
+                        LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img 
+                        ORDER BY avg(note) DESC;
+                        ''')
        ## On récupère la liste des filtres
         type_default = lst_type[type_trie]
-        del lst_type[type_trie] ## On supprime le filtre qu'on a appliqué pour éviter qu'on le selectionne
+        del lst_type[type_trie] ## On supprime les filtre qu'on a appliqué pour éviter qu'on le selectionne
         lst_jeu = cur.fetchall()
     return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
                            lst_jeu = lst_jeu, lst_type = lst_type.values(), default = type_default, filtre = True)
@@ -226,14 +245,17 @@ def search_game():
         lst_finale = []
         for elem in lst_jeu:
             cur = conn.cursor()
-            cur.execute('SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img HAVING jeu.titre = %s;', (elem.titre,))
+            cur.execute('''
+                        SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu 
+                        LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img 
+                        HAVING jeu.titre = %s;
+                        ''', (elem.titre,))
             res = cur.fetchone()
             if res:
                 lst_finale.append(res)
         ## Ainsi, on obtient la liste finale
         lst_jeu = lst_finale
-        
-        ##### Lorsqu'on obtient le résultat, on souhaite afficher sur le site les filtres qu'on a appliqués
+        ##### Après avoir obtenu le résultat, on souhaite conserver sur le site les filtres qu'on y a appliqués
         ##### On récupère la liste des options, sauf qu'on va mettre l'option choisit en tête de liste
         # Genre
         cur.execute('SELECT nom_genre FROM genre WHERE nom_genre = %s;', (genre,)) # On sélectionne l'option choisis
@@ -258,9 +280,9 @@ def search_game():
             lst_dev.append(res)
         ## Si on a trouvé aucun jeu correspondant aux filtres, on affiche à l'utilisateur qu'on a trouvé aucun jeu
         if not lst_jeu:
-                return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
-                                       lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, 
-                                       lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
+            return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
+                                    lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, 
+                                    lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
     return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'],  avatar = session['avatar'],
                            lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, 
                            lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
@@ -272,7 +294,6 @@ def supp_filtre_recherche():
 ## Fin des requêtes pour la recherche
 ############################################################################################################
 ## Début des requêtes pour les jeux
-
 @app.route("/game_click/<string:type>", methods=['GET'])
 def game_click(type):
     """
@@ -286,7 +307,7 @@ def game_click(type):
     type = type.replace("%20", " ") ## Le caractère %20 est la touche espace convertit dans l'url, on remplace donc le caractère %20 par des ' '
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    ## On sélectionne toutes les informations en lien avec le JEU clické pour qu'on puisse les afficher sur le site 
+    ## On sélectionne toutes les informations en lien avec le JEU cliqué pour qu'on puisse les afficher sur le site 
     with db.connect() as conn:
         cur = conn.cursor()
         ## on récupère l'ID du jeu
@@ -294,7 +315,12 @@ def game_click(type):
         for res in cur:
             id_jeu = res.id_jeu
         ## On récupère le titre, prix, date de sortie, age_min, synopsis, editeur, dev, url de l'img, la moyenne de ses notes
-        cur.execute('SELECT titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img, ROUND(avg(note), 1) AS moyenne FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) GROUP BY jeu.id_jeu, titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img HAVING titre = %s;', (type,))
+        cur.execute('''
+                    SELECT titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img, ROUND(avg(note), 1) AS moyenne 
+                    FROM jeu LEFT JOIN achat ON (jeu.id_jeu = achat.id_jeu) 
+                    GROUP BY jeu.id_jeu, titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img 
+                    HAVING titre = %s;''', 
+                    (type,))
         jeu = cur.fetchone()
         ## On récupère tout les genres associés à ce jeu
         cur.execute('SELECT nom_genre FROM jeu NATURAL JOIN classer NATURAL JOIN genre WHERE titre = %s', (jeu.titre,))
@@ -308,23 +334,53 @@ def game_click(type):
         cur.execute('SELECT intitule, condition, date_obtention FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, session['user_nickname'],))
         lst_succes_debloque = cur.fetchall()
         ## On récupère la liste des succès que le joueur n'a pas débloqué
-        cur.execute('SELECT intitule, condition FROM succes WHERE id_jeu = %s EXCEPT SELECT intitule, condition FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, id_jeu, session['user_nickname'],))
+        cur.execute('''
+                    SELECT intitule, condition FROM succes WHERE id_jeu = %s 
+                    EXCEPT SELECT intitule, condition FROM succes 
+                    NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s''', 
+                    (id_jeu, id_jeu, session['user_nickname'],))
         lst_succes_bloque = cur.fetchall()
+        ## On vérifie si le jeu a été partagé à l'utilisateur ou pas
+        cur.execute('SELECT pseudo1, pseudo2, id_jeu FROM partage WHERE pseudo2 = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
+        partage = cur.fetchone()
+        if partage: ## Si on a trouve un truc, alors le jeu a été partagé à l'utilisateur
+            return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'],  avatar = session['avatar'],  
+                                    partage = partage, jeu = jeu, lst_genre = lst_genre, lst_commentaire = lst_commentaire, 
+                                    lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
         ## On vérifie si l'utilisateur a acheté le jeu
         cur.execute('SELECT pseudo, id_jeu, commentaire FROM achat WHERE pseudo = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
         ## Si la requête ne trouve rien, alors l'utilisateur n'a pas acheté le jeu et on saute la boucle
         for res in cur:
-            ## Si c'est le cas, alors on vérifie s'il a mit un commentaire
+            ## On affiche la liste des joueurs avec qui il peut partager le jeu
+            ## i.e les joueurs amis avec la personne et qui ne POSSEDENT PAS LE JEU (Via achat ou par partage)
+            ## On vérifie d'abord qu'il a pas déjà partagé le jeu
+            cur.execute('SELECT pseudo2 FROM partage WHERE pseudo1 = %s and id_jeu = %s;', (session['user_nickname'], id_jeu ))
+            lst_joueur = cur.fetchone()
+            if not(lst_joueur):
+                ## On sélectionne sa liste d'ami, puis on y retire ceux qui possède le jeu ou ceux qui ont déjà le jeu partagé 
+                cur.execute('''
+                            SELECT pseudo1 AS pseudo, url_avatar FROM ami JOIN joueur ON pseudo1 = joueur.pseudo AND pseudo2 =  %s AND statut = 1
+                            UNION SELECT pseudo2, url_avatar FROM ami JOIN joueur ON pseudo2 = joueur.pseudo AND pseudo1 =  %s AND statut = 1
+                            EXCEPT SELECT pseudo, url_avatar FROM achat NATURAL JOIN joueur WHERE id_jeu = %s
+                            EXCEPT SELECT pseudo2, url_avatar FROM partage NATURAL JOIN jeu NATURAL JOIN joueur WHERE id_jeu = %s;
+                            ''', (session['user_nickname'], session['user_nickname'], id_jeu, id_jeu,))
+                lst_joueur = cur.fetchall()
+                already_partage = False
+            else:
+                already_partage = True
+            ## On vérifie s'il a mit un commentaire
             if res.commentaire != None:   
                 ## Si ce n'est pas le cas, alors on lui return la template pour qu'il puisse mettre un commentaire
                 return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],  
-                                       jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, 
-                                       no_commentaire = False, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
+                                       jeu = jeu, lst_genre = lst_genre, lst_joueur = lst_joueur, 
+                                       already_partage= already_partage, already_game = True, solde_restant = solde_restant, 
+                                       no_commentaire = False,lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                        lst_succes_bloque = lst_succes_bloque)
-            ## Sinon on return la tamplate normal
+            ## Sinon on return la template normal
             return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
-                                   jeu = jeu, lst_genre = lst_genre, already_game = True, solde_restant = solde_restant, 
-                                   no_commentaire = True, lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
+                                   jeu = jeu, lst_genre = lst_genre, lst_joueur = lst_joueur, 
+                                   already_partage= already_partage, already_game = True, solde_restant = solde_restant, no_commentaire = True, 
+                                   lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                    lst_succes_bloque = lst_succes_bloque)
         ## On vérifie que l'utilisateur peut acheter le jeu
         if solde_restant < 0:  ## Si ce n'est pas le cas, on le prévient
@@ -365,7 +421,7 @@ def buy_game():
         for res in cur:
             return redirect(url_for('game_click', type=name))
         ## On insère dans la table "achat", l'achat qu'on vient de faire.
-        ## ATTETION !! On n'insère pas de commentaire, ni de note dans la table "achat"
+        ## ATTENTION !! On n'insère pas de commentaire, ni de note dans la table "achat", lorsqu'on achète un jeu, on ne met pas un commentaire directement ...
         cur.execute('INSERT INTO achat (pseudo, id_jeu, date_achat) VALUES (%s, %s, DATE(NOW()));', (session['user_nickname'], id_jeu, ))
         ## On actualise le solde du joueur dans la session et la table
         session['solde'] = decimal.Decimal(session['solde']) - prix_jeu
@@ -399,6 +455,51 @@ def send_commentaire():
         cur.execute('UPDATE achat SET commentaire = %s, note = %s WHERE pseudo = %s AND id_jeu = %s;', (commentaire, rate, session['user_nickname'], id_jeu, ))
     name = name.replace(" ", "%20")
     return redirect(url_for('game_click', type=name))
+
+@app.route("/send_partage", methods=['POST'])
+def send_partage():
+    '''
+    Fonction qui comme son nom l'indique, permet de
+    partager un jeu avec un ami
+    '''
+    name = request.form.get("nom_jeu")
+    name = name.replace("%20", " ")
+    pseudo = request.form.get("send", None)
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On récupère l'ID du jeu qu'on souhaite partager
+        cur.execute('SELECT id_jeu FROM jeu WHERE titre = %s;', (name,) )
+        for res in cur:
+            id_jeu = res.id_jeu
+        ## On insère l'information dans la BDD
+        cur.execute('''
+                    INSERT INTO partage VALUES (%s, %s, %s, DATE(NOW()));
+                    ''', 
+                    (session["user_nickname"], pseudo, id_jeu,))
+    name = name.replace(" ", "%20")
+    return redirect(url_for('game_click', type=name))
+
+@app.route("/stop_partage", methods=['POST'])
+def stop_partage():
+    '''
+    Fonction qui comme son nom l'indique
+    arrête le partage avec un utilisateur
+    '''
+    name = request.form.get("nom_jeu")
+    name = name.replace("%20", " ")
+    pseudo = request.form.get("send", None)
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On récupère l'ID du jeu qu'on souhaite partager
+        cur.execute('SELECT id_jeu FROM jeu WHERE titre = %s;', (name,) )
+        for res in cur:
+            id_jeu = res.id_jeu
+        cur.execute('''
+                    DELETE FROM partage WHERE pseudo1 = %s AND pseudo2 = %s AND id_jeu = %s;
+                    ''', 
+                    (session["user_nickname"], pseudo, id_jeu,))
+    name = name.replace(" ", "%20")
+    return redirect(url_for('game_click', type=name))
 ## FIN des requêtes pour les jeux
 
 ############################################################################################################
@@ -406,11 +507,15 @@ def send_commentaire():
 ## Début des requêtes pour le profil
 @app.route("/profil")
 def profil():
+    '''
+    Fonction qui va faire toutes les requêtes
+    SQL pour récolter les informations concernant
+    l'utilisateur.
+    
+    Ses amis, ses requêtes d'amis, les jeux partagés ...
+    '''
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))
-    pseudo = request.args.get("pseudo", None)
-    recherche_lancer = False
-    liste_pseudo = []
     with db.connect() as conn:
         cur = conn.cursor()
         ## Les infos de l'utilisateur
@@ -419,14 +524,6 @@ def profil():
                     FROM joueur WHERE pseudo = %s;''',
                     (session['user_nickname'],))
         user_info = cur.fetchone()
-        ## Les infos sur les jeux qu'ils possèdent
-        cur.execute('''
-                    SELECT joueur.pseudo, COUNT(achat.id_jeu) AS nbr FROM joueur AS joueur 
-                    LEFT JOIN achat AS achat ON joueur.pseudo = achat.pseudo 
-                    GROUP BY joueur.pseudo HAVING joueur.pseudo = %s;
-                    ''',
-                    (session['user_nickname'],))
-        nbr_jeu = cur.fetchone()
         ## La liste de ses amis 
         cur.execute('''
                     SELECT DISTINCT pseudo, nom, mail, url_avatar
@@ -454,30 +551,79 @@ def profil():
         lst_requete = cur.fetchall()  
         ## La liste de tous les joueurs sur le site Nuage (En retirant ceux qui sont ami, et les requêtes d'amis) 
         cur.execute('''
-                    SELECT pseudo, url_avatar FROM joueur WHERE pseudo <> %sEXCEPT 
+                    SELECT pseudo, url_avatar FROM joueur WHERE pseudo <> %s EXCEPT 
                     (SELECT pseudo1, url_avatar FROM ami NATURAL JOIN joueur WHERE pseudo2 = %s) EXCEPT 
                     (SELECT pseudo2, url_avatar FROM ami NATURAL JOIN joueur WHERE pseudo1 = %s);
                     ''', (session['user_nickname'], session['user_nickname'], session['user_nickname'],))
         lst_joueur = cur.fetchall()
-    return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr,
-                           solde = session['solde'],liste_ami = liste_ami,
-                           liste_pseudo = liste_pseudo, recherche_lancer = recherche_lancer,
+        ## La liste des jeux qu'il a acheté
+        cur.execute('''
+                    SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne 
+                    FROM jeu NATURAL JOIN achat
+                    WHERE pseudo = %s GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;
+                    '''
+                    , (session['user_nickname'],))
+        lst_jeu = cur.fetchall()
+        ## La liste des jeux qu'on lui a partagé
+        cur.execute('''
+                    SELECT titre, prix, date_sortie, url_img, ROUND(avg(note), 1) AS moyenne 
+                    FROM partage NATURAL JOIN jeu NATURAL JOIN achat
+                    WHERE pseudo2 = %s GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;
+                    '''
+                    , (session['user_nickname'],))
+        lst_jeu_partage = cur.fetchall()
+         ## Les infos sur les jeux qu'ils possèdent
+        cur.execute('''
+                    SELECT joueur.pseudo, COUNT(achat.id_jeu) AS nbr FROM joueur AS joueur 
+                    LEFT JOIN achat AS achat ON joueur.pseudo = achat.pseudo 
+                    GROUP BY joueur.pseudo HAVING joueur.pseudo = %s;
+                    ''',
+                    (session['user_nickname'],))
+        nbr_jeu = cur.fetchone()
+        ## Les infos sur les jeux qu'on lui a partagé qu'il possède
+        cur.execute('''
+                    SELECT joueur.pseudo, COUNT(partage.id_jeu) AS nbr FROM joueur AS joueur 
+                    LEFT JOIN partage AS partage ON joueur.pseudo = partage.pseudo2 
+                    GROUP BY joueur.pseudo HAVING joueur.pseudo = %s;
+                    ''',
+                    (session['user_nickname'],))
+        nbr_jeu_partage = cur.fetchone()
+        ## La liste des jeux qu'il a partagé
+        cur.execute('''
+                    SELECT joueur.pseudo, COUNT(partage.id_jeu) AS nbr FROM joueur AS joueur 
+                    LEFT JOIN partage AS partage ON joueur.pseudo = partage.pseudo1 
+                    GROUP BY joueur.pseudo HAVING joueur.pseudo = %s;
+                    ''',
+                    (session['user_nickname'],))
+        nbr_jeu_partage_me = cur.fetchone()
+    return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr, nbr_jeu_partage = nbr_jeu_partage.nbr, nbr_jeu_partage_me = nbr_jeu_partage_me.nbr,
+                           lst_jeu = lst_jeu, lst_jeu_partage = lst_jeu_partage, solde = session['solde'], liste_ami = liste_ami,
                            liste_demande = liste_demande, lst_joueur = lst_joueur, lst_requete = lst_requete)
 
-@app.route("/disconnect", methods = ['POST'])
-def disconnect():
-    session.pop('user_nickname', None)
-    session.pop('solde', None)
-    session.pop('age', None)
-    return redirect(url_for('connexion'))
-
+@app.route("/add_solde", methods=['POST'])
+def add_solde():
+    '''
+    Fonction qui va permettre de mettre à jour le solde du joueur
+    '''
+    new_solde = request.form.get("solde", None)
+    with db.connect() as conn:
+        cur = conn.cursor()
+        cur.execute("UPDATE joueur SET solde = %s WHERE pseudo = %s;", (new_solde, session['user_nickname'],))
+        session['solde'] = new_solde
+        cur.execute("INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES (%s, DATE(NOW()), %s);", (session['user_nickname'], new_solde, ))
+    return redirect(url_for('profil'))
+    
+    
 @app.route("/request_ami", methods=['POST'])
 def request_ami():
+    '''
+    Fonction qui va permettre de gérer les requêtes d'amis
+    '''
     message = request.form.get("accepter", None)
     pseudo = request.form.get("pseudo", None)
     with db.connect() as conn:
         cur = conn.cursor()
-        if (message  == "True"):
+        if (message  == "True"): # Si on a accepté la requête le statut devient 1
                 cur.execute('''
                             UPDATE ami
                             SET statut = 1
@@ -485,7 +631,7 @@ def request_ami():
                             DELETE FROM ami
                             WHERE pseudo1 = %s AND pseudo2 = %s;''',
                             (pseudo, session["user_nickname"], session["user_nickname"], pseudo))
-        elif (message == "False"):
+        elif (message == "False"): # Si on a refusé la requête, on supprime tout simplement la ligne
                 cur.execute('''
                             DELETE FROM ami
                             WHERE pseudo1 = %s AND pseudo2 = %s;
@@ -495,6 +641,9 @@ def request_ami():
 
 @app.route("/send_request", methods=['POST'])
 def send_request():
+    '''
+    Fonction qui permet l'envoie d'une demande d'ami à un joueur
+    '''
     pseudo = request.form.get("send", None)
     with db.connect() as conn:
         cur = conn.cursor()
@@ -503,6 +652,47 @@ def send_request():
                     ''', 
                     (session["user_nickname"], pseudo,))
     return redirect(url_for('profil'))
+
+@app.route("/supp_ami", methods=['POST'])
+def supp_ami():
+    '''
+    Fonction qui permet la suppression d'un ami.
+    
+    La suppression d'un ami implique la suppresion de tout les jeux
+    partagés avec l'ami.
+    '''
+    pseudo = request.form.get("send", None)
+    with db.connect() as conn:
+        cur = conn.cursor()
+        ## On le supprime de sa liste d'ami
+        cur.execute('''
+                    DELETE FROM ami WHERE pseudo1 = %s AND pseudo2 = %s
+                    OR pseudo1 = %s AND pseudo2 = %s;
+                    ''', 
+                    (session["user_nickname"], pseudo,
+                     pseudo, session["user_nickname"]))
+        ## On supprime tout les jeux que l'ami a partagé à l'utilisateur
+        ## ou que l'utilisateur a partagé avec l'ami
+        cur.execute('''
+                    DELETE FROM partage WHERE pseudo1 = %s AND pseudo2 = %s
+                    OR pseudo1 = %s AND pseudo2 = %s;
+                    ''', 
+                    (session["user_nickname"], pseudo,
+                     pseudo, session["user_nickname"]))
+    return redirect(url_for('profil'))
+
+@app.route("/disconnect", methods = ['POST'])
+def disconnect():
+    '''
+    Fonction pour se déconnecter du compte
+    on supprime toutes les sessions et on ramène
+    l'utilisateur à la page de connexion
+    '''
+    session.pop('user_nickname', None)
+    session.pop('solde', None)
+    session.pop('age', None)
+    session.pop('avatar', None)
+    return redirect(url_for('connexion'))
 
 if __name__ == '__main__':
   app.run()
