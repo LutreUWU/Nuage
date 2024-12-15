@@ -391,7 +391,6 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S018', 'Let us be free', 'Finir le Canto V', 6),
 ('S019', 'J''ai pas d''idee', 'Succes sur Tsushima', 7),
 ('S020', 'One try', 'Gagner votre première partie', 8),
-('S021', 'It''s just teddy !', 'Trouver un ours en peluche', 9),
 ('S022', 'Hope blooms', 'Finir Danganronpa 2', 10),
 ('S023', 'Matrixé par LoL', 'Finir Mageseeker', 11),
 ('S024', 'J''ai pas d''idee aussi', 'Succes sur Tsushima', 12),

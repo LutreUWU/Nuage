@@ -319,6 +319,7 @@ button:hover{
     transform: translate(-50%, -50%);
     width: 60vw;
     height: 55vh;
+    padding-bottom: 1%;
     overflow-y: scroll;
     background-color: rgba(0, 0, 0, 0.8);
     border: 2px solid white;

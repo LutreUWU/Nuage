@@ -55,6 +55,8 @@ def new_compte():
     ## Pour l'avatar du joueur, on récupère les images et on lui associe un avatar au hasard
     images = []
     for fichier in os.listdir('static/img/avatar/'):
+        if fichier == ".DS_Store": ## Fichier sur Mac caché dans le dossier, je l'enlève 
+            continue
         images.append(fichier)
     avatar = random.choice(images)
     ## On récupère toutes les informations sous forme de liste
@@ -78,7 +80,7 @@ def new_compte():
                     INSERT INTO joueur 
                     VALUES (%s, %s, %s, %s, %s, %s)
                     ''', 
-                    (value_list[0], hash_pw, value_list[2], value_list[3], value_list[4], avatar,))
+                    (value_list[0], hash_pw, value_list[2], value_list[3], value_list[4], '../static/img/avatar/' + avatar,))
     return render_template("/connexion/connexion.html", create_compte = True, msg = "Le compte a été crée avec succès !")
 
 @app.route("/connexion/back_to_connexion", methods=['POST'])
@@ -340,12 +342,13 @@ def game_click(type):
                     NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s''', 
                     (id_jeu, id_jeu, session['user_nickname'],))
         lst_succes_bloque = cur.fetchall()
+        nb_succes = [len(lst_succes_debloque), len(lst_succes_bloque) + len(lst_succes_debloque)]
         ## On vérifie si le jeu a été partagé à l'utilisateur ou pas
         cur.execute('SELECT pseudo1, pseudo2, id_jeu FROM partage WHERE pseudo2 = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
         partage = cur.fetchone()
         if partage: ## Si on a trouve un truc, alors le jeu a été partagé à l'utilisateur
             return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'],  avatar = session['avatar'],  
-                                    partage = partage, jeu = jeu, lst_genre = lst_genre, lst_commentaire = lst_commentaire, 
+                                    partage = partage, jeu = jeu, lst_genre = lst_genre, lst_commentaire = lst_commentaire, nb_succes = nb_succes, 
                                     lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
         ## On vérifie si l'utilisateur a acheté le jeu
         cur.execute('SELECT pseudo, id_jeu, commentaire FROM achat WHERE pseudo = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
@@ -373,29 +376,29 @@ def game_click(type):
                 ## Si ce n'est pas le cas, alors on lui return la template pour qu'il puisse mettre un commentaire
                 return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],  
                                        jeu = jeu, lst_genre = lst_genre, lst_joueur = lst_joueur, 
-                                       already_partage= already_partage, already_game = True, solde_restant = solde_restant, 
+                                       already_partage= already_partage, already_game = True, solde_restant = solde_restant, nb_succes = nb_succes, 
                                        no_commentaire = False,lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                        lst_succes_bloque = lst_succes_bloque)
             ## Sinon on return la template normal
             return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
                                    jeu = jeu, lst_genre = lst_genre, lst_joueur = lst_joueur, 
-                                   already_partage= already_partage, already_game = True, solde_restant = solde_restant, no_commentaire = True, 
+                                   already_partage= already_partage, already_game = True, solde_restant = solde_restant, nb_succes = nb_succes, no_commentaire = True, 
                                    lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                    lst_succes_bloque = lst_succes_bloque)
         ## On vérifie que l'utilisateur peut acheter le jeu
         if solde_restant < 0:  ## Si ce n'est pas le cas, on le prévient
             return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
-                                   jeu = jeu, lst_genre = lst_genre, no_money = True, solde_restant = solde_restant, 
+                                   jeu = jeu, lst_genre = lst_genre, no_money = True, solde_restant = solde_restant, nb_succes = nb_succes, 
                                    lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                    lst_succes_bloque = lst_succes_bloque)
         ## On vérifie aussi qu'il a l'âge pour jouer, si ce n'est pas le cas, on le prévient
         elif int(session['age']) < jeu.age_min:
             return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'], 
-                                   jeu = jeu, lst_genre = lst_genre, no_age = True, solde_restant = solde_restant, lst_commentaire = lst_commentaire, 
+                                   jeu = jeu, lst_genre = lst_genre, no_age = True, solde_restant = solde_restant, nb_succes = nb_succes, lst_commentaire = lst_commentaire, 
                                    lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
     ## Si on arrive ici, alors le joueur peut acheter le jeu
     return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'],  avatar = session['avatar'],  
-                           jeu = jeu, lst_genre = lst_genre, solde_restant = solde_restant, lst_commentaire = lst_commentaire, 
+                           jeu = jeu, lst_genre = lst_genre, solde_restant = solde_restant, nb_succes = nb_succes, lst_commentaire = lst_commentaire, 
                            lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
 
 @app.route("/buy_game", methods=['POST'])
