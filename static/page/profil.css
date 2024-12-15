@@ -5,9 +5,9 @@ body{
 
 .first_row{
     margin: 2% auto;
-    padding: 1%;
     width: 40vw;
     display: flex;
+    background-color: rgba(0, 0, 0, 0.248);
 }
 
 .left_first_row{
@@ -72,7 +72,6 @@ body{
 
 .right_first_row{
     flex-basis: 70%;
-    background-color: rgba(0, 0, 0, 0.248);
     border: 2px solid #0b5991;
 }
 

@@ -122,9 +122,9 @@ CREATE TABLE debloquer(
 
 CREATE VIEW rapport AS
 (
-    SELECT date, nom_edite, sum(nb_vente * prix) AS chiffre_affaire, sum(nb_vente) AS total_vente, sum(nb_partage) AS total_partage, sum(nb_succe) AS total_succe,--nom, nb_vente, nb_partage,
+   SELECT date, nom_edite, sum(nb_vente * prix) AS chiffre_affaire, sum(nb_vente) AS total_vente, sum(nb_partage) AS total_partage, sum(nb_succes) AS total_succes,--nom, nb_vente, nb_partage,
             --le chiffre d’affaire réalisé
-           ROUND(avg(moyenne_note), 2) AS moyenne_note--moyenne_note, nb_succe, debloque_jeu.date_obtention, vente_jeu.date_achat, partage_jeu.date_partage
+           ROUND(avg(moyenne_note), 2) AS moyenne_note--moyenne_note, nb_succes, debloque_jeu.date_obtention, vente_jeu.date_achat, partage_jeu.date_partage
     FROM
     (
 	 	SELECT id_jeu, date_achat AS date FROM achat
@@ -143,11 +143,11 @@ CREATE VIEW rapport AS
         FROM partage
         GROUP BY id_jeu, date_partage
     ) AS partage_jeu NATURAL LEFT JOIN	
-    (
-       SELECT id_jeu, date_obtention AS jour, count(*) AS nb_succe
+    ( 
+       SELECT id_jeu, count(*) AS nb_succes
        FROM debloquer
-       GROUP BY id_jeu, date_obtention
-    ) AS debloque_jeu NATURAL JOIN
+       GROUP BY id_jeu
+    ) AS debloque_jeu NATURAL LEFT JOIN
     (
         SELECT nom_edite, id_jeu, prix FROM jeu JOIN entreprise ON jeu.nom_edite = entreprise.nom
     ) AS rapport_nom_dev 
@@ -507,7 +507,7 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('Zerio', 11, 4, 'Jsuis pas fan des graphismes mais le gameplay est sympa et l''histoire plutôt cool donc ça rattrape.', '2024-12-22'),
 
 ('Shing', 12, 4.7, 'Un Souls-like qui ne déçoit pas ! Bien qu''il soit assez différents des autres jeux fromsoftware, il a une belle histoire et des boss très satisfaisant à vaincre', '2024-01-10'),
-('LeCrapuleux', 12, 3.6, 'Le jeu est trop dur pour moi donc j''ai beaucoup de mal mais ce n''est pas un mauvais jeu pour autant.  Je suis sûr qu''il va plaire à d''autres personnes', '2024-02-17'),
+('LeCrapuleux', 12, 3.6, 'Le jeu est trop dur pour moi donc j''ai beaucoup de mal mais ce n''est pas un mauvais jeu pour autant.  Je suis sûr qu''il va plaire à d''autres personnes', '2024-01-10'),
 ('RolandLover19', 12, 4.2, 'Je suis un grand fan du japon féodal, jouer à ce jeu qui respecte bien les mentalités de l''époque est un vrai plaisir. De plus, les décor sont magnifiques', '2024-02-18'),
 
 ('Rocinante', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
