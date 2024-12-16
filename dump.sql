@@ -186,7 +186,8 @@ INSERT INTO entreprise (nom, pays) VALUES
 ('Arrowhead_Game_Studios', 'Suède'),
 ('ZTEK_Studio', 'Japon'),
 ('Theorycraft_Games', 'USA'),
-('Maxestlà', 'France');
+('Maxestlà', 'France'),
+('Mihoyo', 'Chine');
 
 -- Genres de jeux
 INSERT INTO genre (nom_genre) VALUES
@@ -206,7 +207,8 @@ INSERT INTO genre (nom_genre) VALUES
 ('Multijoueur'),
 ('Jeu de rôle'),
 ('Bac à sable'),
-('MMO');
+('MMO'),
+('MOBA');
 
 -- Attention, les INSERTS sont pas oufs
 -- Joueurs
@@ -330,6 +332,15 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 ('Upgun', 0, '2021-09-13', 6,
 'Mettez en pièce vos amis en brisant leurs écran dans Upgun ! Vous pouvez choisir une amélioration qui transformera votre partie au fil des rounds. Chaque partie sera différente étant donné la quantité colossale d''amélioration. ',
 'Maxestlà', 'Maxestlà', '../static/img/game_cover/Upgun.webp'
+),
+
+('League of Legends', 0, '2009-10-27', 12,
+'Jouez en équipe avec des inconnus ou des amis dans League of Legends. Un jeu d''équipe où chaque joueur devra jouer un champion différents avec divers rôles disponibles ! Vous trouverez sûrement votre bonheur parmi les 170+ champions disponibles actuellement. D''autres sont à venir puisque le jeu reçoit des mis à jour régulières afin d''assurer un équilibre.',
+'Riot_Games', 'Riot_Games', '../static/img/game_cover/league-of-legends.webp'),
+
+('Zenless Zone Zero', 0, '2024-07-04', 12,
+'Découvrez zenless zone zero, un gacha où, vous allez dans un premier temps chercher des missions à faire pour ensuite vous les réaliser par diverse phases de gameplay sous fonds de musiques au rythme endiablé !',
+'Mihoyo', 'Mihoyo', '../static/img/game_cover/ZZZ.webp'
 )
 ;
 
@@ -377,7 +388,10 @@ INSERT INTO classer (id_jeu, id_genre) VALUES
 (19, 12),
 (20, 11), -- Supervive est un jeu d'action
 (21, 11), -- UPgun est jeu d'action et indépendant
-(21, 12)
+(21, 12),
+(22, 18), -- LoL est un MOBA
+(23, 11), -- ZZZ est un jeu d'action et RPG
+(23, 13)
 ;
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
@@ -471,8 +485,15 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S099', 'Donne moi ton huile moteur', 'Vole 5000HP', 21),
 ('S100', 'BOUUUUUUUUUUUH', 'BOUUUUUUUUUUUH (nice)', 21),
 ('S101', 'Dangereux avec un grappin', 'Eliminez 25 joueurs au grappin', 21),
-('S102', 'Abracadabra', 'Téléportez vous 100 fois !', 21)
-;
+('S102', 'Abracadabra', 'Téléportez vous 100 fois !', 21),
+('S104', 'QUINTU-QUINTUPLÉÉÉ', 'Effectuez 5 quintuplé dans la même partie', 22),
+('S105', 'Un vrai couteau suisse', 'Obtenez une note de rang S ou S+ sur chaque rôle et avec différentes champions', 22),
+('S106', 'Solide comme un Rock', 'Subissez plus de 100 000 dégâts avec Malphite', 22),
+('S107', 'Finir un jeu sans fin?', 'Atteignez la maîtrise 10 sur 100 champions.', 22),
+('S108', 'Personne de confiance', 'Accomplissez plus de 10 missions différentes', 23),
+('S109', 'Proxy néophite', 'Atteignez le niveau 10', 23),
+('S110', 'Easy', 'Terminez un niveau avec 3 étoiles en difficulté max', 23),
+('S111', 'Trop chanceux', 'Obtenez votre premier 5 star de la bannière limitée', 23);
 
 -- Reapprovisionner (argent ajouté au porte-monnaie)
 INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
@@ -493,13 +514,39 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('Gammandi', 1, 4.2, 'Je suis désormais traumatisé à vie mais au moins j''ai finit le jeu', '2023-03-16'),
 ('Zerio', 1, 4.7, 'Je serais prêt à me faire lobotomiser pour oublier ce jeu et le redécouvrir', '2021-05-14'),
 
-('BlazedSora', 6, 3.9, 'J''ai eu un bon perso dès le début ducoup c''est forcément un bon jeu 👍', '2023-06-12'),
-('Gammandi', 6, 4.8, 'C''est un banger absolu, une histoire incroyable avec un système de combat particulier et une D.A magnifique.', '2021-01-06'),
-('Zerio', 6, 4.9, 'J''adore le systèle de dispense qui permet d''avoir le perso que tu souhaites en F2P même si tu es malchanceux. Meilleur Gacha.', '2022-02-12'),
+('Zerio', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
+('Sucre', 2, 3, 'DR 1 pose les bases de la série. C''est un jeu avec un concept original (des lycéens meurent lul). Les ost sont plutôt bonnes dans l''ensemble. Le style graphique pour les visuels est vraiment excellent selon moi. En point faible: l''histoire. Elle est trop courte et trop de personnages meurent avant que le joueur puisse mieux les connaitre.', '2017-05-20'),
+('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
 
 ('BlazedSora', 3, 3.1, 'Le gameplay est intéressant pour certains perso mais reste tout de même limité. En plus, le jeu n''est pas très très beau.', '2021-05-02'),
 ('Gammandi', 3, 4.9, 'Bien que le gameplay soit désagréable par moment, le jeu reste incroyable au niveau de l''histoire et du développement du personnage principal. Le héros évolue bien au fil du jeu et la tension est palpable par moment. Certains artwork sont magnifiques et embeillissent le design de plusieurs personnages.', '2021-07-11'),
 ('Zerio', 3, 4.1, 'Quelques musiques sont bien, l''histoire très cool. Le gameplay est cool de manière général. Malheureusement le jeu est parfois beau mais pas toujours.', '2021-11-12'),
+
+('Rocinante', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
+('Gregor14', 4, 5.0, 'La difficulté est au rendez-vous (sauf si vous jouez mage) avec des tas de builds différents (sauf mage) et le jeu est fun et demande un peu de réflexion sur certains boss (sauf pour les mages).', '2023-08-21'),
+('IsThatTheRedMist2', 4, 3.5, 'Le jeu offre une diversité tel que peu de joueurs auront une aventure très similaire. Bien que l''histoire de base reste la même pour tout les joueurs à quelques exception près. Vous décidez de où vous allez et de ce que VOUS jouez. Tracez votre propre route et profitez.', '2023-07-23'),
+
+('KebabIsGood24', 5, 4.7, 'Je n''ai pas vraiment aimé dofus donc je me suis mis à essayez Waven. Et je ne suis pas déçu ! Avec des amis c''est l''éclate la plus totale. les stratégie et builds sont très divers ce qui offre plusieurs style de jeu différents. Je conseille fort si vous avez des amis prêt à vous rejoindre.', '2021-10-20'),
+('LeCrapuleux', 5, 3.8, 'Le jeu est assez dur seul mais avec des amis c''est bien plus simple et permet d''avancer dans le jeu en groupe. Le jeu est un peu trop simple et il n''y a pas énormément de truc à faire mais ça reste cool.', '2022-09-10'),
+('RolandLover19', 5, 4.8, 'L''histoire est très divertissante et vous fera rire à coups sûr. L''humour d''Ankama c''est toujours incroyable et dans Waven, ça ne fait pas exception. Le jeu est aussi assez cool sur le gameplay et le multijouer est très amusant. ', '2021-09-15'),
+
+('BlazedSora', 6, 3.9, 'J''ai eu un bon perso dès le début ducoup c''est forcément un bon jeu 👍', '2023-06-12'),
+('Gammandi', 6, 4.8, 'C''est un banger absolu, une histoire incroyable avec un système de combat particulier et une D.A magnifique.', '2021-01-06'),
+('Zerio', 6, 4.9, 'J''adore le systèle de dispense qui permet d''avoir le perso que tu souhaites en F2P même si tu es malchanceux. Meilleur Gacha.', '2022-02-12'),
+
+('Shing', 7, 4.7, 'J''ai bien aimé le mode histoire qui est assez complet et permet d''admirer de beau paysages. Je recommande fortement aux fans du japon comme moi. Malheureusement, il y a quelques défauts d''optimisation mais rien de très grave.', '2023-02-10'),
+('LeCrapuleux', 7, 5.0, 'Ayant pratiqué le kendo pendant plusieurs années, j''ai beaucoup aimé l''authenticité des technniques au sabre. Et de manière générale, le jeu reste très fidèles au Japon. On remarque comment les devs se sont bien renseignés pour rendre le jeu le plus réaliste possible. Je valide fort. ', '2021-03-15'),
+('RolandLover19', 7, 4.5, 'J''ai acheté avant tout pour l''aspect multijoueur pour en profiter avec mon frère et on s''est bien amusés, quelques soucis de connection et optimisation mais c''est assez léger donc ça va.', '2023-02-18'),
+
+('KebabIsGood24', 8, 4.8, 'Un jeu de rythme vraiment sympa et qui manque pas de difficulté ! les musiques sont très cool et ambiance vraiment la partie.', '2023-09-25'),
+('LeCrapuleux', 8, 4.4, 'J''ai beaucoup aimé les musiques (logique c''est un jeu de rythme) mais le gameplay est assez particulier et c''est plutôt agréable. Dommage qu''il n''y a que du combat en ligne et pas de coop sans être en local.', '2021-09-22'),
+('RolandLover19', 8, 4.7, 'Le jeu se distingue pas mal au gameplay avec des OST au rythme effrénés et enjolivant. L''histoire aussi est sympa bien que, pour moi, ce n''est pas ce qui rends le jeu aussi bien.', '2023-10-15'),
+
+('Sucre', 10, 3.5, 'Pour DR2: Le jeu reprend les bases du 1 mais en corrigeant certains défauts. La durée de vie du jeu est plus longue et les personnages sont mieux exploités. De plus le cast des personnages est plus attachant que celui du 1. Le jeu a introduit aussi de nouvelles mécaniques notamment lors des procés, ce qui rend le visual novel plus dynamique.', '2017-08-19'),
+('Gammandi', 10, 4.6, 'J''ai adoré, il y a un peu trop de fan-service mais sinon l''histoire est incroyable et les musiques banger. J''ai aussi bien aimé comment fonctionne le jeu dans sa globalité.', '2017-10-10'),
+('Zerio', 10, 4.2, 'J''ai bien aimé le fan-service mais les phases de gameplay sont parfois un peu trop difficiles. J''ai pas l''habitude de ce genre de jeu.', '2018-09-11'),
+('BlazedSora', 10, 5.0, 'Le premier était déjà un pure banger mais là l''histoire est presque aboutis et c''est juste magnifique. Les musiques sont toujours un plaisir à écouter. Sans doute ma série de jeu préférée .', '2020-07-13'),
+('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25'),
 
 ('BlazedSora', 11, 4.3, 'League Of Legends c''est caca mais ce jeu est très bien. Validé par la street', '2022-08-02'),
 ('Gammandi', 11, 5, 'En tant que main Sylas, je dis haut et fort que ce jeu est un banger absolu et résume bien l''histoire de mon champion préféré. Des mécaniques de gameplay incroyable et des combat de boss que j''ai adoré.', '2024-05-11'),
@@ -509,10 +556,6 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('LeCrapuleux', 12, 3.6, 'Le jeu est trop dur pour moi donc j''ai beaucoup de mal mais ce n''est pas un mauvais jeu pour autant.  Je suis sûr qu''il va plaire à d''autres personnes', '2024-01-10'),
 ('RolandLover19', 12, 4.2, 'Je suis un grand fan du japon féodal, jouer à ce jeu qui respecte bien les mentalités de l''époque est un vrai plaisir. De plus, les décor sont magnifiques', '2024-02-18'),
 
-('Rocinante', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
-('Gregor14', 4, 5.0, 'La difficulté est au rendez-vous (sauf si vous jouez mage) avec des tas de builds différents (sauf mage) et le jeu est fun et demande un peu de réflexion sur certains boss (sauf pour les mages).', '2023-08-21'),
-('IsThatTheRedMist2', 4, 3.5, 'Le jeu offre une diversité tel que peu de joueurs auront une aventure très similaire. Bien que l''histoire de base reste la même pour tout les joueurs à quelques exception près. Vous décidez de où vous allez et de ce que VOUS jouez. Tracez votre propre route et profitez.', '2023-07-23'),
-
 ('KebabIsGood24', 13, 4.6, 'Le jeu est sympa visuellement, les combats sont cool avec des boss plus ou moins difficiles. En bref, c''est un bon jeu !', '2022-09-25'),
 ('LeCrapuleux', 13, 4.4, 'Les mécaniques de combats sont amusants à utiliser et l''histoire est assez prenante. Cependant le jeu est beaucoup trop court ! J''ai finis en mode difficile le jeu d''une traite et ça m''a pris moins d''une journée.', '2022-11-22'),
 ('RolandLover19', 13, 3.9, 'League Of Legends c''est toujours caca mais j''aime bien Ekko alors ça va', '2022-11-15'),
@@ -520,7 +563,6 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('BlazedSora', 14, 5.0,'Mon jeu préféré. L''histoire est incroyable, les personnages sont attachant et stylé, le système de combat est incroyable et détaillé. Le jeu devient progressivement très difficile ce qui force la réfléxion à certains moments. J''adore.','2021-09-10'),
 ('Gammandi', 14, 4.9,'Un banger trop peu connu. L''écriture des personnages, les musiques, l''histoire, tout est incroyable. Ceux qui disent que ce jeu est guez n''y ont jamais joué où sont éclatax au jeu. ','2022-10-10'),
 ('IsThatTheRedMist2', 14, 4.5,'A l''aide, j''ai finit le jeu depuis plusieurs mois et je n''arrive pas à me sortir "That''s that and this is this" de ma tête.  J''en suis au point où j''ai rétorqué ça à ma femme lorsqu''elle est partie avec les gosses... Cependant le jeu est bien','2023-11-13'),
-
 ('david', 14, 4.7,'Les musiques sont tellement banger que maintenant j''ai besoin d''en écouter une quotidiennement.','2022-08-07'),
 ('Gregor14', 14, 4.8,'Je n''arrive plus à progresser dans le jeu tant il est difficile. Ce n''est pas pour autant déplaisant puisque le système de combat fait beaucoup réfléchir et j''aime ça.','2023-12-09'),
 
@@ -529,25 +571,8 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('LeCrapuleux', 15, 0.1, 'Nan sérieux Roblox HAHAHAHAHAHA', '2020-11-12'),
 ('RolandLover19', 15, 3.5, 'Y a que des copie de jeux et le reste est P2W, mis à part quelques jeux qui sont banger et qui ne mérite pas d''être sur Roblox le reste c''est nul.', '2023-01-10'),
 --
-('Shing', 7, 4.7, 'J''ai bien aimé le mode histoire qui est assez complet et permet d''admirer de beau paysages. Je recommande fortement aux fans du japon comme moi. Malheureusement, il y a quelques défauts d''optimisation mais rien de très grave.', '2023-02-10'),
-('LeCrapuleux', 7, 5.0, 'Ayant pratiqué le kendo pendant plusieurs années, j''ai beaucoup aimé l''authenticité des technniques au sabre. Et de manière générale, le jeu reste très fidèles au Japon. On remarque comment les devs se sont bien renseignés pour rendre le jeu le plus réaliste possible. Je valide fort. ', '2021-03-15'),
-('RolandLover19', 7, 4.5, 'J''ai acheté avant tout pour l''aspect multijoueur pour en profiter avec mon frère et on s''est bien amusés, quelques soucis de connection et optimisation mais c''est assez léger donc ça va.', '2023-02-18'),
-
-('Gammandi', 10, 4.6, 'J''ai adoré, il y a un peu trop de fan-service mais sinon l''histoire est incroyable et les musiques banger. J''ai aussi bien aimé comment fonctionne le jeu dans sa globalité.', '2017-10-10'),
-('Zerio', 10, 4.2, 'J''ai bien aimé le fan-service mais les phases de gameplay sont parfois un peu trop difficiles. J''ai pas l''habitude de ce genre de jeu.', '2018-09-11'),
-('BlazedSora', 10, 5.0, 'Le premier était déjà un pure banger mais là l''histoire est presque aboutis et c''est juste magnifique. Les musiques sont toujours un plaisir à écouter. Sans doute ma série de jeu préférée .', '2020-07-13'),
-
-('KebabIsGood24', 8, 4.8, 'Un jeu de rythme vraiment sympa et qui manque pas de difficulté ! les musiques sont très cool et ambiance vraiment la partie.', '2023-09-25'),
-('LeCrapuleux', 8, 4.4, 'J''ai beaucoup aimé les musiques (logique c''est un jeu de rythme) mais le gameplay est assez particulier et c''est plutôt agréable. Dommage qu''il n''y a que du combat en ligne et pas de coop sans être en local.', '2021-09-22'),
-('RolandLover19', 8, 4.7, 'Le jeu se distingue pas mal au gameplay avec des OST au rythme effrénés et enjolivant. L''histoire aussi est sympa bien que, pour moi, ce n''est pas ce qui rends le jeu aussi bien.', '2023-10-15'),
-
-('KebabIsGood24', 5, 4.7, 'Je n''ai pas vraiment aimé dofus donc je me suis mis à essayez Waven. Et je ne suis pas déçu ! Avec des amis c''est l''éclate la plus totale. les stratégie et builds sont très divers ce qui offre plusieurs style de jeu différents. Je conseille fort si vous avez des amis prêt à vous rejoindre.', '2021-10-20'),
-('LeCrapuleux', 5, 3.8, 'Le jeu est assez dur seul mais avec des amis c''est bien plus simple et permet d''avancer dans le jeu en groupe. Le jeu est un peu trop simple et il n''y a pas énormément de truc à faire mais ça reste cool.', '2022-09-10'),
-('RolandLover19', 5, 4.8, 'L''histoire est très divertissante et vous fera rire à coups sûr. L''humour d''Ankama c''est toujours incroyable et dans Waven, ça ne fait pas exception. Le jeu est aussi assez cool sur le gameplay et le multijouer est très amusant. ', '2021-09-15'),
-
 ('Gammandi', 16, 5.0, 'Le jeu est trop cool, le concept est génial et j''aime bien la DA mais je n''ai jamais dépassé 1h sans mourrir ...', '2022-02-15'),
 ('KebabIsGood24', 16, 5.0, 'Un vrai banger !', '2023-03-12'),
-
 
 ('Lanius', 17, 5.0, 'J''ai battu mon pote à mort avec un panneau STOP avant de jeter son corps aux monstres, would play again', '2023-11-19'),
 ('LeCrapuleux', 17, 0.0, 'Pourquoi c''est autorisé de tuer ses propres coéquipiers avec un panneau STOP?', '2024-01-10'),
@@ -570,12 +595,13 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('Lanius', 21, 4.8, 'J''aime beaucoup, le jeu offre une diversité assez intéressante et plus la partie dure, plus ça devient n''importe de quoi.. Amusement garantis entre amis (et rage aussi)', '2023-05-23'),
 ('Philip', 21, 3.1, 'C''est dommage que le jeu n''est complet que si l''on paye le DLC, le jeu de base ne possède pas énormément de contenu ce qui limite les différents décors. j''ai quands même bien rigolé sur quelques parties mais rien de bien fou à l''usure.', '2024-04-18'), 
 
-('Zerio', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
+('LeDrogué', 22, 4.3, 'J''y joue tout les jours et n''arrête pas de m''amuser ! J''èspère atteindre le Bronze d''ici la fin de la saison. Je suis pour l''instant fer IV mais on n''abandonne pas :emojimuscle:', '2023-06-14'),
+('GrosOiseau', 22, 4.1, 'Mon coups de coeur à été Anivia et depuis je n''ai pas arrêté de jouer ce champion, il y a vraiment de tout en personnage jouable. J''aime beaucoup cette diversité.', '2021-01-07'),
+('Refel', 22, 5,'Je me lève tout les jours avec la tristesse aux yeux, un désespoir profond, une charge mentale et énergie vitale négative. 20/20, je continue d"y jouer.', '2024-12-16'),
 
-('Sucre', 2, 3, 'DR 1 pose les bases de la série. C''est un jeu avec un concept original (des lycéens meurent lul). Les ost sont plutôt bonnes dans l''ensemble. Le style graphique pour les visuels est vraiment excellent selon moi. En point faible: l''histoire. Elle est trop courte et trop de personnages meurent avant que le joueur puisse mieux les connaitre.', '2017-05-20'),
-('Sucre', 10, 3.5, 'Pour DR2: Le jeu reprend les bases du 1 mais en corrigeant certains défauts. La durée de vie du jeu est plus longue et les personnages sont mieux exploités. De plus le cast des personnages est plus attachant que celui du 1. Le jeu a introduit aussi de nouvelles mécaniques notamment lors des procés, ce qui rend le visual novel plus dynamique.', '2017-08-19'),
-('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
-('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25');
+('KebabIsGood24', 23, 4.5, 'La façon dont le "monde ouvert" est géré me plaît beaucoup. On peut prendre un café et même manger tout en cherchant pour des missions ! Le système de combat est aussi très sympa.', '2024-08-19'),
+('GlorieuseEvolution', 23, 3.8, 'Les combat sont sympa, l''univers est charmant et le design de certains personnages sont cool. Mais le jeu manque d''une glorieuse évolution.', '2024-07-04'),
+('Rocinante', 23, 4.8, 'INCROYABLE, LA D.A EST MAGNIFIQUE ET LES MUSIQUES TROP COOL. LE SEUL DÉFAUT QUE J"AI TROUVÉ C"EST QUE  J''AIME TROP DE PERSOS ET QUE JE NE PEUX PAS TOUS LES AVOIR !!!!!!!', '2024-11-14');
 
 -- Partages de jeux entre joueurs
 INSERT INTO partage (pseudo1, pseudo2, id_jeu, date_partage) VALUES

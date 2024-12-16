@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
 </head>
-
+<!--DIV nav-->
 <div class="nav">
     <div class="nav_info">
         <img class="nav_avatar" src={{avatar}}>
@@ -37,12 +37,13 @@
     </form>
 </div>
 
+<!--main DIV-->
 <div class='mainDiv'>
     <h1>Rechercher un jeu</h1>
     <form method="get" action="search_game">
-            {% if default[0]%}
-            <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche" value ={{default[0]}}>
-            {% else %}
+            {% if default[0]%} <!--Si on avait déjà fait une recherche, on affiche la recherche qu'on avait faite-->
+            <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche" value ="{{default[0]}}">
+            {% else %} <!--Sinon on affiche rien-->
             <input class="type_search" type=text placeholder="Chercher un jeu..." name="titre_recherche">
             {% endif %}
         <span>

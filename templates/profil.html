@@ -162,7 +162,7 @@
                     </div>
                 </form>
             {% endfor%}
-            <!-- La liste des demandes d'amis que l'utilisateur a fait -->
+            <!-- La liste des demandes d'amis que l'utilisateur a envoyé -->
             <h3 style="border-top:5px double grey; padding-top:1vh;">Vos demandes d'amis</h3>
             {% if not lst_requete%}
                 <p style="text-align:center;">Vous avez fait aucune requête</p>
@@ -181,13 +181,14 @@
         </div>
     </div>
 <!--DIV pour les jeux-->
+    <!--Liste des jeux-->
     <h1>Vos Jeux</h1>
-    {%if not(lst_jeu)%}
+    {%if not(lst_jeu)%} <!--Si on n'a acheté aucun jeu-->
         <h2>Vous avez acheté aucun jeu</h2>
-    {%else%}
+    {%else%} <!--Sinon on affiche les jeux qu'il a acheté-->
         <div class='allGame'>
             {% for elem in lst_jeu %}
-            <form class='Game', methods="get" action="game_click/{{elem.titre.replace('/', '%2F')}}" onclick="submit()">
+            <form class='Game', methods="get" action="game_click/{{elem.titre}}" onclick="submit()">
                 <img src={{elem.url_img}}>
                 <img class="img_jeu_blur" src={{elem.url_img}}>
                 <h4>{{elem.titre}}</h4>
@@ -206,13 +207,14 @@
             {% endfor%}
     {% endif %}
     </div>
+    <!--Liste des jeux qu'on lui a partagé-->
     <h1>Jeux partagés avec vous</h1>
-    {%if not(lst_jeu_partage)%}
+    {%if not(lst_jeu_partage)%} <!--Dans le cas où il a aucun jeu partagé-->
         <h2>Vous avez emprunté aucun jeu</h2>
     {%else%}
         <div class='allGame'>
             {% for elem in lst_jeu_partage %}
-            <form class='Game', methods="get" action="game_click/{{elem.titre.replace('/', '%2F')}}" onclick="submit()">
+            <form class='Game', methods="get" action="game_click/{{elem.titre}}" onclick="submit()">
                 <img src={{elem.url_img}}>
                 <img class="img_jeu_blur" src={{elem.url_img}}>
                 <h4>{{elem.titre}}</h4>

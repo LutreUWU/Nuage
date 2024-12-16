@@ -4,11 +4,10 @@ body{
 
 .mainDiv{
     position: absolute;
-    top: 45%;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 40vw;
-    height: 30vh;
 }
 
 .mainDiv h1{

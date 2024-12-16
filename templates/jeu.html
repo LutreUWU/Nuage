@@ -83,31 +83,26 @@
     <!--2ème div qui cette fois-ci va contenir des informations concernant le joueur et s'il a acheté le jeu ou pas -->
     <form class="Game" action="{{url_for('buy_game')}}" method="POST">
         <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input> <!--Input hidden qui va permettre de récupérer le jeu -->
-        <!--Si le jeu a été partagé-->
-        {% if partage %}
+        {% if partage %} <!--Si le jeu a été partagé-->
             <div class="already_buy">
             <span style="text-wrap:nowrap"> {{partage.pseudo1}} a partagé ce jeu avec vous !</span>
-        {% else %}
-            <!--Si on a déjà acheté le jeu-->
-            {% if already_game %}
-            <div class="already_buy">
-            <span style="text-wrap:nowrap"> Vous avez déjà acheté le jeu !</span>
-            <!--Si on n'a pas déjà acheté le jeu-->
-            {% else %}
+        {% else %} <!--Si le jeu n'a pas été partagé-->
+            {% if already_game %} <!--Si l'user a déjà acheté le jeu-->
+                <div class="already_buy">
+                <span style="text-wrap:nowrap"> Vous avez déjà acheté le jeu !</span>
+            {% else %} <!--Si on n'a pas déjà acheté le jeu-->
                 <div class="buy_div" style="width:43%; margin-left: 56.7%">
-                <!--Si l'utilisateur est pauvre-->
-                {% if no_money %}
+                {% if no_money %} <!--Si l'utilisateur est pauvre-->
                 <span style="text-wrap:nowrap;"> Vous êtes PAUVRE !</span>
                 {% else %}
-                    <!--Si on a pas l'âge requis-->
-                    {% if no_age %} 
+                    {% if no_age %} <!--Sinon, si on a pas l'âge requis--> 
                     <span style="text-wrap:nowrap; font-size:0.8em"> Vous êtes TROP JEUNE</span>
                     {% else %}
                         <!--Sinon, on a l'âge requis et l'argent nécessaire pour acheter le jeu-->
                         {% if jeu.prix == 0.0 %} <!--Dans le cas où le jeu est gratuit-->
                         <button type="button" id="buy" > Obtenir</button>
                         <span>Gratuit</span>
-                        {% else %}
+                        {% else %} <!--Sinon-->
                             <button type="button" id="buy"> Acheter</button>
                             <span>{{jeu.prix}} €</span>        
                         {% endif %}
@@ -152,12 +147,14 @@
         <form class="send_commentaire" action="/send_commentaire" method="POST">
             <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
             <h2>Donnez un avis sur <u style="color:rgb(32, 97, 204);">{{jeu.titre}} :</u></h2>
-            <div class="send_commentaire_div"> <!--Commentaire-->
+            <!--Commentaire-->
+            <div class="send_commentaire_div"> 
                 <textarea name="commentaire" rows="30" cols="230" placeholder="Ecrire un commentaire ..." required></textarea>
             </div>
-            <div class="avis_and_send_div">
+            <!--Note & Button submit-->
+            <div class="avis_and_send_div"> 
                 <div>
-                    <img src="../static/img/star.png"> <!--Note-->
+                    <img src="../static/img/star.png"> 
                     <input class="rate" type="number" name="note_jeu" min="0" max="5" step="0.1" value="5" required/>
                 </div>
                 <input class="send" style="padding:0.3% 0.5%;" type=submit value="Envoyer">
@@ -172,6 +169,7 @@
             <!--Pour chaque commentaire sur le jeu ...-->
             {% for elem in lst_commentaire %}
                 <!--Si le commentaire appartient à l'utilisateur, on lui propose de modifier son commentaire et sa note-->
+                <!--Pour ce faire, on modifie juste le type de la balise <p> par un <input> -->
                 {% if (elem.pseudo == user) %}
                 <form action="/send_commentaire" method="POST">
                     <input type="hidden" value={{jeu.titre.replace(' ', '%20')}} name="nom_jeu" ></input>
@@ -182,6 +180,7 @@
                                 <p>{{elem.pseudo}}</p>
                                 <div style="display:flex; align-items:center; height:2vh">
                                     <img class="star" src="../static/img/star.png">
+                                    <!--balise input-->
                                     <input class="rate_own" type="number" name="note_jeu" min="0" max="5" step="0.1" value={{elem.note}} required/>
                                 </div>                            
                                 <p style="color:grey; font-size:0.7em; text-decoration:underline" >Acheté le :</p>
@@ -207,6 +206,7 @@
                             </div>
                         </div>
                         <div class="content_commentaire">
+                            <!--balise p-->
                             <p>{{elem.commentaire}}<p>
                         </div>
                     </div>
@@ -248,8 +248,9 @@
             {%endif%}
         </div>
     </div>
-    {% if already_game%}
-        {% if already_partage %}
+    <!--DIV pour le partage de jeu-->
+    {% if already_game%} <!--On vérifie qu'il a acheté le jeu-->
+        {% if already_partage %} <!--Si l'user a déjà partagé le jeu, on lui propose d'arrêter le partage-->
         <h2 style="width:100%; text-align:center;" >Vous avez déjà partagé ce jeu avec {{lst_joueur.pseudo2}}</h2>
         <form style="width:100%;color:darkred; display:flex; justify-content:center; align-items:center; gap:1vw;"
         action="/stop_partage" method="POST" id="joueur">

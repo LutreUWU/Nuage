@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=VT323&display=swap" rel="stylesheet">
 </head>
 
+<!--DIV nav-->
 <div class="nav">
     <div class="nav_info">
         <img class="nav_avatar" src={{avatar}}>
@@ -37,39 +38,43 @@
     </form>
 </div>
 
+<!--Main DIV-->
 <div class='mainDiv'>
-    <h1 style="display:inline-block;">Liste des jeux : </h1>
-    <form style="display:inline-block;" methods="get" action="add_filtre">
-        <select class="filtre_button" name="type" onchange="submit()">
-            <option value="default">{{default}}
-            {% for elem in lst_type %}
-            <option type=submit value={{elem}}>{{elem}}
-            {% endfor %}
-        </select>
-    </form>
-    {% if filtre%}
-    <form style="display:inline-block;" methods="post" action="supp_filtre" onclick="submit()">
-    <span class="filtre" type=submit> • Supprimer le filtre</span>
-    </form>
-    {%endif%}
-    <div class='allGame'>
-        {% for elem in lst_jeu %}
-        <form class='Game', methods="get" action="game_click/{{elem.titre.replace('/', '%2F')}}" onclick="submit()">
-            <img src={{elem.url_img}}>
-            <img class="img_jeu_blur" src={{elem.url_img}}>
-            <h4>{{elem.titre}}</h4>
-            {% if elem.prix == 0.0 %}
-                <h5>Gratuit</h5>
-            {% else%}
-            <h5>{{elem.prix}} €</h5>
-            {% endif %}
-            <h6>{{elem.date_sortie}}</h6>
-            {% if elem.moyenne == None %}
-                <p>Aucune note</p>
-            {% else%}
-                <p>{{elem.moyenne}}<img class='star' src='../static/img/star.png'></p>
-            {% endif %}
+    <!--Liste des jeux-->
+        <h1 style="display:inline-block;">Liste des jeux : </h1>
+        <form style="display:inline-block;" methods="get" action="add_filtre">
+            <select class="filtre_button" name="type" onchange="submit()">
+                <option value="default">{{default}}
+                {% for elem in lst_type %}
+                <option type=submit value={{elem}}>{{elem}}
+                {% endfor %}
+            </select>
         </form>
-        {% endfor%}
-    </div>
+    <!--Filtre pour les jeux-->
+        {% if filtre%} <!--Si on active les filtres, on affiche la div permettant de supprimer les divs-->
+        <form style="display:inline-block;" methods="post" action="supp_filtre" onclick="submit()">
+        <span class="filtre" type=submit> • Supprimer le filtre</span>
+        </form>
+        {%endif%}
+        <!--Liste de tout les jeux-->
+        <div class='allGame'>
+            {% for elem in lst_jeu %}
+            <form class='Game', methods="get" action="game_click/{{elem.titre}}" onclick="submit()">
+                <img src={{elem.url_img}}>
+                <img class="img_jeu_blur" src={{elem.url_img}}>
+                <h4>{{elem.titre}}</h4>
+                {% if elem.prix == 0.0 %}
+                    <h5>Gratuit</h5>
+                {% else%}
+                <h5>{{elem.prix}} €</h5>
+                {% endif %}
+                <h6>{{elem.date_sortie}}</h6>
+                {% if elem.moyenne == None %}
+                    <p>Aucune note</p>
+                {% else%}
+                    <p>{{elem.moyenne}}<img class='star' src='../static/img/star.png'></p>
+                {% endif %}
+            </form>
+            {% endfor%}
+        </div>
 </div>
