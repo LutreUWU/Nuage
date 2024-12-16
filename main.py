@@ -609,11 +609,12 @@ def add_solde():
     Fonction qui va permettre de mettre à jour le solde du joueur
     '''
     new_solde = request.form.get("solde", None)
+    montant = str(int(float(new_solde) - float(session['solde'])))
     with db.connect() as conn:
         cur = conn.cursor()
         cur.execute("UPDATE joueur SET solde = %s WHERE pseudo = %s;", (new_solde, session['user_nickname'],))
         session['solde'] = new_solde
-        cur.execute("INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES (%s, DATE(NOW()), %s);", (session['user_nickname'], new_solde, ))
+        cur.execute("INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES (%s, DATE(NOW()), %s);", (session['user_nickname'], montant, ))
     return redirect(url_for('profil'))
     
     

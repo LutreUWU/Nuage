@@ -131,7 +131,6 @@ h2{
 }
 
 .Game .buy_div{
-    height: 5vh;
     background-color:  rgba(130, 130, 130, 0.5);
     border: 2px solid #0b5991;
     position: relative;
@@ -243,23 +242,23 @@ h2{
 .send_commentaire{
     border-top: 2px solid rgb(32, 97, 154);
     background : linear-gradient( to bottom, rgba(80, 80, 80, 0.2) 5%, rgba(58, 58, 58, 0.2) 95%); 
-    height: 40vh;
     width: 100%;
-    position: relative;
     backdrop-filter: blur(2px);
+    z-index: 10;
 }
 
 .send_commentaire h2{
     margin-left: 1vw;
+    margin-bottom: 5vh;
 }
 
 .send_commentaire textarea{
-    position: absolute;
+    width: 80%;
+    max-height: 25vh;
+    position: relative;
     left: 50%;
     transform: translate(-50%);
-    max-width: 90%;
     font-size: 1em;
-    max-height: 25vh;
     color:white;
     background : linear-gradient( to bottom, #222b35 5%, #243344 95%); 
     box-shadow: inset 1px 1px 10px rgb(70, 70, 70);
@@ -275,9 +274,8 @@ h2{
 }
 
 .avis_and_send_div{
-    position: absolute;
-    bottom: 1.2%;
-    padding: 0 2%;
+    margin-top: 5vh;
+    padding: 1% 2%;
     width: 96%;
     height: 5vh;
     display: flex;
@@ -395,7 +393,7 @@ h2{
     display: flex;
     align-items: top;
     gap: 1vw;
-    min-width: 24%;
+    min-width: 28%;
 }
 
 .avatar_user{
@@ -643,8 +641,8 @@ h2{
     background-color: rgba(0, 0, 0, 0.5);
     border: 2px solid #0b5991;
     font-size: 2em;
+    padding: 1vh 0;
     padding-left: 1%;
-    height: 4vw;
     width: 45vw;
     border-radius: 10px;
     color: white;

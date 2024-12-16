@@ -1,7 +1,7 @@
 body{
     background-image: url("./img/BG.jpg");
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     background-size: cover;
     image-rendering: pixelated;
     font-size: 1.2vw;
@@ -9,6 +9,7 @@ body{
     background-repeat: no-repeat;
     background-color: rgb(2, 6, 4);
     margin: 0;
+    padding-bottom: 5%;
 }
 
 .nav{
@@ -65,7 +66,7 @@ nav form input{
     font-family: "VT323", monospace;
     font-size: 2.3em;
     width: 15vw;
-    height: 8vh;
+    padding: 1vh 0;
     background-color: transparent;
     text-align: center;
     color: white;

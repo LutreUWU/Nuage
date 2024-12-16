@@ -144,9 +144,9 @@ CREATE VIEW rapport AS
         GROUP BY id_jeu, date_partage
     ) AS partage_jeu NATURAL LEFT JOIN	
     ( 
-       SELECT id_jeu, count(*) AS nb_succes
-       FROM debloquer
-       GROUP BY id_jeu
+       SELECT id_jeu, date_obtention AS date, count(*) AS nb_succes
+       FROM debloquer 
+       GROUP BY id_jeu, date_obtention
     ) AS debloque_jeu NATURAL LEFT JOIN
     (
         SELECT nom_edite, id_jeu, prix FROM jeu JOIN entreprise ON jeu.nom_edite = entreprise.nom
@@ -157,16 +157,6 @@ CREATE VIEW rapport AS
 
 -- Entreprises
 INSERT INTO entreprise (nom, pays) VALUES
-('Capcom', 'Japon'),
-('Square_Enix', 'Japon'),
-('Bethesda', 'USA'),
-('Bungie', 'USA'),
-('CD_Projekt', 'Pologne'),
-('Naughty_Dog', 'USA'),
-('2K_Games', 'USA'),
-('Riot_Games', 'USA'),
-('Sega', 'Japon'),
-('Gearbox_Software', 'USA'),
 ('Project_Moon', 'Corée'),
 ('Ubisoft_Montreal', 'Canada'),
 ('Spike_Chunsoft', 'Japon'),
@@ -178,11 +168,12 @@ INSERT INTO entreprise (nom, pays) VALUES
 ('Humble_Games', 'USA'),
 ('Digital_Sun', 'Espagne'),
 ('Riot_Forge', 'USA'),
+('Riot_Games', 'USA'),
 ('Activision', 'USA'),
 ('Double_Stallion', 'Canada'),
 ('Roblox_Corporation', 'USA'),
 ('Motion_Twin','France'),
-('Zeekerss', '??'),
+('Zeekerss', 'Inconnu'),
 ('Arrowhead_Game_Studios', 'Suède'),
 ('ZTEK_Studio', 'Japon'),
 ('Theorycraft_Games', 'USA'),
@@ -191,16 +182,11 @@ INSERT INTO entreprise (nom, pays) VALUES
 
 -- Genres de jeux
 INSERT INTO genre (nom_genre) VALUES
-('Simulation'),
 ('Stratégie'),
-('MMORPG'),
-('Survival'),
-('VR'),
 ('Sandbox'),
 ('Musique'),
-('Puzzle'),
 ('Horreur'), 
-('Indépendant'), --10
+('Indépendant'),
 ('Aventure'),
 ('Action'),
 ('RPG'),
@@ -210,8 +196,8 @@ INSERT INTO genre (nom_genre) VALUES
 ('MMO'),
 ('MOBA');
 
--- Attention, les INSERTS sont pas oufs
 -- Joueurs
+-- Tout les MDP sont 123
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar) VALUES
 ('BlazedSora', '$2b$12$0VfNOiZzcdTGOlapxCxeOuMZPpy1xQp8xN59XoF0eQGv30ciE9Jku', 'Oliver Grey', 'oliver@gmail.com', '1992-11-01','../static/img/avatar/Nagito_Komaeda_Report_Card_Profile.webp'),
 ('Gammandi', '$2b$12$6o7uSZLw5X02hL3SDqfuC.FhZ96aI4Scdh4TwpHYAD0g0WfbNC3WC', 'Sophia Black', 'sophia@gmail.com', '1990-10-12', '../static/img/avatar/Akane_Owari_Report_Card_Profile.webp'),
@@ -239,9 +225,11 @@ INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar) VALUES
 ('Sucre', '$2b$12$qGVlteqLq4nIUGYQCPR63.Gb1TAgPevaFMGlZEb3Sz6b7KbfVOfFe', 'Sucre', 'Sucre@gmail.com', '2003-02-23', '../static/img/avatar/Ibuki_Mioda_Report_Card_Profile.webp')
 ;
 
+--Séparement car on leur ajoute un solde pour faire les tests
+-- Tout les MDP sont 123
 INSERT INTO joueur (pseudo, mdp, nom, mail, date_naissance, url_avatar, solde) VALUES
-('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', '../static/img/avatar/Chiaki.jpg', 50), --MDP : 123
-('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', '../static/img/avatar/chauve.jpeg', 60); --MDP : 123
+('david', '$2b$12$EGQmS9W6aN5x.cU7sbRE4uM.FwmL6kSBGoFfHGn539tBO/IeyPU0i', 'dada dembele', 'dada@gmail.com', '2006-01-10', '../static/img/avatar/Chiaki.jpg', 50), 
+('abdel', '$2b$12$65L8VEsVpi1oHY1hKuVTl.ENKwHtxNWNjPD4tRtldU/EE1YnoSZCC', 'abdel kader', 'abdel@gmail.com', '2014-03-04', '../static/img/avatar/chauve.jpeg', 60); 
 
 -- Jeux
 INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev, url_img) VALUES
@@ -346,52 +334,52 @@ INSERT INTO jeu (titre, prix, date_sortie, age_min, synopsis, nom_edite, nom_dev
 
 -- Classer les jeux dans des genres
 INSERT INTO classer (id_jeu, id_genre) VALUES
-(1, 9),  -- Lobotomy Corp est un jeu d'Horreur psychologique
-(2, 11), -- Danganronpa: Trigger Happy Havoc est un jeu d'aventure
-(3, 12),  -- Fate/Samurai Remnant est un jeu d'action et de RPG
-(3, 13),
-(4, 12),  -- Elden ring est un jeu d'action et de RPG
-(4, 13), 
-(5, 14),  -- Waven est un jeu multi et un jeu de rôle
-(5, 15), 
-(6, 2), -- Limbus Company est un jeu de stratégie, un jeu d'horreur, et un RPG
-(6, 9),  
-(6, 13), 
-(7, 11), -- Ghost of Tsushima est un jeu d'action et d'aventure
-(7, 12), 
-(8, 2),  -- One Step est un jeu de Stratégie, indépendant, aventure, action
-(8, 10),
-(8, 11),
-(8, 12),
-(9, 11), -- Rain Code est un jeu d'action et d'aventure
-(9, 12),
-(10, 11), -- Danganronpa 2 est un jeu d'aventure
-(11, 12), -- Mageseeker est un jeu d'Action, RPG et Indépendant
-(11, 13),
-(11, 10),
-(12, 11), -- Sekiro est un jeu Action et Aventure
-(12, 12),
-(13, 11), -- Convergence est un jeu Action et Aventure
-(13, 12),
-(14, 10), -- Library of Ruina est un jeu Indépendant, RPG, Stratégie
-(14, 13),
-(14, 2),
-(15, 16), -- Roblox est un jeu bac à sable et MMO 
-(15, 17),
-(16, 11), -- Dead Cells est un Action, Aventure, Indépendant
-(16, 12),
-(16, 10),
-(17, 9), -- Lethal est un jeu d'horreur et multi
-(17, 14),
-(18, 11), -- Helldivers 2 est un jeu d'action
-(19, 11), -- Panicore est un jeu d'action et aventure
-(19, 12),
-(20, 11), -- Supervive est un jeu d'action
-(21, 11), -- UPgun est jeu d'action et indépendant
-(21, 12),
-(22, 18), -- LoL est un MOBA
-(23, 11), -- ZZZ est un jeu d'action et RPG
-(23, 13)
+(1, 4),  -- Lobotomy Corp est un jeu d'Horreur psychologique
+(2, 6), -- Danganronpa: Trigger Happy Havoc est un jeu d'aventure
+(3, 7),  -- Fate/Samurai Remnant est un jeu d'action et de RPG
+(3, 8),
+(4, 7),  -- Elden ring est un jeu d'action et de RPG
+(4, 8), 
+(5, 9),  -- Waven est un jeu multi et un jeu de rôle
+(5, 10), 
+(6, 1), -- Limbus Company est un jeu de stratégie, un jeu d'horreur, et un RPG
+(6, 4),  
+(6, 8), 
+(7, 7), -- Ghost of Tsushima est un jeu d'action et d'aventure
+(7, 6), 
+(8, 1),  -- One Step est un jeu de Stratégie, indépendant, aventure, action
+(8, 5),
+(8, 7),
+(8, 6),
+(9, 7), -- Rain Code est un jeu d'action et d'aventure
+(9, 6),
+(10, 7), -- Danganronpa 2 est un jeu d'aventure
+(11, 6), -- Mageseeker est un jeu d'Action, RPG et Indépendant
+(11, 8),
+(11, 5),
+(12, 7), -- Sekiro est un jeu Action et Aventure
+(12, 6),
+(13, 7), -- Convergence est un jeu Action et Aventure
+(13, 6),
+(14, 5), -- Library of Ruina est un jeu Indépendant, RPG, Stratégie
+(14, 8),
+(14, 1),
+(15, 11), -- Roblox est un jeu bac à sable et MMO 
+(15, 12),
+(16, 7), -- Dead Cells est un Action, Aventure, Indépendant
+(16, 6),
+(16, 5),
+(17, 4), -- Lethal est un jeu d'horreur et multi
+(17, 9),
+(18, 7), -- Helldivers 2 est un jeu d'action
+(19, 7), -- Panicore est un jeu d'action et aventure
+(19, 6),
+(20, 7), -- Supervive est un jeu d'action
+(21, 7), -- UPgun est jeu d'action et indépendant
+(21, 5),
+(22, 13), -- LoL est un MOBA
+(23, 7), -- ZZZ est un jeu d'action et RPG
+(23, 8)
 ;
 -- Succès pour les jeux
 INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
@@ -495,18 +483,18 @@ INSERT INTO succes (code, intitule, condition, id_jeu) VALUES
 ('S110', 'Easy', 'Terminez un niveau avec 3 étoiles en difficulté max', 23),
 ('S111', 'Trop chanceux', 'Obtenez votre premier 5 star de la bannière limitée', 23);
 
--- Reapprovisionner (argent ajouté au porte-monnaie)
+-- Reapprovisionner (La quantité d'argent qu'on a ajouté au porte-monnaie)
 INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES
-('BlazedSora', '2024-11-01', 300),
-('Gammandi', '2024-11-05', 400),
-('Zerio', '2024-11-10', 500),
-('Shing', '2024-11-12', 600),
-('LeCrapuleux', '2024-11-15', 700),
-('RolandLover19', '2024-11-17', 800),
-('IsThatTheRedMist2', '2024-11-20', 150),
-('Gregor14', '2024-11-22', 900),
-('Rocinante', '2024-11-25', 1100),
-('KebabIsGood24',  '2024-11-26', 1300);
+('BlazedSora', '2024-11-01', 30),
+('Gammandi', '2024-11-05', 40),
+('Zerio', '2024-11-10', 50),
+('Shing', '2024-11-12', 60),
+('LeCrapuleux', '2024-11-15', 70),
+('RolandLover19', '2024-11-17', 80),
+('IsThatTheRedMist2', '2024-11-20', 15),
+('Gregor14', '2024-11-22', 90),
+('Rocinante', '2024-11-25', 110),
+('KebabIsGood24',  '2024-11-26', 130);
 
 -- Achats de jeux
 INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
@@ -514,29 +502,29 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('Gammandi', 1, 4.2, 'Je suis désormais traumatisé à vie mais au moins j''ai finit le jeu', '2023-03-16'),
 ('Zerio', 1, 4.7, 'Je serais prêt à me faire lobotomiser pour oublier ce jeu et le redécouvrir', '2021-05-14'),
 
-('Zerio', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
+('TrisoMic', 2, 4.6, 'L''ambiance est incroyable on ressent vraiment l''effroi des personnages fasse au death game. Dommage que la moitié du cast ait des relans de merdes inévitables ', '2018-10-11'),
 ('Sucre', 2, 3, 'DR 1 pose les bases de la série. C''est un jeu avec un concept original (des lycéens meurent lul). Les ost sont plutôt bonnes dans l''ensemble. Le style graphique pour les visuels est vraiment excellent selon moi. En point faible: l''histoire. Elle est trop courte et trop de personnages meurent avant que le joueur puisse mieux les connaitre.', '2017-05-20'),
 ('david', 2, 5, 'Je pleure sur le poulet que c''est DR, jouer à ce jeu svp', '2023-11-25'),
 
-('BlazedSora', 3, 3.1, 'Le gameplay est intéressant pour certains perso mais reste tout de même limité. En plus, le jeu n''est pas très très beau.', '2021-05-02'),
-('Gammandi', 3, 4.9, 'Bien que le gameplay soit désagréable par moment, le jeu reste incroyable au niveau de l''histoire et du développement du personnage principal. Le héros évolue bien au fil du jeu et la tension est palpable par moment. Certains artwork sont magnifiques et embeillissent le design de plusieurs personnages.', '2021-07-11'),
-('Zerio', 3, 4.1, 'Quelques musiques sont bien, l''histoire très cool. Le gameplay est cool de manière général. Malheureusement le jeu est parfois beau mais pas toujours.', '2021-11-12'),
+('BlazedSora', 3, 3.1, 'Le gameplay est intéressant pour certains perso mais reste tout de même limité. En plus, le jeu n''est pas très très beau.', '2024-05-02'),
+('Gammandi', 3, 4.9, 'Bien que le gameplay soit désagréable par moment, le jeu reste incroyable au niveau de l''histoire et du développement du personnage principal. Le héros évolue bien au fil du jeu et la tension est palpable par moment. Certains artwork sont magnifiques et embeillissent le design de plusieurs personnages.', '2024-07-11'),
+('Zerio', 3, 4.1, 'Quelques musiques sont bien, l''histoire très cool. Le gameplay est cool de manière général. Malheureusement le jeu est parfois beau mais pas toujours.', '2024-11-12'),
 
 ('Rocinante', 4, 0.1, 'Cé tro dure. Je retourne sure roblox', '2023-11-19'),
 ('Gregor14', 4, 5.0, 'La difficulté est au rendez-vous (sauf si vous jouez mage) avec des tas de builds différents (sauf mage) et le jeu est fun et demande un peu de réflexion sur certains boss (sauf pour les mages).', '2023-08-21'),
 ('IsThatTheRedMist2', 4, 3.5, 'Le jeu offre une diversité tel que peu de joueurs auront une aventure très similaire. Bien que l''histoire de base reste la même pour tout les joueurs à quelques exception près. Vous décidez de où vous allez et de ce que VOUS jouez. Tracez votre propre route et profitez.', '2023-07-23'),
 
-('KebabIsGood24', 5, 4.7, 'Je n''ai pas vraiment aimé dofus donc je me suis mis à essayez Waven. Et je ne suis pas déçu ! Avec des amis c''est l''éclate la plus totale. les stratégie et builds sont très divers ce qui offre plusieurs style de jeu différents. Je conseille fort si vous avez des amis prêt à vous rejoindre.', '2021-10-20'),
-('LeCrapuleux', 5, 3.8, 'Le jeu est assez dur seul mais avec des amis c''est bien plus simple et permet d''avancer dans le jeu en groupe. Le jeu est un peu trop simple et il n''y a pas énormément de truc à faire mais ça reste cool.', '2022-09-10'),
-('RolandLover19', 5, 4.8, 'L''histoire est très divertissante et vous fera rire à coups sûr. L''humour d''Ankama c''est toujours incroyable et dans Waven, ça ne fait pas exception. Le jeu est aussi assez cool sur le gameplay et le multijouer est très amusant. ', '2021-09-15'),
+('KebabIsGood24', 5, 4.7, 'Je n''ai pas vraiment aimé dofus donc je me suis mis à essayez Waven. Et je ne suis pas déçu ! Avec des amis c''est l''éclate la plus totale. les stratégie et builds sont très divers ce qui offre plusieurs style de jeu différents. Je conseille fort si vous avez des amis prêt à vous rejoindre.', '2023-10-20'),
+('LeCrapuleux', 5, 3.8, 'Le jeu est assez dur seul mais avec des amis c''est bien plus simple et permet d''avancer dans le jeu en groupe. Le jeu est un peu trop simple et il n''y a pas énormément de truc à faire mais ça reste cool.', '2023-09-10'),
+('RolandLover19', 5, 4.8, 'L''histoire est très divertissante et vous fera rire à coups sûr. L''humour d''Ankama c''est toujours incroyable et dans Waven, ça ne fait pas exception. Le jeu est aussi assez cool sur le gameplay et le multijouer est très amusant. ', '2023-09-15'),
 
 ('BlazedSora', 6, 3.9, 'J''ai eu un bon perso dès le début ducoup c''est forcément un bon jeu 👍', '2023-06-12'),
-('Gammandi', 6, 4.8, 'C''est un banger absolu, une histoire incroyable avec un système de combat particulier et une D.A magnifique.', '2021-01-06'),
-('Zerio', 6, 4.9, 'J''adore le systèle de dispense qui permet d''avoir le perso que tu souhaites en F2P même si tu es malchanceux. Meilleur Gacha.', '2022-02-12'),
+('Gammandi', 6, 4.8, 'C''est un banger absolu, une histoire incroyable avec un système de combat particulier et une D.A magnifique.', '2023-03-06'),
+('Zerio', 6, 4.9, 'J''adore le systèle de dispense qui permet d''avoir le perso que tu souhaites en F2P même si tu es malchanceux. Meilleur Gacha.', '2023-04-12'),
 
-('Shing', 7, 4.7, 'J''ai bien aimé le mode histoire qui est assez complet et permet d''admirer de beau paysages. Je recommande fortement aux fans du japon comme moi. Malheureusement, il y a quelques défauts d''optimisation mais rien de très grave.', '2023-02-10'),
-('LeCrapuleux', 7, 5.0, 'Ayant pratiqué le kendo pendant plusieurs années, j''ai beaucoup aimé l''authenticité des technniques au sabre. Et de manière générale, le jeu reste très fidèles au Japon. On remarque comment les devs se sont bien renseignés pour rendre le jeu le plus réaliste possible. Je valide fort. ', '2021-03-15'),
-('RolandLover19', 7, 4.5, 'J''ai acheté avant tout pour l''aspect multijoueur pour en profiter avec mon frère et on s''est bien amusés, quelques soucis de connection et optimisation mais c''est assez léger donc ça va.', '2023-02-18'),
+('Shing', 7, 4.7, 'J''ai bien aimé le mode histoire qui est assez complet et permet d''admirer de beau paysages. Je recommande fortement aux fans du japon comme moi. Malheureusement, il y a quelques défauts d''optimisation mais rien de très grave.', '2024-04-10'),
+('LeCrapuleux', 7, 5.0, 'Ayant pratiqué le kendo pendant plusieurs années, j''ai beaucoup aimé l''authenticité des technniques au sabre. Et de manière générale, le jeu reste très fidèles au Japon. On remarque comment les devs se sont bien renseignés pour rendre le jeu le plus réaliste possible. Je valide fort. ', '2024-03-12'),
+('RolandLover19', 7, 4.5, 'J''ai acheté avant tout pour l''aspect multijoueur pour en profiter avec mon frère et on s''est bien amusés, quelques soucis de connection et optimisation mais c''est assez léger donc ça va.', '2024-04-18'),
 
 ('KebabIsGood24', 8, 4.8, 'Un jeu de rythme vraiment sympa et qui manque pas de difficulté ! les musiques sont très cool et ambiance vraiment la partie.', '2023-09-25'),
 ('LeCrapuleux', 8, 4.4, 'J''ai beaucoup aimé les musiques (logique c''est un jeu de rythme) mais le gameplay est assez particulier et c''est plutôt agréable. Dommage qu''il n''y a que du combat en ligne et pas de coop sans être en local.', '2021-09-22'),
@@ -548,7 +536,7 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('BlazedSora', 10, 5.0, 'Le premier était déjà un pure banger mais là l''histoire est presque aboutis et c''est juste magnifique. Les musiques sont toujours un plaisir à écouter. Sans doute ma série de jeu préférée .', '2020-07-13'),
 ('david', 10, 5, 'Chiaki une reine putain, je pleure snif.', '2024-11-25'),
 
-('BlazedSora', 11, 4.3, 'League Of Legends c''est caca mais ce jeu est très bien. Validé par la street', '2022-08-02'),
+('BlazedSora', 11, 4.3, 'League Of Legends c''est caca mais ce jeu est très bien. Validé par la street', '2023-08-02'),
 ('Gammandi', 11, 5, 'En tant que main Sylas, je dis haut et fort que ce jeu est un banger absolu et résume bien l''histoire de mon champion préféré. Des mécaniques de gameplay incroyable et des combat de boss que j''ai adoré.', '2024-05-11'),
 ('Zerio', 11, 4, 'Jsuis pas fan des graphismes mais le gameplay est sympa et l''histoire plutôt cool donc ça rattrape.', '2024-12-22'),
 
@@ -556,9 +544,9 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('LeCrapuleux', 12, 3.6, 'Le jeu est trop dur pour moi donc j''ai beaucoup de mal mais ce n''est pas un mauvais jeu pour autant.  Je suis sûr qu''il va plaire à d''autres personnes', '2024-01-10'),
 ('RolandLover19', 12, 4.2, 'Je suis un grand fan du japon féodal, jouer à ce jeu qui respecte bien les mentalités de l''époque est un vrai plaisir. De plus, les décor sont magnifiques', '2024-02-18'),
 
-('KebabIsGood24', 13, 4.6, 'Le jeu est sympa visuellement, les combats sont cool avec des boss plus ou moins difficiles. En bref, c''est un bon jeu !', '2022-09-25'),
-('LeCrapuleux', 13, 4.4, 'Les mécaniques de combats sont amusants à utiliser et l''histoire est assez prenante. Cependant le jeu est beaucoup trop court ! J''ai finis en mode difficile le jeu d''une traite et ça m''a pris moins d''une journée.', '2022-11-22'),
-('RolandLover19', 13, 3.9, 'League Of Legends c''est toujours caca mais j''aime bien Ekko alors ça va', '2022-11-15'),
+('KebabIsGood24', 13, 4.6, 'Le jeu est sympa visuellement, les combats sont cool avec des boss plus ou moins difficiles. En bref, c''est un bon jeu !', '2023-09-25'),
+('LeCrapuleux', 13, 4.4, 'Les mécaniques de combats sont amusants à utiliser et l''histoire est assez prenante. Cependant le jeu est beaucoup trop court ! J''ai finis en mode difficile le jeu d''une traite et ça m''a pris moins d''une journée.', '2023-11-22'),
+('RolandLover19', 13, 3.9, 'League Of Legends c''est toujours caca mais j''aime bien Ekko alors ça va', '2023-11-15'),
 
 ('BlazedSora', 14, 5.0,'Mon jeu préféré. L''histoire est incroyable, les personnages sont attachant et stylé, le système de combat est incroyable et détaillé. Le jeu devient progressivement très difficile ce qui force la réfléxion à certains moments. J''adore.','2021-09-10'),
 ('Gammandi', 14, 4.9,'Un banger trop peu connu. L''écriture des personnages, les musiques, l''histoire, tout est incroyable. Ceux qui disent que ce jeu est guez n''y ont jamais joué où sont éclatax au jeu. ','2022-10-10'),
@@ -606,17 +594,18 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 -- Partages de jeux entre joueurs
 INSERT INTO partage (pseudo1, pseudo2, id_jeu, date_partage) VALUES
 -- pseudo 1 partage le jeu à pseudo 2
-('BlazedSora', 'david', 1, '2024-11-03'),
-('BlazedSora', 'KebabIsGood24', 10, '2024-11-03'),
-('david', 'Gammandi', 10, '2024-11-03'),
-('david', 'Zerio', 2, '2024-11-03');
+('BlazedSora', 'david', 1, '2023-12-09'), --Editeur du jeu 1 : Project_Moon
+('Gammandi', 'david', 14, '2023-12-09'),  --Editeur du jeu 14 : Project_Moon
+('BlazedSora', 'KebabIsGood24', 10, '2024-11-03'), --Editeur du jeu 10 : Spike_Chunsoft 
+('david', 'Zerio', 2, '2024-11-03'); --Editeur du jeu 2 : Spike_Chunsoft 
 
 
 -- Déblocages supplémentaires de succès
 INSERT INTO debloquer (pseudo, id_jeu, code, date_obtention) VALUES
-('david', 2, 'S012', '2024-11-20'),
-('david', 2, 'S013', '2024-11-21'),
-('david', 10, 'S022', '2024-11-22');
+('david', 2, 'S012', '2024-11-20'), --Editeur du jeu 2 : Spike_Chunsoft 
+('david', 2, 'S013', '2024-11-20'),
+('Gammandi', 1, 'S011', '2023-12-09'),
+('david', 10, 'S022', '2024-11-22'); --Editeur du jeu 10 : Spike_Chunsoft 
 
 
 INSERT INTO ami(pseudo1, pseudo2, statut) VALUES
