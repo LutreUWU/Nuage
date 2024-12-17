@@ -27,7 +27,7 @@ CREATE TABLE joueur(
     mail varchar(50) NOT NULL,
     date_naissance date NOT NULL,
     url_avatar varchar(200) NOT NULL,
-    solde numeric(4, 2) default 0 NOT NULL
+    solde numeric(5, 2) default 0 NOT NULL
 );
 
 CREATE TABLE ami(
@@ -43,7 +43,7 @@ CREATE TABLE ami(
 CREATE TABLE jeu(
     id_jeu serial PRIMARY KEY,
     titre varchar(100) NOT NULL, --On considére qu'un jeu n'a pas forcement un titre unique
-    prix numeric(4, 2) default 0 NOT NULL,
+    prix numeric(5, 2) default 0 NOT NULL,
     date_sortie date NOT NULL,
     age_min numeric(2, 0) NOT NULL,
     synopsis text, 

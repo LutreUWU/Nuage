@@ -4,6 +4,15 @@ from passlib.context import CryptContext
 import decimal
 app = Flask(__name__)
 
+
+def  select_solde():
+    with db.connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT solde FROM joueur WHERE pseudo = %s;", (session['user_nickname'],))
+        solde = cur.fetchone()
+        solde = solde.solde
+    return solde
+
 ## Page de connexion
 @app.route("/connexion/connexion")
 def connexion():
@@ -33,7 +42,6 @@ def login():
                 # On récupère dans une session, son solde, son avatar, son age et son pseudo
                 cur.execute('SELECT solde, url_avatar FROM joueur WHERE pseudo = %s', (pseudo,))
                 for res in cur:
-                    session['solde'] = res.solde
                     session['avatar'] = res.url_avatar
                 cur.execute('SELECT EXTRACT(YEAR FROM age(date_naissance)) AS age FROM joueur WHERE pseudo = %s;', (pseudo,))
                 for res in cur:
@@ -88,11 +96,13 @@ def back_to_connexion():
     error_condition = False
     return render_template("/connexion/connexion.html", error = error_condition)
 
+
+@app.route("/")
 @app.route("/accueil")
 def accueil():
     if 'user_nickname' not in session:
         return redirect(url_for('connexion'))       
-    return render_template("/accueil.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'])
+    return render_template("/accueil.html", user = session['user_nickname'], solde = select_solde(), avatar = session['avatar'])
 
 ############################################################################################################
 ## Début des requêtes pour la boutique
@@ -116,7 +126,7 @@ def boutique():
                         GROUP BY jeu.id_jeu, titre, prix, date_sortie, url_img;
                     ''')
         lst_jeu = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'],
+    return render_template("/boutique.html", user = session['user_nickname'], solde = select_solde(), avatar = session['avatar'],
                            lst_jeu = lst_jeu, lst_type = lst_type.values(), default = "Trier par",  filtre = False)
 
 @app.route("/add_filtre", methods = ['GET'])
@@ -156,7 +166,7 @@ def add_filtre():
         type_default = lst_type[type_trie]
         del lst_type[type_trie] ## On supprime les filtre qu'on a appliqué pour éviter qu'on le selectionne
         lst_jeu = cur.fetchall()
-    return render_template("/boutique.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
+    return render_template("/boutique.html", user = session['user_nickname'], solde = select_solde(), avatar = session['avatar'], 
                            lst_jeu = lst_jeu, lst_type = lst_type.values(), default = type_default, filtre = True)
 
 @app.route("/supp_filtre")
@@ -177,7 +187,7 @@ def recherche():
         lst_gen = cur.fetchall()
         cur.execute('SELECT nom FROM entreprise;')
         lst_entreprise = cur.fetchall()
-    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'],
+    return render_template("/recherche.html", user = session['user_nickname'], solde = select_solde(), avatar = session['avatar'],
                            lst_jeu = [], lst_genre = lst_gen, lst_editeur = lst_entreprise, lst_developpeur = lst_entreprise, default = ['', False, False, False])
 
 ## Pour trier les jeux en fonctions de la barre de recherche ET de ses filtres 
@@ -282,10 +292,10 @@ def search_game():
             lst_dev.append(res)
         ## Si on a trouvé aucun jeu correspondant aux filtres, on affiche à l'utilisateur qu'on a trouvé aucun jeu
         if not lst_jeu:
-            return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'], avatar = session['avatar'], 
+            return render_template("/recherche.html", user = session['user_nickname'], solde = select_solde(), avatar = session['avatar'], 
                                     lst_jeu = lst_jeu, nothing = True, lst_genre = lst_gen, lst_editeur = lst_edi, 
                                     lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
-    return render_template("/recherche.html", user = session['user_nickname'], solde = session['solde'],  avatar = session['avatar'],
+    return render_template("/recherche.html", user = session['user_nickname'], solde = select_solde(),  avatar = session['avatar'],
                            lst_jeu = lst_jeu, lst_genre = lst_gen, lst_editeur = lst_edi, 
                            lst_developpeur = lst_dev, default = [titre_recherche, genre, editeur, dev], filtre=True)
     
@@ -331,7 +341,7 @@ def game_click(type):
         cur.execute('SELECT pseudo, note, commentaire, url_avatar, date_achat FROM achat NATURAL JOIN joueur WHERE id_jeu = %s AND commentaire IS NOT NULL', (id_jeu,))
         lst_commentaire = cur.fetchall()
         ## On récupère le solde restant du joueur s'il décide d'acheter le jeu
-        solde_restant = decimal.Decimal(session['solde']) - jeu.prix
+        solde_restant = decimal.Decimal(select_solde()) - jeu.prix
         ## On récupère la liste des succès que le joueur a débloqué sur ce jeu
         cur.execute('SELECT intitule, condition, date_obtention FROM succes NATURAL JOIN debloquer WHERE id_jeu = %s AND pseudo = %s', (id_jeu, session['user_nickname'],))
         lst_succes_debloque = cur.fetchall()
@@ -347,7 +357,7 @@ def game_click(type):
         cur.execute('SELECT pseudo1, pseudo2, id_jeu FROM partage WHERE pseudo2 = %s AND id_jeu = %s', (session['user_nickname'], id_jeu,))
         partage = cur.fetchone()
         if partage: ## Si on a trouve un truc, alors le jeu a été partagé à l'utilisateur
-            return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'],  avatar = session['avatar'],  
+            return render_template("jeu.html", user = session['user_nickname'], solde=select_solde(),  avatar = session['avatar'],  
                                     partage = partage, jeu = jeu, lst_genre = lst_genre, lst_commentaire = lst_commentaire, nb_succes = nb_succes, 
                                     lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
         ## On vérifie si l'utilisateur a acheté le jeu
@@ -362,11 +372,17 @@ def game_click(type):
             if not(lst_joueur):
                 ## On sélectionne sa liste d'ami, puis on y retire ceux qui possède le jeu ou ceux qui ont déjà le jeu partagé 
                 cur.execute('''
-                            SELECT pseudo1 AS pseudo, url_avatar FROM ami JOIN joueur ON pseudo1 = joueur.pseudo AND pseudo2 =  %s AND statut = 1
-                            UNION SELECT pseudo2, url_avatar FROM ami JOIN joueur ON pseudo2 = joueur.pseudo AND pseudo1 =  %s AND statut = 1
+                            SELECT pseudo1 AS pseudo, url_avatar
+                            FROM ami JOIN joueur ON pseudo1 = joueur.pseudo AND pseudo2 =  %s AND statut = 1 AND EXTRACT(YEAR FROM age(date_naissance)) >= %s
+                            UNION SELECT pseudo2, url_avatar
+                            FROM ami JOIN joueur ON pseudo2 = joueur.pseudo AND pseudo1 =  %s AND statut = 1 AND EXTRACT(YEAR FROM age(date_naissance)) >= %s
                             EXCEPT SELECT pseudo, url_avatar FROM achat NATURAL JOIN joueur WHERE id_jeu = %s
                             EXCEPT SELECT pseudo2, url_avatar FROM partage NATURAL JOIN jeu NATURAL JOIN joueur WHERE id_jeu = %s;
-                            ''', (session['user_nickname'], session['user_nickname'], id_jeu, id_jeu,))
+                            ''',
+                            (
+                                session['user_nickname'], jeu.age_min,
+                                session['user_nickname'], jeu.age_min,
+                                id_jeu, id_jeu,))
                 lst_joueur = cur.fetchall()
                 already_partage = False
             else:
@@ -374,30 +390,30 @@ def game_click(type):
             ## On vérifie s'il a mit un commentaire
             if res.commentaire != None:   
                 ## Si ce n'est pas le cas, alors on lui return la template pour qu'il puisse mettre un commentaire
-                return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],  
+                return render_template("jeu.html", user = session['user_nickname'], solde= select_solde(),  avatar = session['avatar'],  
                                        jeu = jeu, lst_genre = lst_genre, lst_joueur = lst_joueur, 
                                        already_partage= already_partage, already_game = True, solde_restant = solde_restant, nb_succes = nb_succes, 
                                        no_commentaire = False,lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                        lst_succes_bloque = lst_succes_bloque)
             ## Sinon on return la template normal
-            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
+            return render_template("jeu.html", user = session['user_nickname'], solde= select_solde(),  avatar = session['avatar'],
                                    jeu = jeu, lst_genre = lst_genre, lst_joueur = lst_joueur, 
                                    already_partage= already_partage, already_game = True, solde_restant = solde_restant, nb_succes = nb_succes, no_commentaire = True, 
                                    lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                    lst_succes_bloque = lst_succes_bloque)
         ## On vérifie que l'utilisateur peut acheter le jeu
         if solde_restant < 0:  ## Si ce n'est pas le cas, on le prévient
-            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'],
+            return render_template("jeu.html", user = session['user_nickname'], solde= select_solde(),  avatar = session['avatar'],
                                    jeu = jeu, lst_genre = lst_genre, no_money = True, solde_restant = solde_restant, nb_succes = nb_succes, 
                                    lst_commentaire = lst_commentaire, lst_succes_debloque = lst_succes_debloque, 
                                    lst_succes_bloque = lst_succes_bloque)
         ## On vérifie aussi qu'il a l'âge pour jouer, si ce n'est pas le cas, on le prévient
         elif int(session['age']) < jeu.age_min:
-            return render_template("jeu.html", user = session['user_nickname'], solde= session['solde'],  avatar = session['avatar'], 
+            return render_template("jeu.html", user = session['user_nickname'], solde= select_solde(),  avatar = session['avatar'], 
                                    jeu = jeu, lst_genre = lst_genre, no_age = True, solde_restant = solde_restant, nb_succes = nb_succes, lst_commentaire = lst_commentaire, 
                                    lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
     ## Si on arrive ici, alors le joueur peut acheter le jeu
-    return render_template("jeu.html", user = session['user_nickname'], solde=session['solde'],  avatar = session['avatar'],  
+    return render_template("jeu.html", user = session['user_nickname'], solde=select_solde(),  avatar = session['avatar'],  
                            jeu = jeu, lst_genre = lst_genre, solde_restant = solde_restant, nb_succes = nb_succes, lst_commentaire = lst_commentaire, 
                            lst_succes_debloque = lst_succes_debloque, lst_succes_bloque = lst_succes_bloque)
 
@@ -426,9 +442,7 @@ def buy_game():
         ## On insère dans la table "achat", l'achat qu'on vient de faire.
         ## ATTENTION !! On n'insère pas de commentaire, ni de note dans la table "achat", lorsqu'on achète un jeu, on ne met pas un commentaire directement ...
         cur.execute('INSERT INTO achat (pseudo, id_jeu, date_achat) VALUES (%s, %s, DATE(NOW()));', (session['user_nickname'], id_jeu, ))
-        ## On actualise le solde du joueur dans la session et la table
-        session['solde'] = decimal.Decimal(session['solde']) - prix_jeu
-        cur.execute('UPDATE joueur SET solde = %s WHERE pseudo = %s;', (session['solde'], session['user_nickname'], ))
+        cur.execute('UPDATE joueur SET solde = %s WHERE pseudo = %s;', (decimal.Decimal(select_solde()) - prix_jeu, session['user_nickname'], ))
     name = name.replace(" ", "%20")
     return redirect(url_for('game_click', type=name))
 
@@ -600,7 +614,7 @@ def profil():
                     (session['user_nickname'],))
         nbr_jeu_partage_me = cur.fetchone()
     return render_template("/profil.html", user = user_info, nbr_jeu = nbr_jeu.nbr, nbr_jeu_partage = nbr_jeu_partage.nbr, nbr_jeu_partage_me = nbr_jeu_partage_me.nbr,
-                           lst_jeu = lst_jeu, lst_jeu_partage = lst_jeu_partage, solde = session['solde'], liste_ami = liste_ami,
+                           lst_jeu = lst_jeu, lst_jeu_partage = lst_jeu_partage, solde = select_solde(), liste_ami = liste_ami,
                            liste_demande = liste_demande, lst_joueur = lst_joueur, lst_requete = lst_requete)
 
 @app.route("/add_solde", methods=['POST'])
@@ -609,11 +623,10 @@ def add_solde():
     Fonction qui va permettre de mettre à jour le solde du joueur
     '''
     new_solde = request.form.get("solde", None)
-    montant = str(int(float(new_solde) - float(session['solde'])))
+    montant = str(int(float(new_solde) - float(select_solde())))
     with db.connect() as conn:
         cur = conn.cursor()
         cur.execute("UPDATE joueur SET solde = %s WHERE pseudo = %s;", (new_solde, session['user_nickname'],))
-        session['solde'] = new_solde
         cur.execute("INSERT INTO reapprovisionner (pseudo, date_transaction, montant) VALUES (%s, DATE(NOW()), %s);", (session['user_nickname'], montant, ))
     return redirect(url_for('profil'))
     
