@@ -191,8 +191,8 @@ INSERT INTO genre (nom_genre) VALUES
 ('Action'),
 ('RPG'),
 ('Multijoueur'),
-('Jeu de rôle'),
-('Bac à sable'),
+('Jeu_de_rôle'),
+('Bac_à_sable'),
 ('MMO'),
 ('MOBA');
 
