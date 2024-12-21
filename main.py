@@ -706,7 +706,6 @@ def disconnect():
     l'utilisateur à la page de connexion
     '''
     session.pop('user_nickname', None)
-    session.pop('solde', None)
     session.pop('age', None)
     session.pop('avatar', None)
     return redirect(url_for('connexion'))
