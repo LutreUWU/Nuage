@@ -551,7 +551,6 @@ INSERT INTO achat (pseudo, id_jeu, note, commentaire, date_achat) VALUES
 ('BlazedSora', 14, 5.0,'Mon jeu préféré. L''histoire est incroyable, les personnages sont attachant et stylé, le système de combat est incroyable et détaillé. Le jeu devient progressivement très difficile ce qui force la réfléxion à certains moments. J''adore.','2021-09-10'),
 ('Gammandi', 14, 4.9,'Un banger trop peu connu. L''écriture des personnages, les musiques, l''histoire, tout est incroyable. Ceux qui disent que ce jeu est guez n''y ont jamais joué où sont éclatax au jeu. ','2022-10-10'),
 ('IsThatTheRedMist2', 14, 4.5,'A l''aide, j''ai finit le jeu depuis plusieurs mois et je n''arrive pas à me sortir "That''s that and this is this" de ma tête.  J''en suis au point où j''ai rétorqué ça à ma femme lorsqu''elle est partie avec les gosses... Cependant le jeu est bien','2023-11-13'),
-('david', 14, 4.7,'Les musiques sont tellement banger que maintenant j''ai besoin d''en écouter une quotidiennement.','2022-08-07'),
 ('Gregor14', 14, 4.8,'Je n''arrive plus à progresser dans le jeu tant il est difficile. Ce n''est pas pour autant déplaisant puisque le système de combat fait beaucoup réfléchir et j''aime ça.','2023-12-09'),
 
 ('Rocinante', 15, 5.0, 'C tro bien jeu sui joueure pro adopte me j''ai fini le jeux o moin cinque foi', '2016-07-13'),
